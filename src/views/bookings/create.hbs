@@ -1,12 +1,22 @@
 <h1>Créer une réservation</h1>
 <form method='post' action='/bookings/create'>
   <div>
-    <label>Property ID</label>
-    <input name='propertyId' required />
+    <label>Property</label>
+    <select name='propertyId' required>
+      <option value='' disabled selected>-- Choisir une propriété --</option>
+      {{#each properties}}
+        <option value='{{this.id}}'>{{this.name}}</option>
+      {{/each}}
+    </select>
   </div>
   <div>
-    <label>Client ID</label>
-    <input name='clientId' required />
+    <label>Client</label>
+    <select name='clientId' required>
+      <option value='' disabled selected>-- Choisir un client --</option>
+      {{#each clients}}
+        <option value='{{this.id}}'>{{this.lastName}} {{this.firstName}} - {{this.email}}</option>
+      {{/each}}
+    </select>
   </div>
   <div>
     <label>Start Date</label>

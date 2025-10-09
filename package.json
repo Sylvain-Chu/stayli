@@ -22,13 +22,16 @@
     "prisma:generate:local": "dotenv -e .env.local -- prisma generate",
     "prisma:migrate:deploy:local": "dotenv -e .env.local -- prisma migrate deploy",
     "prisma:migrate:dev:local": "dotenv -e .env.local -- prisma migrate dev",
-    "start:dev:local": "dotenv -e .env.local -- nest start --watch"
+    "dev": "dotenv -e .env.local -- nest start --watch"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
     "@nestjs/platform-express": "^11.0.1",
     "@prisma/client": "^6.17.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
     "hbs": "^4.2.0",
     "method-override": "^3.0.0",
     "reflect-metadata": "^0.2.2",
@@ -45,8 +48,8 @@
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "dotenv": "^17.2.3",
-    "eslint": "^9.18.0",
     "dotenv-cli": "^7.4.1",
+    "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",

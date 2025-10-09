@@ -19,6 +19,14 @@ export class InvoicesService {
     return this.prisma.invoice.create({ data });
   }
 
+  // List bookings that do not yet have an invoice (for the create form)
+  async findEligibleBookings() {
+    return this.prisma.booking.findMany({
+      where: { invoice: null },
+      include: { property: true, client: true },
+    });
+  }
+
   async delete(id: string): Promise<Invoice> {
     return this.prisma.invoice.delete({ where: { id } });
   }
@@ -29,7 +37,13 @@ export class InvoicesService {
 
   async update(
     id: string,
-    data: { invoiceNumber?: string; dueDate?: Date; amount?: number; status?: string },
+    data: {
+      invoiceNumber?: string;
+      dueDate?: Date;
+      amount?: number;
+      status?: string;
+      bookingId?: string;
+    },
   ): Promise<Invoice> {
     return this.prisma.invoice.update({ where: { id }, data });
   }

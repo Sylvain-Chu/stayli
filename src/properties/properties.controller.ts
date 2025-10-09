@@ -12,6 +12,8 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
+import { CreatePropertyDto } from './dto/create-property.dto';
+import { UpdatePropertyDto } from './dto/update-property.dto';
 import { Prisma } from '@prisma/client';
 
 @Controller('properties')
@@ -37,12 +39,8 @@ export class PropertiesController {
 
   @Post('create')
   @Redirect('/properties')
-  async create(@Body() body: { name: string; address?: string; description?: string }) {
-    await this.propertiesService.create({
-      name: body.name,
-      address: body.address,
-      description: body.description,
-    });
+  async create(@Body() body: CreatePropertyDto) {
+    await this.propertiesService.create(body);
     return;
   }
 
@@ -88,15 +86,8 @@ export class PropertiesController {
 
   @Post(':id/edit')
   @Redirect('/properties')
-  async update(
-    @Param('id') id: string,
-    @Body() body: { name?: string; address?: string; description?: string },
-  ) {
-    await this.propertiesService.update(id, {
-      name: body.name,
-      address: body.address,
-      description: body.description,
-    });
+  async update(@Param('id') id: string, @Body() body: UpdatePropertyDto) {
+    await this.propertiesService.update(id, body);
     return;
   }
 }

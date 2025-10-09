@@ -1,6 +1,16 @@
 <h1>Modifier la facture</h1>
 <form method='post' action='/invoices/{{invoice.id}}/edit'>
   <div>
+    <label>Réservation</label>
+    <select name='bookingId' required>
+      {{#each bookings}}
+        <option value='{{this.id}}' {{#if (eq this.id ../invoice.bookingId)}}selected{{/if}}>
+          {{date this.startDate}} → {{date this.endDate}} — {{this.property.name}} — {{this.client.lastName}} {{this.client.firstName}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+  <div>
     <label>Invoice Number</label>
     <input name='invoiceNumber' value='{{invoice.invoiceNumber}}' required />
   </div>

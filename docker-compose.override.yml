@@ -1,6 +1,6 @@
 services:
   app:
-    command: node dist/src/main.js
+    command: yarn start:dev
     environment:
       - DB_HOST=db
       - DB_PORT=5432

@@ -16,6 +16,7 @@ if (existsSync(localEnv)) {
   dotenv.config();
 }
 import * as express from 'express';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -49,11 +50,20 @@ async function bootstrap() {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   });
+  // Simple equality helper for select preselection
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('eq', function (a: unknown, b: unknown) {
+    // strict equality is fine for ids/strings used in templates
+    return a === b;
+  });
   // Attach body parsing and static asset serving to the underlying Express instance
   // so server-side forms still work and client JS can be served from /js.
   const server = app.getHttpAdapter().getInstance();
   server.use(express.urlencoded({ extended: true }));
   server.use(express.static(join(process.cwd(), 'public')));
+
+  // Global validation (DTOs)
+  app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   await app.listen(process.env.PORT ?? 3000);
 }

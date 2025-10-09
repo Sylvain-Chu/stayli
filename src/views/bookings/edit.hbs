@@ -1,6 +1,26 @@
 <h1>Modifier la réservation</h1>
 <form method='post' action='/bookings/{{booking.id}}/edit'>
   <div>
+    <label>Property</label>
+    <select name='propertyId' required>
+      {{#each properties}}
+        <option value='{{this.id}}' {{#if (eq this.id ../booking.propertyId)}}selected{{/if}}>
+          {{this.name}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+  <div>
+    <label>Client</label>
+    <select name='clientId' required>
+      {{#each clients}}
+        <option value='{{this.id}}' {{#if (eq this.id ../booking.clientId)}}selected{{/if}}>
+          {{this.lastName}} {{this.firstName}} - {{this.email}}
+        </option>
+      {{/each}}
+    </select>
+  </div>
+  <div>
     <label>Start Date</label>
     <input type='date' name='startDate' value='{{date booking.startDate}}' required />
   </div>

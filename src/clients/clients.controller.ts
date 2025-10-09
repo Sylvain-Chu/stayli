@@ -12,6 +12,8 @@ import {
   Redirect,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
+import { CreateClientDto } from './dto/create-client.dto';
+import { UpdateClientDto } from './dto/update-client.dto';
 import { Prisma } from '@prisma/client';
 
 @Controller('clients')
@@ -37,15 +39,8 @@ export class ClientsController {
 
   @Post('create')
   @Redirect('/clients')
-  async create(
-    @Body() body: { firstName: string; lastName: string; email: string; phone?: string },
-  ) {
-    await this.clientsService.create({
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phone: body.phone,
-    });
+  async create(@Body() body: CreateClientDto) {
+    await this.clientsService.create(body);
     return;
   }
 
@@ -91,16 +86,8 @@ export class ClientsController {
 
   @Post(':id/edit')
   @Redirect('/clients')
-  async update(
-    @Param('id') id: string,
-    @Body() body: { firstName?: string; lastName?: string; email?: string; phone?: string },
-  ) {
-    await this.clientsService.update(id, {
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      phone: body.phone,
-    });
+  async update(@Param('id') id: string, @Body() body: UpdateClientDto) {
+    await this.clientsService.update(id, body);
     return;
   }
 }

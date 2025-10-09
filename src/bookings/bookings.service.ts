@@ -42,6 +42,8 @@ export class BookingsService {
       endDate?: Date;
       totalPrice?: number;
       status?: string;
+      propertyId?: string;
+      clientId?: string;
     },
   ): Promise<Booking> {
     return this.prisma.booking.update({ where: { id }, data });
