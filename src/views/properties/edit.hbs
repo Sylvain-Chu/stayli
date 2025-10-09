@@ -1,0 +1,17 @@
+<h1>Edit property</h1>
+<form method='post' action='/properties/{{property.id}}/edit'>
+  <div>
+    <label>Name</label>
+    <input name='name' value='{{property.name}}' required />
+  </div>
+  <div>
+    <label>Address</label>
+    <input name='address' value='{{property.address}}' />
+  </div>
+  <div>
+    <label>Description</label>
+    <textarea name='description'>{{property.description}}</textarea>
+  </div>
+  <button type='submit'>Save</button>
+</form>
+<p><a href='/properties'>Back</a></p>

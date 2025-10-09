@@ -42,11 +42,44 @@ export class PropertiesController {
     return;
   }
 
-  // HTML forms don't support DELETE; use POST to ':id/delete'
   @Post(':id/delete')
   @Redirect('/properties')
   async remove(@Param('id') id: string) {
     await this.propertiesService.delete(id);
+    return;
+  }
+
+  @Get(':id')
+  @Render('properties/show')
+  async show(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+    if (!property) {
+      throw new InternalServerErrorException('Property not found');
+    }
+    return { property };
+  }
+
+  @Get(':id/edit')
+  @Render('properties/edit')
+  async editForm(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+    if (!property) {
+      throw new InternalServerErrorException('Property not found');
+    }
+    return { property };
+  }
+
+  @Post(':id/edit')
+  @Redirect('/properties')
+  async update(
+    @Param('id') id: string,
+    @Body() body: { name?: string; address?: string; description?: string },
+  ) {
+    await this.propertiesService.update(id, {
+      name: body.name,
+      address: body.address,
+      description: body.description,
+    });
     return;
   }
 }

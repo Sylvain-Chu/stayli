@@ -11,6 +11,8 @@
       <form method='post' action='/properties/{{this.id}}/delete' style='display:inline'>
         <button type='submit' onclick="return confirm('Delete this property?')">Delete</button>
       </form>
+      <a href='/properties/{{this.id}}'>Show</a>
+      <a href='/properties/{{this.id}}/edit'>Edit</a>
     </li>
   {{else}}
     <li>Vous n'avez pas encore de propriété.</li>
