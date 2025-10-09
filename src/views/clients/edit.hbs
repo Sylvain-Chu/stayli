@@ -1,0 +1,21 @@
+<h1>Modifier le client</h1>
+<form method='post' action='/clients/{{client.id}}/edit'>
+  <div>
+    <label>Prénom</label>
+    <input name='firstName' value='{{client.firstName}}' required />
+  </div>
+  <div>
+    <label>Nom</label>
+    <input name='lastName' value='{{client.lastName}}' required />
+  </div>
+  <div>
+    <label>Email</label>
+    <input name='email' value='{{client.email}}' required />
+  </div>
+  <div>
+    <label>Téléphone</label>
+    <input name='phone' value='{{client.phone}}' />
+  </div>
+  <button type='submit'>Enregistrer</button>
+</form>
+<p><a href='/clients'>Retour</a></p>

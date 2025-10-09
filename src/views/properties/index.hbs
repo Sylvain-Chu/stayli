@@ -8,11 +8,17 @@
     <li>
       <strong>{{this.name}}</strong><br />
       <small>{{this.address}}</small>
-      <form method='post' action='/properties/{{this.id}}/delete' style='display:inline'>
-        <button type='submit' onclick="return confirm('Delete this property?')">Delete</button>
-      </form>
+      <button
+        data-delete
+        data-id='{{this.id}}'
+        data-base='/properties'
+        data-confirm='Supprimer cette propriété ?'
+      >Supprimer</button>
+      <a href='/properties/{{this.id}}'>Afficher</a>
+      <a href='/properties/{{this.id}}/edit'>Modifier</a>
     </li>
   {{else}}
     <li>Vous n'avez pas encore de propriété.</li>
   {{/each}}
 </ul>
+<script src='/js/app.js'></script>

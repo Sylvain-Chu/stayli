@@ -1,0 +1,35 @@
+<h1>Créer une réservation</h1>
+<form method='post' action='/bookings/create'>
+  <div>
+    <label>Property</label>
+    <select name='propertyId' required>
+      <option value='' disabled selected>-- Choisir une propriété --</option>
+      {{#each properties}}
+        <option value='{{this.id}}'>{{this.name}}</option>
+      {{/each}}
+    </select>
+  </div>
+  <div>
+    <label>Client</label>
+    <select name='clientId' required>
+      <option value='' disabled selected>-- Choisir un client --</option>
+      {{#each clients}}
+        <option value='{{this.id}}'>{{this.lastName}} {{this.firstName}} - {{this.email}}</option>
+      {{/each}}
+    </select>
+  </div>
+  <div>
+    <label>Start Date</label>
+    <input type='date' name='startDate' required />
+  </div>
+  <div>
+    <label>End Date</label>
+    <input type='date' name='endDate' required />
+  </div>
+  <div>
+    <label>Total Price</label>
+    <input type='number' step='0.01' name='totalPrice' required />
+  </div>
+  <button type='submit'>Créer</button>
+</form>
+<p><a href='/bookings'>Retour</a></p>

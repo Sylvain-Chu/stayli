@@ -1,0 +1,29 @@
+<h1>{{title}}</h1>
+<p>Bienvenue sur Stayli. Choisissez une section ci-dessous :</p>
+
+<nav>
+  <ul>
+    {{#each sections}}
+      <li>
+        <h2>{{this.label}}</h2>
+        <ul>
+          {{#each this.links}}
+            <li><a href='{{this.href}}'>{{this.label}}</a></li>
+          {{/each}}
+        </ul>
+      </li>
+    {{/each}}
+  </ul>
+</nav>
+
+<hr />
+<p>
+  Raccourcis:
+  <a href='/bookings'>Réservations</a>
+  |
+  <a href='/clients'>Clients</a>
+  |
+  <a href='/properties'>Propriétés</a>
+  |
+  <a href='/invoices'>Factures</a>
+</p>
