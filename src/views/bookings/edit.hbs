@@ -1,0 +1,21 @@
+<h1>Modifier la réservation</h1>
+<form method='post' action='/bookings/{{booking.id}}/edit'>
+  <div>
+    <label>Start Date</label>
+    <input type='date' name='startDate' value='{{date booking.startDate}}' required />
+  </div>
+  <div>
+    <label>End Date</label>
+    <input type='date' name='endDate' value='{{date booking.endDate}}' required />
+  </div>
+  <div>
+    <label>Total Price</label>
+    <input type='number' step='0.01' name='totalPrice' value='{{booking.totalPrice}}' />
+  </div>
+  <div>
+    <label>Status</label>
+    <input name='status' value='{{booking.status}}' />
+  </div>
+  <button type='submit'>Enregistrer</button>
+</form>
+<p><a href='/bookings'>Retour</a></p>

@@ -1,0 +1,22 @@
+<h1>Ajouter un client</h1>
+<form method='post' action='/clients/create'>
+  <div>
+    <label>Prénom</label>
+    <input name='firstName' required />
+  </div>
+  <div>
+    <label>Nom de famille</label>
+    <input name='lastName' required />
+  </div>
+  <div>
+    <label>Email</label>
+    <input type='email' name='email' required />
+  </div>
+  <div>
+    <label>Téléphone</label>
+    <input name='phone' />
+  </div>
+
+  <button type='submit'>Créer</button>
+</form>
+<p><a href='/properties'>Retour</a></p>

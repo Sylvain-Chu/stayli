@@ -21,165 +21,145 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Description
+# Stayli — Short-term rentals manager (NestJS + Prisma + Handlebars)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Stayli is a simple, self-hostable web app to manage short-term rentals. It aims to be open-source and easy to deploy on your own server (e.g. TrueNAS SCALE), so you stay in control of your data and avoid paid SaaS lock-in.
 
-## Project setup
+## Vision and scope
 
-```bash
-$ yarn install
+- Audience: non-technical users first (designed for simplicity and clarity).
+- Goal: a clean CRUD experience for the core entities of rental operations.
+- Core features (roadmap):
+  1. Properties — manage apartments/rooms to rent
+  2. Clients — manage tenants/guests
+  3. Bookings — link a client to a property over a period
+  4. Invoices — generate invoices from bookings
+
+The app ships with server-rendered pages (Handlebars) and a tiny amount of progressive JS for actions like deletions.
+
+## Tech stack
+
+- Backend: NestJS (TypeScript)
+- Database: PostgreSQL
+- ORM/Client: Prisma
+- Views: Handlebars (hbs)
+- Packaging/Infra: Docker
+
+## Project status
+
+- Infrastructure (Nest, Docker, PostgreSQL, Prisma): ready
+- Properties CRUD: implemented end-to-end
+- Clients, Bookings, Invoices: implemented as basic CRUDs and iterating
+- Home page: `/` with quick links to all modules
+
+## Repository structure
+
+- `src/views/` — Handlebars templates
+- `src/**` — Nest modules (controllers, services)
+- `prisma/schema.prisma` — Prisma schema
+- `.env` — Docker environment (DB host = `db`)
+- `.env.local` — Local environment (app on host, DB on `localhost`)
+
+## Environments
+
+- `.env` (Docker):
+  - `DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public"`
+- `.env.local` (local):
+  - `DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}?schema=public"`
+  - `PORT=3001` (avoid conflicts with 3000; adjust if needed)
+
+## Quick start — Local (host app + Docker DB)
+
+1. Create and fill env files
+   - Copy `.env.example` to `.env` and set a strong `POSTGRES_PASSWORD`
+   - Ensure `.env.local` matches credentials and points to `localhost`
+
+2. Start PostgreSQL via Docker
+
+```powershell
+docker-compose up -d db
 ```
 
-## Compile and run the project
+3. Install dependencies and generate Prisma client
 
-```bash
-# development
-$ yarn run start
-
-# watch mode
-$ yarn run start:dev
-
-# production mode
-$ yarn run start:prod
+```powershell
+yarn install
+yarn prisma:generate:local
 ```
 
-## Run tests
+4. Apply database migrations
 
-```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
+```powershell
+yarn prisma:migrate:deploy:local
 ```
 
-## Deployment
+5. Start the app in watch mode (port 3001 by default)
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ yarn install -g @nestjs/mau
-$ mau deploy
+```powershell
+yarn start:dev:local
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+6. Open the app
 
-## Resources
+```
+http://localhost:3001/
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Home page provides quick links:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- Bookings: `/bookings`, create: `/bookings/create`
+- Clients: `/clients`, create: `/clients/create`
+- Properties: `/properties`, create: `/properties/create`
+- Invoices: `/invoices`, create: `/invoices/create`
 
-## Support
+## Full Docker (app + DB)
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-
-## Development (Docker) — dev with hot-reload (PowerShell)
-
-This project includes a development workflow that runs the app inside Docker with hot-reload (Nest watch). The repo contains a `docker-compose.override.yml` which switches the app to `yarn start:dev` and mounts the project files into the container.
-
-Prerequisites
-
-- Docker Desktop running
-- PowerShell (Windows)
-
-Quick start (PowerShell)
-
-1. Copy the example env file and edit the password:
+1. Copy `.env.example` to `.env` and set `POSTGRES_PASSWORD`
 
 ```powershell
 Copy-Item .env.example .env
-# then open .env and replace <votre_mot_de_passe_solide_ici> with a real password
-code .env
+# edit .env to set a real password
 ```
 
-2. Start the development stack (rebuild if needed):
+2. Bring up the full stack
 
 ```powershell
-docker-compose up --build
-# or run in background
 docker-compose up --build -d
 ```
 
-3. Follow the app logs:
-
-```powershell
-docker-compose logs -f app
-```
-
-4. Open the app in your browser:
+3. Open the app
 
 ```
-http://localhost:3000/properties
+http://localhost:3000/
 ```
 
-5. Stop the stack:
+Notes:
 
-```powershell
-docker-compose down
-```
-
-Notes about hot-reload and mounts
-
-- The override mounts the project into `/usr/src/app` and runs `yarn start:dev` inside the container. Code edits in VS Code will be picked up by Nest's watch mode.
-- If you add or change dependencies (package.json), rebuild the image or install the dependency inside the running container:
-
-```powershell
-docker-compose exec app yarn add <package>
-docker-compose restart app
-```
-
-What `scripts/wait-for-db.sh` does
-
-- Waits for Postgres to be ready using `pg_isready` (this checks SQL readiness, not just TCP port).
-- Retries a number of times (configured inside the script) and exits if DB never becomes ready.
-- When ready it runs `npx prisma migrate deploy` to apply migrations and then execs the main command (start the app).
-
-This prevents the app from starting too early and failing with Prisma/DB connection errors.
-
-Rebuild the image (when Dockerfile or system packages change)
-
-```powershell
-docker-compose build app
-docker-compose up -d
-```
-
-Troubleshooting
-
-- `Cannot find module 'hbs'` inside the container:
-  ```powershell
-  docker-compose exec app yarn add hbs
-  docker-compose restart app
-  ```
-- Prisma can't reach DB: check `docker-compose logs db` and `docker-compose logs app`.
-- Bind mount performance on Windows: if you notice slowness, consider using WSL2 (open the project from WSL) for better file system performance.
-
-Useful commands
-
-- Build & start in background: `docker-compose up --build -d`
+- The image builds the project, waits for DB (`wait-for-db.sh`), applies migrations, then starts the app.
 - Follow logs: `docker-compose logs -f app`
-- Run Prisma migrate: `docker-compose exec app npx prisma migrate deploy`
-- Run a shell inside the app container: `docker-compose exec app sh`
+
+## Useful Yarn scripts
+
+- Local dev (host): `yarn start:dev:local`
+- Dev in Docker image: `yarn start:dev`
+- Build: `yarn build`
+- Lint: `yarn lint`
+- Tests: `yarn test` / `yarn test:e2e`
+- Prisma (local):
+  - `yarn prisma:generate:local`
+  - `yarn prisma:migrate:deploy:local`
+  - `yarn prisma:migrate:dev:local`
+
+## Troubleshooting
+
+- Prisma P1001 (cannot reach DB):
+  - Local: ensure the DB container is running (`docker-compose ps`) and `.env.local` points to `localhost:5432` with correct credentials.
+  - Docker: ensure `DATABASE_URL` targets `db:5432` (default in `.env`).
+- Port already in use (EADDRINUSE):
+  - Change `PORT` in `.env.local` (e.g. 3002) or free the port.
+- View not found (Handlebars):
+  - Views live under `src/views`. The app auto-detects the correct path depending on runtime (source vs dist).
+
+## Why this project?
+
+Stayli aims to be a free, sovereign alternative to rental management SaaS. It’s designed to be approachable for non-technical users and easy to self-host, while using a modern, maintainable stack under the hood.

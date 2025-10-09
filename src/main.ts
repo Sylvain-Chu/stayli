@@ -3,6 +3,19 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { join } from 'path';
 import { AppModule } from './app.module';
 import { existsSync } from 'fs';
+import * as dotenv from 'dotenv';
+// hbs types are minimal; use default import with any to avoid TS complaints
+import hbsDefault from 'hbs';
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+const hbs: any = hbsDefault as any;
+// Load env from .env.local if present, otherwise fallback to .env
+const localEnv = join(process.cwd(), '.env.local');
+if (existsSync(localEnv)) {
+  dotenv.config({ path: localEnv });
+} else {
+  dotenv.config();
+}
+import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -25,6 +38,22 @@ async function bootstrap() {
     app.setBaseViewsDir(viewsDir);
   }
   app.setViewEngine('hbs');
+  // Register useful Handlebars helpers
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('date', function (value?: Date | string) {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  });
+  // Attach body parsing and static asset serving to the underlying Express instance
+  // so server-side forms still work and client JS can be served from /js.
+  const server = app.getHttpAdapter().getInstance();
+  server.use(express.urlencoded({ extended: true }));
+  server.use(express.static(join(process.cwd(), 'public')));
 
   await app.listen(process.env.PORT ?? 3000);
 }

@@ -1,0 +1,8 @@
+<h1>{{client.firstName}} {{client.lastName}}</h1>
+<p><strong>Email:</strong>{{client.email}}</p>
+{{#if client.phone}}
+  <p><strong>Téléphone:</strong>{{client.phone}}</p>{{/if}}
+<p>
+  <a href='/clients/{{client.id}}/edit'>Modifier</a>
+  <a href='/clients'>Retour</a>
+</p>

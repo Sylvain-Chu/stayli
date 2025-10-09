@@ -1,0 +1,21 @@
+<h1>Créer une facture</h1>
+<form method='post' action='/invoices/create'>
+  <div>
+    <label>Invoice Number</label>
+    <input name='invoiceNumber' required />
+  </div>
+  <div>
+    <label>Booking ID</label>
+    <input name='bookingId' required />
+  </div>
+  <div>
+    <label>Due Date</label>
+    <input type='date' name='dueDate' required />
+  </div>
+  <div>
+    <label>Amount</label>
+    <input type='number' step='0.01' name='amount' required />
+  </div>
+  <button type='submit'>Créer</button>
+</form>
+<p><a href='/invoices'>Retour</a></p>

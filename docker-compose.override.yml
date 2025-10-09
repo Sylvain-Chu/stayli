@@ -1,7 +1,6 @@
-version: '3.8'
 services:
   app:
-    command: yarn start:dev
+    command: node dist/src/main.js
     environment:
       - DB_HOST=db
       - DB_PORT=5432

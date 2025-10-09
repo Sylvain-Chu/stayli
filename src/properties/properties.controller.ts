@@ -7,8 +7,12 @@ import {
   Body,
   Redirect,
   Param,
+  Delete,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
+import { Prisma } from '@prisma/client';
 
 @Controller('properties')
 export class PropertiesController {
@@ -42,11 +46,24 @@ export class PropertiesController {
     return;
   }
 
-  @Post(':id/delete')
-  @Redirect('/properties')
+  @Delete(':id/delete')
+  @HttpCode(204)
   async remove(@Param('id') id: string) {
-    await this.propertiesService.delete(id);
-    return;
+    try {
+      await this.propertiesService.delete(id);
+    } catch (err: unknown) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2003') {
+          throw new BadRequestException(
+            'Impossible de supprimer cette propriété: des réservations y sont liées.',
+          );
+        }
+        if (err.code === 'P2025') {
+          throw new BadRequestException('Propriété introuvable.');
+        }
+      }
+      throw new InternalServerErrorException('Erreur lors de la suppression de la propriété.');
+    }
   }
 
   @Get(':id')

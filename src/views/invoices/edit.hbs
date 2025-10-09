@@ -1,0 +1,21 @@
+<h1>Modifier la facture</h1>
+<form method='post' action='/invoices/{{invoice.id}}/edit'>
+  <div>
+    <label>Invoice Number</label>
+    <input name='invoiceNumber' value='{{invoice.invoiceNumber}}' required />
+  </div>
+  <div>
+    <label>Due Date</label>
+    <input type='date' name='dueDate' value='{{date invoice.dueDate}}' required />
+  </div>
+  <div>
+    <label>Amount</label>
+    <input type='number' step='0.01' name='amount' value='{{invoice.amount}}' />
+  </div>
+  <div>
+    <label>Status</label>
+    <input name='status' value='{{invoice.status}}' />
+  </div>
+  <button type='submit'>Enregistrer</button>
+</form>
+<p><a href='/invoices'>Retour</a></p>
