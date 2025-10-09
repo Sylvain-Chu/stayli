@@ -1,0 +1,18 @@
+<h1>Mes Propriétés</h1>
+<p>
+  <a href='/properties/create'>Ajouter une nouvelle propriété</a>
+</p>
+<hr />
+<ul>
+  {{#each properties}}
+    <li>
+      <strong>{{this.name}}</strong><br />
+      <small>{{this.address}}</small>
+      <form method='post' action='/properties/{{this.id}}/delete' style='display:inline'>
+        <button type='submit' onclick="return confirm('Delete this property?')">Delete</button>
+      </form>
+    </li>
+  {{else}}
+    <li>Vous n'avez pas encore de propriété.</li>
+  {{/each}}
+</ul>
