@@ -7,8 +7,14 @@ import {
   Body,
   Redirect,
   Param,
+  Delete,
+  HttpCode,
+  BadRequestException,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
+import { CreatePropertyDto } from './dto/create-property.dto';
+import { UpdatePropertyDto } from './dto/update-property.dto';
+import { Prisma } from '@prisma/client';
 
 @Controller('properties')
 export class PropertiesController {
@@ -33,20 +39,55 @@ export class PropertiesController {
 
   @Post('create')
   @Redirect('/properties')
-  async create(@Body() body: { name: string; address?: string; description?: string }) {
-    await this.propertiesService.create({
-      name: body.name,
-      address: body.address,
-      description: body.description,
-    });
+  async create(@Body() body: CreatePropertyDto) {
+    await this.propertiesService.create(body);
     return;
   }
 
-  // HTML forms don't support DELETE; use POST to ':id/delete'
-  @Post(':id/delete')
-  @Redirect('/properties')
+  @Delete(':id/delete')
+  @HttpCode(204)
   async remove(@Param('id') id: string) {
-    await this.propertiesService.delete(id);
+    try {
+      await this.propertiesService.delete(id);
+    } catch (err: unknown) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2003') {
+          throw new BadRequestException(
+            'Impossible de supprimer cette propriété: des réservations y sont liées.',
+          );
+        }
+        if (err.code === 'P2025') {
+          throw new BadRequestException('Propriété introuvable.');
+        }
+      }
+      throw new InternalServerErrorException('Erreur lors de la suppression de la propriété.');
+    }
+  }
+
+  @Get(':id')
+  @Render('properties/show')
+  async show(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+    if (!property) {
+      throw new InternalServerErrorException('Property not found');
+    }
+    return { property };
+  }
+
+  @Get(':id/edit')
+  @Render('properties/edit')
+  async editForm(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+    if (!property) {
+      throw new InternalServerErrorException('Property not found');
+    }
+    return { property };
+  }
+
+  @Post(':id/edit')
+  @Redirect('/properties')
+  async update(@Param('id') id: string, @Body() body: UpdatePropertyDto) {
+    await this.propertiesService.update(id, body);
     return;
   }
 }

@@ -1,0 +1,28 @@
+<h1>Factures</h1>
+<p>
+  <a href='/invoices/create'>Créer une nouvelle facture</a>
+</p>
+<hr />
+<ul>
+  {{#each invoices}}
+    <li>
+      <strong>{{this.invoiceNumber}}</strong>
+      —
+      {{this.bookingId}}
+      —
+      {{this.amount}}€ —
+      {{this.status}}
+      <button
+        data-delete
+        data-id='{{this.id}}'
+        data-base='/invoices'
+        data-confirm='Supprimer cette facture ?'
+      >Supprimer</button>
+      <a href='/invoices/{{this.id}}'>Afficher</a>
+      <a href='/invoices/{{this.id}}/edit'>Modifier</a>
+    </li>
+  {{else}}
+    <li>Aucune facture.</li>
+  {{/each}}
+</ul>
+<script src='/js/app.js'></script>

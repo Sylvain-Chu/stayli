@@ -1,0 +1,32 @@
+<h1>Réservations</h1>
+<p>
+  <a href='/bookings/create'>Créer une nouvelle réservation</a>
+</p>
+<hr />
+<ul>
+  {{#each bookings}}
+    <li>
+      <strong>{{this.property.name}}
+        —
+        {{this.client.firstName}}
+        {{this.client.lastName}}</strong><br />
+      <small>{{date this.startDate}}
+        →
+        {{date this.endDate}}
+        —
+        {{this.totalPrice}}€ —
+        {{this.status}}</small>
+      <button
+        data-delete
+        data-id='{{this.id}}'
+        data-base='/bookings'
+        data-confirm='Supprimer cette réservation ?'
+      >Supprimer</button>
+      <a href='/bookings/{{this.id}}'>Afficher</a>
+      <a href='/bookings/{{this.id}}/edit'>Modifier</a>
+    </li>
+  {{else}}
+    <li>Aucune réservation.</li>
+  {{/each}}
+</ul>
+<script src='/js/app.js'></script>

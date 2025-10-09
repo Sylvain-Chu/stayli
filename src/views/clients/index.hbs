@@ -1,0 +1,24 @@
+<h1>Mes Clients</h1>
+<p>
+  <a href='/clients/create'>Ajouter un nouveau client</a>
+</p>
+<hr />
+<ul>
+  {{#each clients}}
+    <li>
+      <strong>{{this.firstName}} {{this.lastName}}</strong><br />
+      <small>{{this.email}} {{#if this.phone}}- {{this.phone}}{{/if}}</small>
+      <button
+        data-delete
+        data-id='{{this.id}}'
+        data-base='/clients'
+        data-confirm='Supprimer ce client ?'
+      >Supprimer</button>
+      <a href='/clients/{{this.id}}'>Afficher</a>
+      <a href='/clients/{{this.id}}/edit'>Modifier</a>
+    </li>
+  {{else}}
+    <li>Vous n'avez pas encore de client.</li>
+  {{/each}}
+</ul>
+<script src='/js/app.js'></script>
