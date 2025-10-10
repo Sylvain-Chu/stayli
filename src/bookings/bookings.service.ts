@@ -1,9 +1,13 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Client, Property, Prisma } from '@prisma/client';
+import { Booking, Client, Property, Prisma, Invoice } from '@prisma/client';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 
-export type BookingWithRelations = Booking & { property: Property; client: Client };
+export type BookingWithRelations = Booking & {
+  property: Property;
+  client: Client;
+  invoice: Invoice | null;
+};
 type DateRange = { start?: Date; end?: Date };
 
 // Narrow and validate booking status without referencing enum static members (avoids ESLint unsafe-member-access)
@@ -19,7 +23,9 @@ export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(): Promise<BookingWithRelations[]> {
-    return this.prisma.booking.findMany({ include: { property: true, client: true } });
+    return this.prisma.booking.findMany({
+      include: { property: true, client: true, invoice: true },
+    });
   }
 
   async findOverlappingRange(range?: DateRange): Promise<BookingWithRelations[]> {
@@ -33,7 +39,7 @@ export class BookingsService {
 
     return this.prisma.booking.findMany({
       where,
-      include: { property: true, client: true },
+      include: { property: true, client: true, invoice: true },
       orderBy: { startDate: 'asc' },
     });
   }
@@ -86,10 +92,10 @@ export class BookingsService {
     });
   }
 
-  async findOne(id: string): Promise<Booking | null> {
+  async findOne(id: string): Promise<BookingWithRelations | null> {
     return this.prisma.booking.findUnique({
       where: { id },
-      include: { property: true, client: true },
+      include: { property: true, client: true, invoice: true },
     });
   }
 
