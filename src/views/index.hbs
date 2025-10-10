@@ -1,29 +1,34 @@
-<h1>{{title}}</h1>
-<p>Welcome to Stayli. Choose a section below:</p>
+{{> header }}
+{{> sidebar }}
 
-<nav>
-  <ul>
-    {{#each sections}}
-      <li>
-        <h2>{{this.label}}</h2>
-        <ul>
-          {{#each this.links}}
-            <li><a href='{{this.href}}'>{{this.label}}</a></li>
-          {{/each}}
-        </ul>
-      </li>
-    {{/each}}
-  </ul>
-</nav>
+  <h1>{{title}}</h1>
+  <p>Welcome to Stayli. Choose a section below:</p>
 
-<hr />
-<p>
-  Shortcuts:
-  <a href='/bookings'>Bookings</a>
-  |
-  <a href='/clients'>Clients</a>
-  |
-  <a href='/properties'>Properties</a>
-  |
-  <a href='/invoices'>Invoices</a>
-</p>
+  <nav>
+    <ul>
+      {{#each sections}}
+        <li>
+          <h2>{{this.label}}</h2>
+          <ul>
+            {{#each this.links}}
+              <li><a href='{{this.href}}'>{{this.label}}</a></li>
+            {{/each}}
+          </ul>
+        </li>
+      {{/each}}
+    </ul>
+  </nav>
+
+  <hr />
+  <p>
+    Shortcuts:
+    <a href='/bookings'>Bookings</a>
+    |
+    <a href='/clients'>Clients</a>
+    |
+    <a href='/properties'>Properties</a>
+    |
+    <a href='/invoices'>Invoices</a>
+  </p>
+
+{{> footer }}

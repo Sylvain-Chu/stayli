@@ -1,3 +1,6 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>Edit client</h1>
 <form method='post' action='/clients/{{client.id}}/edit'>
   <div>
@@ -19,3 +22,5 @@
   <button type='submit'>Save</button>
 </form>
 <p><a href='/clients'>Back</a></p>
+
+{{> footer }}

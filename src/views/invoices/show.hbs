@@ -1,5 +1,10 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>Invoice {{invoice.invoiceNumber}}</h1>
 <p><strong>Booking:</strong> {{invoice.bookingId}}</p>
 <p><strong>Amount:</strong> {{invoice.amount}}€</p>
 <p><strong>Due date:</strong> {{date invoice.dueDate}}</p>
 <p><a href='/invoices/{{invoice.id}}/edit'>Edit</a> | <a href='/invoices'>Back</a></p>
+
+{{> footer }}
