@@ -17,12 +17,16 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
 import { HttpException, Query } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { InvoicesService } from 'src/invoices/invoices.service';
+
+const INVOICE_DUE_DAYS = 14;
 
 @Controller('bookings')
 export class BookingsController {
   constructor(
     private readonly bookingsService: BookingsService,
     private readonly prisma: PrismaService,
+    private readonly invoicesService: InvoicesService,
   ) {}
 
   @Get()
@@ -199,6 +203,46 @@ export class BookingsController {
         }
       }
       throw new InternalServerErrorException('Error cancelling booking.');
+    }
+  }
+
+  @Post(':id/invoice')
+  @Redirect()
+  async generateInvoice(@Param('id') bookingId: string) {
+    try {
+      // Ensure booking exists and whether it already has an invoice
+      const booking = await this.bookingsService.findOne(bookingId);
+      if (!booking) {
+        throw new BadRequestException('Booking not found.');
+      }
+      if (booking.invoice) {
+        throw new BadRequestException('An invoice already exists for this booking.');
+      }
+      // Amount and due date defaults: amount = booking.totalPrice, due in INVOICE_DUE_DAYS days
+      const today = new Date();
+      const amount = booking.totalPrice;
+      if (amount == null) {
+        throw new BadRequestException('Missing booking total price.');
+      }
+
+      if (amount <= 0) {
+        throw new BadRequestException('Booking total price must be greater than zero.');
+      }
+      const dueDate = new Date(today);
+      dueDate.setDate(dueDate.getDate() + INVOICE_DUE_DAYS);
+
+      const inv = await this.invoicesService.create({ dueDate, amount, bookingId });
+      return { url: `/invoices/${inv.id}` };
+    } catch (err: unknown) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2003') {
+          throw new BadRequestException('Invalid booking.');
+        }
+      }
+      if (err instanceof BadRequestException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Error generating invoice.');
     }
   }
 }

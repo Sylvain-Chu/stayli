@@ -46,54 +46,23 @@ export class InvoicesController {
   @Redirect('/invoices')
   async create(@Body() body: CreateInvoiceDto) {
     try {
-      // Auto-generate invoice number like INV-YYYYMMDD-XXXX (4-digit sequence)
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      const base = `INV-${yyyy}${mm}${dd}`;
-      let seq = 1;
-      let invoiceNumber = `${base}-${String(seq).padStart(4, '0')}`;
-      // try a few times to avoid collisions on concurrent requests
-      // in practice you may switch to a DB-side unique sequence
-      let created = false;
-      while (!created) {
-        try {
-          await this.invoicesService.create({
-            invoiceNumber,
-            dueDate: body.dueDate,
-            amount: body.amount,
-            bookingId: body.bookingId,
-          });
-          created = true;
-        } catch (err: unknown) {
-          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const target = Array.isArray(err.meta?.target) ? (err.meta?.target as string[]) : [];
-            if (target.includes('invoiceNumber')) {
-              seq += 1;
-              invoiceNumber = `${base}-${String(seq).padStart(4, '0')}`;
-              continue;
-            }
-            if (target.includes('bookingId')) {
-              // stop the loop and rethrow so outer catch can produce a friendly message
-              throw new BadRequestException('An invoice already exists for this booking.');
-            }
-          }
-          throw err;
-        }
-      }
+      const inv = await this.invoicesService.create({
+        dueDate: body.dueDate,
+        amount: body.amount,
+        bookingId: body.bookingId,
+      });
+      return { url: `/invoices/${inv.id}` };
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
-        if (err.code === 'P2002') {
-          throw new BadRequestException('Unique constraint conflict (number or booking).');
-        }
         if (err.code === 'P2003') {
           throw new BadRequestException('Invalid booking.');
+        }
+        if (err.code === 'P2002') {
+          throw new BadRequestException('Booking already has an invoice.');
         }
       }
       throw new InternalServerErrorException('Error creating invoice.');
     }
-    return;
   }
 
   @Delete(':id/delete')
