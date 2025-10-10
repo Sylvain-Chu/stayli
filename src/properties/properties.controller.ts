@@ -27,7 +27,7 @@ export class PropertiesController {
       const properties = await this.propertiesService.findAll();
       return { properties };
     } catch {
-      throw new InternalServerErrorException('Impossible de récupérer les propriétés.');
+      throw new InternalServerErrorException('Failed to retrieve properties.');
     }
   }
 
@@ -52,15 +52,13 @@ export class PropertiesController {
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2003') {
-          throw new BadRequestException(
-            'Impossible de supprimer cette propriété: des réservations y sont liées.',
-          );
+          throw new BadRequestException('Cannot delete this property: linked bookings exist.');
         }
         if (err.code === 'P2025') {
-          throw new BadRequestException('Propriété introuvable.');
+          throw new BadRequestException('Property not found.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la suppression de la propriété.');
+      throw new InternalServerErrorException('Error deleting property.');
     }
   }
 
@@ -73,7 +71,6 @@ export class PropertiesController {
     }
     return { property };
   }
-
   @Get(':id/edit')
   @Render('properties/edit')
   async editForm(@Param('id') id: string) {

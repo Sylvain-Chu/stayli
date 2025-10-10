@@ -1,4 +1,4 @@
-<h1>Modifier la facture</h1>
+<h1>Edit invoice</h1>
 <form method='post' action='/invoices/{{invoice.id}}/edit'>
   <div>
     <label>Réservation</label>
@@ -26,6 +26,6 @@
     <label>Status</label>
     <input name='status' value='{{invoice.status}}' />
   </div>
-  <button type='submit'>Enregistrer</button>
+  <button type='submit'>Save</button>
 </form>
-<p><a href='/invoices'>Retour</a></p>
+<p><a href='/invoices'>Back</a></p>

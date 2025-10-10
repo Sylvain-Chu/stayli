@@ -1,6 +1,6 @@
-<h1>Réservations</h1>
+<h1>Bookings</h1>
 <p>
-  <a href='/bookings/create'>Créer une nouvelle réservation</a>
+  <a href='/bookings/create'>Create a new booking</a>
 </p>
 <hr />
 <ul>
@@ -20,13 +20,13 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/bookings'
-        data-confirm='Supprimer cette réservation ?'
-      >Supprimer</button>
-      <a href='/bookings/{{this.id}}'>Afficher</a>
-      <a href='/bookings/{{this.id}}/edit'>Modifier</a>
+        data-confirm='Delete this booking?'
+      >Delete</button>
+      <a href='/bookings/{{this.id}}'>View</a>
+      <a href='/bookings/{{this.id}}/edit'>Edit</a>
     </li>
   {{else}}
-    <li>Aucune réservation.</li>
+    <li>No bookings yet.</li>
   {{/each}}
 </ul>
 <script src='/js/app.js'></script>
