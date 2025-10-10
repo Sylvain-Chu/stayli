@@ -1,0 +1,115 @@
+<h1>Bookings Calendar</h1>
+<p><a href='/bookings'>Back to bookings list</a></p>
+
+<section id='controls' style='margin: 1rem 0;'>
+  <fieldset
+    id='status-filters'
+    style='display:flex; gap:1rem; align-items:center; flex-wrap: wrap;'
+  >
+    <legend style='font-weight:600; margin-right: .5rem;'>Filter by status:</legend>
+    <label style='display:flex; align-items:center; gap:.35rem;'>
+      <input type='checkbox' name='status' value='confirmed' checked />
+      <span style='display:inline-flex; align-items:center; gap:.35rem;'>
+        <span
+          style='width:12px; height:12px; background:#16a34a; border:1px solid #15803d; display:inline-block;'
+        ></span>
+        Confirmed
+      </span>
+    </label>
+    <label style='display:flex; align-items:center; gap:.35rem;'>
+      <input type='checkbox' name='status' value='pending' checked />
+      <span style='display:inline-flex; align-items:center; gap:.35rem;'>
+        <span
+          style='width:12px; height:12px; background:#f59e0b; border:1px solid #d97706; display:inline-block;'
+        ></span>
+        Pending
+      </span>
+    </label>
+    <label style='display:flex; align-items:center; gap:.35rem;'>
+      <input type='checkbox' name='status' value='cancelled' checked />
+      <span style='display:inline-flex; align-items:center; gap:.35rem;'>
+        <span
+          style='width:12px; height:12px; background:#dc2626; border:1px solid #b91c1c; display:inline-block;'
+        ></span>
+        Cancelled
+      </span>
+    </label>
+    <label style='display:flex; align-items:center; gap:.35rem;'>
+      <input type='checkbox' name='status' value='blocked' checked />
+      <span style='display:inline-flex; align-items:center; gap:.35rem;'>
+        <span
+          style='width:12px; height:12px; background:#6b7280; border:1px solid #4b5563; display:inline-block;'
+        ></span>
+        Blocked
+      </span>
+    </label>
+  </fieldset>
+  <small style='display:block; margin-top:.5rem; color:#6b7280;'>Uncheck to hide specific statuses.
+    With none selected, the calendar shows no events.</small>
+</section>
+
+<div id='calendar'></div>
+<link
+  href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.css'
+  rel='stylesheet'
+/>
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script>
+  (function () {
+    const calendarEl = document.getElementById('calendar');
+    const filtersEl = document.getElementById('status-filters');
+    if (!calendarEl) return;
+
+    function selectedStatuses() {
+      if (!filtersEl) return [];
+      const boxes = Array.from(filtersEl.querySelectorAll('input[name="status"]'));
+      return boxes.filter((b) => b.checked).map((b) => b.value);
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+      },
+      navLinks: true,
+      nowIndicator: true,
+      events: async function (info, successCb, failureCb) {
+        const statuses = selectedStatuses();
+        // If no statuses selected, show nothing
+        if (statuses.length === 0) {
+          successCb([]);
+          return;
+        }
+        const params = new URLSearchParams();
+        params.set('start', info.startStr);
+        params.set('end', info.endStr);
+        statuses.forEach((s) => params.append('status', s));
+        try {
+          const res = await fetch(`/bookings/events?${params.toString()}`);
+          if (!res.ok) throw new Error('Network');
+          const events = await res.json();
+          successCb(events);
+        } catch (e) {
+          alert('Failed to load bookings.');
+          if (typeof failureCb === 'function') failureCb(e);
+        }
+      },
+      eventClick: function (info) {
+        // Allow navigating to the booking detail page via event.url
+        if (info.event.url) {
+          info.jsEvent.preventDefault();
+          window.location.href = info.event.url;
+        }
+      },
+    });
+    calendar.render();
+    if (filtersEl) {
+      filtersEl.addEventListener('change', function () {
+        calendar.refetchEvents();
+      });
+    }
+  })();
+</script>

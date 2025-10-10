@@ -15,7 +15,7 @@ import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
-import { HttpException } from '@nestjs/common';
+import { HttpException, Query } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('bookings')
@@ -34,6 +34,62 @@ export class BookingsController {
     } catch {
       throw new InternalServerErrorException('Failed to retrieve bookings.');
     }
+  }
+
+  @Get('calendar')
+  @Render('bookings/calendar')
+  calendar() {
+    return {};
+  }
+
+  @Get('events')
+  async events(
+    @Query('start') start?: string,
+    @Query('end') end?: string,
+    @Query('status') status?: string | string[],
+  ) {
+    const startDate = start ? new Date(start) : undefined;
+    const endDate = end ? new Date(end) : undefined;
+
+    // Normalize and validate statuses
+    const allowed = new Set(['confirmed', 'pending', 'cancelled', 'blocked']);
+    const rawStatuses = Array.isArray(status) ? status : status ? [status] : [];
+    const statuses = rawStatuses.filter((s) => allowed.has(String(s)));
+
+    // Fetch bookings; service handles overlap filter; we'll filter by status here if provided
+    let bookings = await this.bookingsService.findOverlappingRange({
+      start: startDate,
+      end: endDate,
+    });
+    if (statuses.length > 0) {
+      bookings = bookings.filter((b) => statuses.includes(String(b.status)));
+    }
+
+    const colors: Record<
+      string,
+      { backgroundColor: string; borderColor: string; textColor?: string }
+    > = {
+      confirmed: { backgroundColor: '#16a34a', borderColor: '#15803d', textColor: '#ffffff' },
+      pending: { backgroundColor: '#f59e0b', borderColor: '#d97706', textColor: '#111827' },
+      cancelled: { backgroundColor: '#dc2626', borderColor: '#b91c1c', textColor: '#ffffff' },
+      blocked: { backgroundColor: '#6b7280', borderColor: '#4b5563', textColor: '#ffffff' },
+    };
+
+    // Map to FullCalendar event format
+    return bookings.map((b) => ({
+      id: b.id,
+      title: `${b.property.name} — ${b.client.firstName} ${b.client.lastName}`,
+      start: b.startDate,
+      end: b.endDate,
+      ...(colors[String(b.status)] ?? {}),
+      extendedProps: {
+        totalPrice: b.totalPrice,
+        status: b.status,
+        propertyId: b.propertyId,
+        clientId: b.clientId,
+      },
+      url: `/bookings/${b.id}`,
+    }));
   }
 
   @Get('create')
