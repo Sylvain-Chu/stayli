@@ -1,13 +1,41 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking } from '@prisma/client';
+import { Booking, Client, Property, Prisma } from '@prisma/client';
+import { UpdateBookingDto } from './dto/update-booking.dto';
+
+export type BookingWithRelations = Booking & { property: Property; client: Client };
+type DateRange = { start?: Date; end?: Date };
+
+// Narrow and validate booking status without referencing enum static members (avoids ESLint unsafe-member-access)
+function isValidBookingStatus(s: unknown): s is 'confirmed' | 'pending' | 'cancelled' | 'blocked' {
+  return (
+    typeof s === 'string' &&
+    (s === 'confirmed' || s === 'pending' || s === 'cancelled' || s === 'blocked')
+  );
+}
 
 @Injectable()
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<Booking[]> {
+  async findAll(): Promise<BookingWithRelations[]> {
     return this.prisma.booking.findMany({ include: { property: true, client: true } });
+  }
+
+  async findOverlappingRange(range?: DateRange): Promise<BookingWithRelations[]> {
+    const { start, end } = range ?? {};
+    const where =
+      start && end
+        ? {
+            AND: [{ startDate: { lt: end } }, { endDate: { gt: start } }],
+          }
+        : undefined;
+
+    return this.prisma.booking.findMany({
+      where,
+      include: { property: true, client: true },
+      orderBy: { startDate: 'asc' },
+    });
   }
 
   async create(data: {
@@ -38,6 +66,7 @@ export class BookingsService {
     const overlap = await this.prisma.booking.findFirst({
       where: {
         propertyId: data.propertyId,
+        status: { not: 'cancelled' },
         AND: [{ startDate: { lt: data.endDate } }, { endDate: { gt: data.startDate } }],
       },
       select: { id: true },
@@ -64,17 +93,7 @@ export class BookingsService {
     });
   }
 
-  async update(
-    id: string,
-    data: {
-      startDate?: Date;
-      endDate?: Date;
-      totalPrice?: number;
-      status?: string;
-      propertyId?: string;
-      clientId?: string;
-    },
-  ): Promise<Booking> {
+  async update(id: string, data: UpdateBookingDto): Promise<Booking> {
     // Fetch current booking to have base values for validation
     const current = await this.prisma.booking.findUnique({ where: { id } });
     if (!current) {
@@ -103,6 +122,7 @@ export class BookingsService {
     const overlap = await this.prisma.booking.findFirst({
       where: {
         propertyId,
+        status: { not: 'cancelled' },
         id: { not: id },
         AND: [{ startDate: { lt: endDate } }, { endDate: { gt: startDate } }],
       },
@@ -112,6 +132,27 @@ export class BookingsService {
       throw new ConflictException('Overlapping booking exists for this property.');
     }
 
-    return this.prisma.booking.update({ where: { id }, data });
+    // Build Prisma-compliant update payload
+    const updateData: Prisma.BookingUpdateInput = {
+      startDate,
+      endDate,
+      totalPrice,
+    };
+
+    if (typeof data.status !== 'undefined') {
+      if (!isValidBookingStatus(data.status)) {
+        throw new BadRequestException('Invalid status.');
+      }
+      updateData.status = data.status;
+    }
+
+    if (data.propertyId && data.propertyId !== current.propertyId) {
+      updateData.property = { connect: { id: data.propertyId } };
+    }
+    if (data.clientId && data.clientId !== current.clientId) {
+      updateData.client = { connect: { id: data.clientId } };
+    }
+
+    return this.prisma.booking.update({ where: { id }, data: updateData });
   }
 }

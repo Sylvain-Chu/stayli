@@ -33,7 +33,7 @@ model Booking {
   startDate  DateTime
   endDate    DateTime
   totalPrice Float
-  status     String   @default("confirmed")
+  status     BookingStatus @default(confirmed)
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])
   clientId   String
@@ -43,6 +43,13 @@ model Booking {
   updatedAt  DateTime @updatedAt
 
   @@index([propertyId, startDate, endDate])
+}
+
+enum BookingStatus {
+  confirmed
+  pending
+  cancelled
+  blocked
 }
 
 model Invoice {

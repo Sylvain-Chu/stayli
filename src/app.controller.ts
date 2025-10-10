@@ -16,6 +16,7 @@ export class AppController {
           links: [
             { label: 'Bookings list', href: '/bookings' },
             { label: 'Create a booking', href: '/bookings/create' },
+            { label: 'Calendar view', href: '/bookings/calendar' },
           ],
         },
         {
