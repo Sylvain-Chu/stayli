@@ -207,7 +207,7 @@ export class BookingsController {
   }
 
   @Post(':id/invoice')
-  @Redirect('/bookings')
+  @Redirect()
   async generateInvoice(@Param('id') bookingId: string) {
     try {
       // Ensure booking exists and whether it already has an invoice
@@ -220,8 +220,7 @@ export class BookingsController {
       }
       // Amount and due date defaults: amount = booking.totalPrice, due in INVOICE_DUE_DAYS days
       const today = new Date();
-      const rawAmount = booking.totalPrice as unknown as number | string;
-      const amount = typeof rawAmount === 'number' ? rawAmount : parseFloat(String(rawAmount));
+      const amount = booking.totalPrice;
       if (!Number.isFinite(amount)) {
         throw new BadRequestException('Invalid booking total price.');
       }
