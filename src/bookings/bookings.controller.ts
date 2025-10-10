@@ -216,47 +216,13 @@ export class BookingsController {
       if (booking.invoice) {
         throw new BadRequestException('An invoice already exists for this booking.');
       }
-
-      // Create an invoice number like INV-YYYYMMDD-XXXX
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const dd = String(today.getDate()).padStart(2, '0');
-      const base = `INV-${yyyy}${mm}${dd}`;
-      let seq = 1;
-      let invoiceNumber = `${base}-${String(seq).padStart(4, '0')}`;
-
       // Amount and due date defaults: amount = booking.totalPrice, due in 14 days
+      const today = new Date();
       const amount = Number(booking.totalPrice);
       const dueDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-      let created = false;
-      while (!created) {
-        try {
-          await this.invoicesService.create({
-            invoiceNumber,
-            dueDate,
-            amount,
-            bookingId,
-          });
-          created = true;
-        } catch (err: unknown) {
-          if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const target = Array.isArray(err.meta?.target) ? (err.meta?.target as string[]) : [];
-            if (target.includes('invoiceNumber')) {
-              seq += 1;
-              invoiceNumber = `${base}-${String(seq).padStart(4, '0')}`;
-              continue;
-            }
-            if (target.includes('bookingId')) {
-              throw new BadRequestException('An invoice already exists for this booking.');
-            }
-          }
-          throw err;
-        }
-      }
-
-      return;
+      const inv = await this.invoicesService.create({ dueDate, amount, bookingId });
+      return { url: `/invoices/${inv.id}` };
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2003') {
