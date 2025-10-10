@@ -55,22 +55,61 @@
 />
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 <script>
-  (function () { const calendarEl = document.getElementById('calendar'); const filtersEl =
-  document.getElementById('status-filters'); if (!calendarEl) return; function selectedStatuses() {
-  if (!filtersEl) return []; const boxes =
-  Array.from(filtersEl.querySelectorAll('input[name="status"]')); return boxes.filter((b) =>
-  b.checked).map((b) => b.value); } const calendar = new FullCalendar.Calendar(calendarEl, {
-  initialView: 'dayGridMonth', height: 'auto', headerToolbar: { left: 'prev,next today', center:
-  'title', right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek', }, navLinks: true, nowIndicator:
-  true, events: async function (info, successCb, failureCb) { const statuses = selectedStatuses();
-  // If no statuses selected, show nothing if (statuses.length === 0) { successCb([]); return; }
-  const params = new URLSearchParams(); params.set('start', info.startStr); params.set('end',
-  info.endStr); statuses.forEach((s) => params.append('status', s)); try { const res = await
-  fetch(`/bookings/events?${params.toString()}`); if (!res.ok) throw new Error('Network'); const
-  events = await res.json(); successCb(events); } catch (e) { alert('Failed to load bookings.'); if
-  (typeof failureCb === 'function') failureCb(e); } }, eventClick: function (info) { // Allow
-  navigating to the booking detail page via event.url if (info.event.url) {
-  info.jsEvent.preventDefault(); window.location.href = info.event.url; } }, }); calendar.render();
-  if (filtersEl) { filtersEl.addEventListener('change', function () { calendar.refetchEvents(); });
-  } })();
+  (function () {
+    const calendarEl = document.getElementById('calendar');
+    const filtersEl = document.getElementById('status-filters');
+    if (!calendarEl) return;
+
+    function selectedStatuses() {
+      if (!filtersEl) return [];
+      const boxes = Array.from(filtersEl.querySelectorAll('input[name="status"]'));
+      return boxes.filter((b) => b.checked).map((b) => b.value);
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      height: 'auto',
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
+      },
+      navLinks: true,
+      nowIndicator: true,
+      events: async function (info, successCb, failureCb) {
+        const statuses = selectedStatuses();
+        // If no statuses selected, show nothing
+        if (statuses.length === 0) {
+          successCb([]);
+          return;
+        }
+        const params = new URLSearchParams();
+        params.set('start', info.startStr);
+        params.set('end', info.endStr);
+        statuses.forEach((s) => params.append('status', s));
+        try {
+          const res = await fetch(`/bookings/events?${params.toString()}`);
+          if (!res.ok) throw new Error('Network');
+          const events = await res.json();
+          successCb(events);
+        } catch (e) {
+          alert('Failed to load bookings.');
+          if (typeof failureCb === 'function') failureCb(e);
+        }
+      },
+      eventClick: function (info) {
+        // Allow navigating to the booking detail page via event.url
+        if (info.event.url) {
+          info.jsEvent.preventDefault();
+          window.location.href = info.event.url;
+        }
+      },
+    });
+    calendar.render();
+    if (filtersEl) {
+      filtersEl.addEventListener('change', function () {
+        calendar.refetchEvents();
+      });
+    }
+  })();
 </script>
