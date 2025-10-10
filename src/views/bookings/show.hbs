@@ -1,3 +1,6 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>Booking</h1>
 <p><strong>Property:</strong> {{booking.property.name}}</p>
 <p><strong>Client:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
@@ -28,7 +31,8 @@
   {{/unless}}
   |
   <a href='/bookings'>Back</a>
-  <script src='/js/app.js'></script>
   <small style='color:#6b7280; display:block; margin-top:.5rem;'>Cancelling will free up the dates
     for new bookings.</small>
 </p>
+
+{{> footer }}

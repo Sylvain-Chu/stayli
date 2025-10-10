@@ -1,3 +1,6 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>{{client.firstName}} {{client.lastName}}</h1>
 <p><strong>Email:</strong> {{client.email}}</p>
 {{#if client.phone}}
@@ -6,3 +9,5 @@
   <a href='/clients/{{client.id}}/edit'>Edit</a>
   <a href='/clients'>Back</a>
 </p>
+
+{{> footer }}
