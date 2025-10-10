@@ -182,4 +182,23 @@ export class BookingsController {
       throw new InternalServerErrorException('Error updating booking.');
     }
   }
+
+  @Post(':id/cancel')
+  @Redirect('/bookings')
+  async cancel(@Param('id') id: string) {
+    try {
+      await this.bookingsService.update(id, { status: 'cancelled' } as unknown as UpdateBookingDto);
+      return;
+    } catch (err: unknown) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      if (err instanceof Prisma.PrismaClientKnownRequestError) {
+        if (err.code === 'P2025') {
+          throw new BadRequestException('Booking not found.');
+        }
+      }
+      throw new InternalServerErrorException('Error cancelling booking.');
+    }
+  }
 }

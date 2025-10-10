@@ -3,4 +3,19 @@
 <p><strong>Client:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
 <p><strong>Period:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
 <p><strong>Price:</strong> {{booking.totalPrice}}€</p>
-<p><a href='/bookings/{{booking.id}}/edit'>Edit</a> | <a href='/bookings'>Back</a></p>
+<p>
+  <a href='/bookings/{{booking.id}}/edit'>Edit</a>
+  {{#unless (eq booking.status 'cancelled')}}
+    |
+    <button
+      data-post
+      data-url='/bookings/{{booking.id}}/cancel'
+      data-confirm='Cancel this booking?'
+    >Cancel</button>
+  {{/unless}}
+  |
+  <a href='/bookings'>Back</a>
+  <script src='/js/app.js'></script>
+  <small style='color:#6b7280; display:block; margin-top:.5rem;'>Cancelling will free up the dates
+    for new bookings.</small>
+</p>
