@@ -54,7 +54,7 @@ enum BookingStatus {
 
 model Invoice {
   id            String   @id @default(uuid())
-  invoiceNumber String   @unique
+  invoiceNumber String   @unique @default(dbgenerated("concat('INV-', to_char(now(), 'YYYYMMDD'), '-', lpad(nextval('invoice_seq')::text, 4, '0'))"))
   issueDate     DateTime @default(now())
   dueDate       DateTime
   amount        Float
