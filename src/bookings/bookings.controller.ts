@@ -19,6 +19,8 @@ import { HttpException, Query } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InvoicesService } from 'src/invoices/invoices.service';
 
+const INVOICE_DUE_DAYS = 14;
+
 @Controller('bookings')
 export class BookingsController {
   constructor(
@@ -216,10 +218,15 @@ export class BookingsController {
       if (booking.invoice) {
         throw new BadRequestException('An invoice already exists for this booking.');
       }
-      // Amount and due date defaults: amount = booking.totalPrice, due in 14 days
+      // Amount and due date defaults: amount = booking.totalPrice, due in INVOICE_DUE_DAYS days
       const today = new Date();
-      const amount = Number(booking.totalPrice);
-      const dueDate = new Date(today.getTime() + 14 * 24 * 60 * 60 * 1000);
+      const rawAmount = booking.totalPrice as unknown as number | string;
+      const amount = typeof rawAmount === 'number' ? rawAmount : parseFloat(String(rawAmount));
+      if (!Number.isFinite(amount)) {
+        throw new BadRequestException('Invalid booking total price.');
+      }
+      const dueDate = new Date(today);
+      dueDate.setDate(dueDate.getDate() + INVOICE_DUE_DAYS);
 
       const inv = await this.invoicesService.create({ dueDate, amount, bookingId });
       return { url: `/invoices/${inv.id}` };
