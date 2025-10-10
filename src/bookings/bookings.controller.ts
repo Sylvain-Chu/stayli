@@ -221,9 +221,10 @@ export class BookingsController {
       // Amount and due date defaults: amount = booking.totalPrice, due in INVOICE_DUE_DAYS days
       const today = new Date();
       const amount = booking.totalPrice;
-      if (!Number.isFinite(amount)) {
-        throw new BadRequestException('Invalid booking total price.');
+      if (amount == null) {
+        throw new BadRequestException('Missing booking total price.');
       }
+
       if (amount <= 0) {
         throw new BadRequestException('Booking total price must be greater than zero.');
       }
