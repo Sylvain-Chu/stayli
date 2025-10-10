@@ -224,6 +224,9 @@ export class BookingsController {
       if (!Number.isFinite(amount)) {
         throw new BadRequestException('Invalid booking total price.');
       }
+      if (amount <= 0) {
+        throw new BadRequestException('Booking total price must be greater than zero.');
+      }
       const dueDate = new Date(today);
       dueDate.setDate(dueDate.getDate() + INVOICE_DUE_DAYS);
 
