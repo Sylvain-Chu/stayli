@@ -9,34 +9,34 @@ export class AppController {
   @Render('index')
   home() {
     return {
-      title: 'Accueil',
+      title: 'Home',
       sections: [
         {
-          label: 'Réservations',
+          label: 'Bookings',
           links: [
-            { label: 'Liste des réservations', href: '/bookings' },
-            { label: 'Créer une réservation', href: '/bookings/create' },
+            { label: 'Bookings list', href: '/bookings' },
+            { label: 'Create a booking', href: '/bookings/create' },
           ],
         },
         {
           label: 'Clients',
           links: [
-            { label: 'Liste des clients', href: '/clients' },
-            { label: 'Ajouter un client', href: '/clients/create' },
+            { label: 'Clients list', href: '/clients' },
+            { label: 'Add a client', href: '/clients/create' },
           ],
         },
         {
-          label: 'Propriétés',
+          label: 'Properties',
           links: [
-            { label: 'Liste des propriétés', href: '/properties' },
-            { label: 'Ajouter une propriété', href: '/properties/create' },
+            { label: 'Properties list', href: '/properties' },
+            { label: 'Add a property', href: '/properties/create' },
           ],
         },
         {
-          label: 'Factures',
+          label: 'Invoices',
           links: [
-            { label: 'Liste des factures', href: '/invoices' },
-            { label: 'Créer une facture', href: '/invoices/create' },
+            { label: 'Invoices list', href: '/invoices' },
+            { label: 'Create an invoice', href: '/invoices/create' },
           ],
         },
       ],

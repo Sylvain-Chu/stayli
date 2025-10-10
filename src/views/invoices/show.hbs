@@ -1,5 +1,5 @@
-<h1>Facture {{invoice.invoiceNumber}}</h1>
+<h1>Invoice {{invoice.invoiceNumber}}</h1>
 <p><strong>Booking:</strong> {{invoice.bookingId}}</p>
-<p><strong>Montant:</strong> {{invoice.amount}}€</p>
-<p><strong>Date d'échéance:</strong> {{invoice.dueDate}}</p>
-<p><a href='/invoices/{{invoice.id}}/edit'>Modifier</a> | <a href='/invoices'>Retour</a></p>
+<p><strong>Amount:</strong> {{invoice.amount}}€</p>
+<p><strong>Due date:</strong> {{date invoice.dueDate}}</p>
+<p><a href='/invoices/{{invoice.id}}/edit'>Edit</a> | <a href='/invoices'>Back</a></p>

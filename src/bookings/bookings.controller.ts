@@ -15,6 +15,7 @@ import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
+import { HttpException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Controller('bookings')
@@ -31,7 +32,7 @@ export class BookingsController {
       const bookings = await this.bookingsService.findAll();
       return { bookings };
     } catch {
-      throw new InternalServerErrorException('Impossible de r\u00e9cup\u00e9rer les bookings.');
+      throw new InternalServerErrorException('Failed to retrieve bookings.');
     }
   }
 
@@ -52,13 +53,16 @@ export class BookingsController {
       await this.bookingsService.create(body);
       return;
     } catch (err: unknown) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2003') {
           // FK constraint
-          throw new BadRequestException('Propriété ou client invalide.');
+          throw new BadRequestException('Invalid property or client.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la création de la réservation.');
+      throw new InternalServerErrorException('Error creating booking.');
     }
   }
 
@@ -70,10 +74,10 @@ export class BookingsController {
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2025') {
-          throw new BadRequestException('Réservation introuvable.');
+          throw new BadRequestException('Booking not found.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la suppression de la réservation.');
+      throw new InternalServerErrorException('Error deleting booking.');
     }
   }
 
@@ -108,15 +112,18 @@ export class BookingsController {
       await this.bookingsService.update(id, body);
       return;
     } catch (err: unknown) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2025') {
-          throw new BadRequestException('Réservation introuvable.');
+          throw new BadRequestException('Booking not found.');
         }
         if (err.code === 'P2003') {
-          throw new BadRequestException('Propriété ou client invalide.');
+          throw new BadRequestException('Invalid property or client.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la mise à jour de la réservation.');
+      throw new InternalServerErrorException('Error updating booking.');
     }
   }
 }

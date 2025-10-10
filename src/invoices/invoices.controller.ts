@@ -31,7 +31,7 @@ export class InvoicesController {
       const invoices = await this.invoicesService.findAll();
       return { invoices };
     } catch {
-      throw new InternalServerErrorException('Impossible de r\u00e9cup\u00e9rer les invoices.');
+      throw new InternalServerErrorException('Failed to retrieve invoices.');
     }
   }
 
@@ -76,7 +76,7 @@ export class InvoicesController {
             }
             if (target.includes('bookingId')) {
               // stop the loop and rethrow so outer catch can produce a friendly message
-              throw new BadRequestException('Une facture existe déjà pour cette réservation.');
+              throw new BadRequestException('An invoice already exists for this booking.');
             }
           }
           throw err;
@@ -85,13 +85,13 @@ export class InvoicesController {
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2002') {
-          throw new BadRequestException('Conflit de contrainte unique (numéro ou réservation).');
+          throw new BadRequestException('Unique constraint conflict (number or booking).');
         }
         if (err.code === 'P2003') {
-          throw new BadRequestException('Réservation invalide.');
+          throw new BadRequestException('Invalid booking.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la création de la facture.');
+      throw new InternalServerErrorException('Error creating invoice.');
     }
     return;
   }
@@ -103,9 +103,9 @@ export class InvoicesController {
       await this.invoicesService.delete(id);
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
-        throw new BadRequestException('Facture introuvable.');
+        throw new BadRequestException('Invoice not found.');
       }
-      throw new InternalServerErrorException('Erreur lors de la suppression de la facture.');
+      throw new InternalServerErrorException('Error deleting invoice.');
     }
   }
 
@@ -144,18 +144,18 @@ export class InvoicesController {
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2025') {
-          throw new BadRequestException('Facture introuvable.');
+          throw new BadRequestException('Invoice not found.');
         }
         if (err.code === 'P2002') {
           throw new BadRequestException(
-            'Numéro de facture déjà utilisé ou facture déjà associée à cette réservation.',
+            'Invoice number already used or invoice already linked to this booking.',
           );
         }
         if (err.code === 'P2003') {
-          throw new BadRequestException('Réservation invalide.');
+          throw new BadRequestException('Invalid booking.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la mise à jour de la facture.');
+      throw new InternalServerErrorException('Error updating invoice.');
     }
   }
 }
