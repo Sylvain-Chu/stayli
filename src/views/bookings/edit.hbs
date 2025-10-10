@@ -34,7 +34,12 @@
   </div>
   <div>
     <label>Status</label>
-    <input name='status' value='{{booking.status}}' />
+    <select name='status'>
+      <option value='confirmed' {{#if (eq booking.status 'confirmed')}}selected{{/if}}>Confirmed</option>
+      <option value='pending' {{#if (eq booking.status 'pending')}}selected{{/if}}>Pending</option>
+      <option value='cancelled' {{#if (eq booking.status 'cancelled')}}selected{{/if}}>Cancelled</option>
+      <option value='blocked' {{#if (eq booking.status 'blocked')}}selected{{/if}}>Blocked</option>
+    </select>
   </div>
   <button type='submit'>Save</button>
 </form>

@@ -1,6 +1,7 @@
 <h1>Bookings</h1>
 <p>
-  <a href='/bookings/create'>Create a new booking</a> |
+  <a href='/bookings/create'>Create a new booking</a>
+  |
   <a href='/bookings/calendar'>Open calendar</a>
 </p>
 <hr />
@@ -23,6 +24,13 @@
         data-base='/bookings'
         data-confirm='Delete this booking?'
       >Delete</button>
+      {{#unless (eq this.status 'cancelled')}}
+        <button
+          data-post
+          data-url='/bookings/{{this.id}}/cancel'
+          data-confirm='Cancel this booking?'
+        >Cancel</button>
+      {{/unless}}
       <a href='/bookings/{{this.id}}'>View</a>
       <a href='/bookings/{{this.id}}/edit'>Edit</a>
     </li>
