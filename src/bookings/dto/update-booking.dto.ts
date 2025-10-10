@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
-import { IsDate, IsNumber, IsOptional, IsPositive, IsString, IsUUID } from 'class-validator';
+import { IsDate, IsEnum, IsNumber, IsOptional, IsPositive, IsUUID } from 'class-validator';
+import { BookingStatus } from '@prisma/client';
 
 export class UpdateBookingDto {
   @IsOptional()
@@ -19,8 +20,8 @@ export class UpdateBookingDto {
   totalPrice?: number;
 
   @IsOptional()
-  @IsString()
-  status?: string;
+  @IsEnum(BookingStatus)
+  status?: BookingStatus;
 
   @IsOptional()
   @IsUUID()
