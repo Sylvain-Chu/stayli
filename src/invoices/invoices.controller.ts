@@ -57,6 +57,9 @@ export class InvoicesController {
         if (err.code === 'P2003') {
           throw new BadRequestException('Invalid booking.');
         }
+        if (err.code === 'P2002') {
+          throw new BadRequestException('Booking already has an invoice.');
+        }
       }
       throw new InternalServerErrorException('Error creating invoice.');
     }
