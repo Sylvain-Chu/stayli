@@ -1,4 +1,4 @@
-<h1>Modifier la réservation</h1>
+<h1>Edit booking</h1>
 <form method='post' action='/bookings/{{booking.id}}/edit'>
   <div>
     <label>Property</label>
@@ -36,6 +36,6 @@
     <label>Status</label>
     <input name='status' value='{{booking.status}}' />
   </div>
-  <button type='submit'>Enregistrer</button>
+  <button type='submit'>Save</button>
 </form>
-<p><a href='/bookings'>Retour</a></p>
+<p><a href='/bookings'>Back</a></p>
