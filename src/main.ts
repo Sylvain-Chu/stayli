@@ -39,6 +39,11 @@ async function bootstrap() {
     app.setBaseViewsDir(viewsDir);
   }
   app.setViewEngine('hbs');
+  // Register partials for shared layout components (header/sidebar/footer)
+  if (viewsDir && existsSync(join(viewsDir, 'partials'))) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+    hbs.registerPartials(join(viewsDir, 'partials'));
+  }
   // Register useful Handlebars helpers
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('date', function (value?: Date | string) {
@@ -55,6 +60,11 @@ async function bootstrap() {
   hbs.registerHelper('eq', function (a: unknown, b: unknown) {
     // strict equality is fine for ids/strings used in templates
     return a === b;
+  });
+  // Current year helper for footer
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('year', function () {
+    return new Date().getFullYear();
   });
   // Attach body parsing and static asset serving to the underlying Express instance
   // so server-side forms still work and client JS can be served from /js.
