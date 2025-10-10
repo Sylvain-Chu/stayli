@@ -1,3 +1,6 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>Create an invoice</h1>
 {{#if bookings.length}}
   <form method='post' action='/invoices/create'>
@@ -32,3 +35,5 @@
 {{else}}
   <p>No eligible booking available. Create a booking without an invoice to be able to issue one.</p>
 {{/if}}
+
+{{> footer }}

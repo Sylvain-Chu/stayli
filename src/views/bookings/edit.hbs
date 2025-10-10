@@ -1,3 +1,6 @@
+{{> header }}
+{{> sidebar }}
+
 <h1>Edit booking</h1>
 <form method='post' action='/bookings/{{booking.id}}/edit'>
   <div>
@@ -44,3 +47,5 @@
   <button type='submit'>Save</button>
 </form>
 <p><a href='/bookings'>Back</a></p>
+
+{{> footer }}
