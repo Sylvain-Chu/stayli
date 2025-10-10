@@ -3,6 +3,19 @@
 <p><strong>Client:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
 <p><strong>Period:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
 <p><strong>Price:</strong> {{booking.totalPrice}}€</p>
+{{#if booking.invoice}}
+  <p><strong>Invoice:</strong>
+    <a href='/invoices/{{booking.invoice.id}}'>View invoice {{booking.invoice.invoiceNumber}}</a>
+  </p>
+{{else}}
+  <p>
+    <button
+      data-post
+      data-url='/bookings/{{booking.id}}/invoice'
+      data-confirm='Generate an invoice for this booking?'
+    >Generate Invoice</button>
+  </p>
+{{/if}}
 <p>
   <a href='/bookings/{{booking.id}}/edit'>Edit</a>
   {{#unless (eq booking.status 'cancelled')}}
