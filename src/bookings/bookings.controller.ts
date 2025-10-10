@@ -242,7 +242,9 @@ export class BookingsController {
           created = true;
         } catch (err: unknown) {
           if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
-            const target = Array.isArray(err.meta?.target) ? (err.meta?.target as string[]) : [];
+            const target = Array.isArray(err.meta?.target) && err.meta?.target.every((t) => typeof t === 'string')
+              ? (err.meta?.target as string[])
+              : [];
             if (target.includes('invoiceNumber')) {
               seq += 1;
               invoiceNumber = `${base}-${String(seq).padStart(4, '0')}`;
