@@ -1,6 +1,6 @@
-<h1>Réservation</h1>
-<p><strong>Propriété:</strong> {{booking.property.name}}</p>
+<h1>Booking</h1>
+<p><strong>Property:</strong> {{booking.property.name}}</p>
 <p><strong>Client:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
-<p><strong>Période:</strong> {{booking.startDate}} → {{booking.endDate}}</p>
-<p><strong>Prix:</strong> {{booking.totalPrice}}€</p>
-<p><a href='/bookings/{{booking.id}}/edit'>Modifier</a> | <a href='/bookings'>Retour</a></p>
+<p><strong>Period:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
+<p><strong>Price:</strong> {{booking.totalPrice}}€</p>
+<p><a href='/bookings/{{booking.id}}/edit'>Edit</a> | <a href='/bookings'>Back</a></p>

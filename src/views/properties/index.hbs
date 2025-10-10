@@ -1,6 +1,6 @@
-<h1>Mes Propriétés</h1>
+<h1>Properties</h1>
 <p>
-  <a href='/properties/create'>Ajouter une nouvelle propriété</a>
+  <a href='/properties/create'>Add a new property</a>
 </p>
 <hr />
 <ul>
@@ -12,13 +12,13 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/properties'
-        data-confirm='Supprimer cette propriété ?'
-      >Supprimer</button>
-      <a href='/properties/{{this.id}}'>Afficher</a>
-      <a href='/properties/{{this.id}}/edit'>Modifier</a>
+        data-confirm='Delete this property?'
+      >Delete</button>
+      <a href='/properties/{{this.id}}'>View</a>
+      <a href='/properties/{{this.id}}/edit'>Edit</a>
     </li>
   {{else}}
-    <li>Vous n'avez pas encore de propriété.</li>
+    <li>No properties yet.</li>
   {{/each}}
 </ul>
 <script src='/js/app.js'></script>

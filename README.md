@@ -96,7 +96,7 @@ yarn prisma:migrate:deploy:local
 5. Start the app in watch mode (port 3001 by default)
 
 ```powershell
-yarn start:dev:local
+yarn dev
 ```
 
 6. Open the app

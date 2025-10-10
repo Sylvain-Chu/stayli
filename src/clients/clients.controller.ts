@@ -27,7 +27,7 @@ export class ClientsController {
       const clients = await this.clientsService.findAll();
       return { clients };
     } catch {
-      throw new InternalServerErrorException('Impossible de r\u00e9cup\u00e9rer les clients.');
+      throw new InternalServerErrorException('Failed to retrieve clients.');
     }
   }
 
@@ -52,15 +52,13 @@ export class ClientsController {
     } catch (err: unknown) {
       if (err instanceof Prisma.PrismaClientKnownRequestError) {
         if (err.code === 'P2003') {
-          throw new BadRequestException(
-            'Impossible de supprimer ce client: des réservations y sont liées.',
-          );
+          throw new BadRequestException('Cannot delete this client: linked bookings exist.');
         }
         if (err.code === 'P2025') {
-          throw new BadRequestException('Client introuvable.');
+          throw new BadRequestException('Client not found.');
         }
       }
-      throw new InternalServerErrorException('Erreur lors de la suppression du client.');
+      throw new InternalServerErrorException('Error deleting client.');
     }
   }
 
