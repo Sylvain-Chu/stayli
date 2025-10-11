@@ -19,13 +19,15 @@ body {
 body {
   margin: 0;
   font-family:
-    Inter,
+    'IBM Plex Sans',
     system-ui,
     -apple-system,
     Segoe UI,
     Roboto,
     Arial,
     sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
   background: var(--bg);
   color: var(--text);
 }
@@ -91,6 +93,15 @@ body {
 .content h2,
 .content h3 {
   margin-top: 0;
+}
+.content h1 {
+  font-size: 28px;
+}
+.content h2 {
+  font-size: 22px;
+}
+.content h3 {
+  font-size: 17px;
 }
 
 .site-footer {
@@ -159,6 +170,255 @@ form .row {
 
 /* headings inside content area */
 .content > h1 {
-  font-size: 22px;
   margin-bottom: 12px;
+}
+
+/* dashboard */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+  align-items: start; /* prevent cards from stretching to tallest row */
+}
+.card {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px 16px 14px;
+}
+.card .card-title {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card .card-title svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--muted);
+  stroke-width: 1.8;
+}
+.card .card-value {
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+  text-align: center;
+}
+.card .card-links {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.card.stretch {
+  grid-column: span 2;
+}
+
+/* allow a card to span full row (used by mini calendar) */
+.card.full {
+  grid-column: 1 / -1;
+}
+
+/* specific fine-tunes for the invoices card to avoid large empty space */
+.card:has(.card-title i[data-feather='clock']) {
+  min-height: 120px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.dashboard-grid .column {
+  background: var(--panel);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 16px;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.list-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.list-item:last-child {
+  border-bottom: none;
+}
+.item-title {
+  font-weight: 600;
+}
+.item-sub {
+  color: var(--muted);
+  font-size: 14px;
+}
+.item-meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.list a {
+  color: var(--text);
+  text-decoration: none;
+}
+.list a:hover {
+  text-decoration: underline;
+}
+.today-event {
+  background: rgba(79, 140, 255, 0.08);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+@media (max-width: 1000px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .card .card-value {
+    font-size: 30px;
+  }
+  .card .card-title {
+    font-size: 13px;
+  }
+}
+
+/* tabs */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0;
+}
+.tab {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.tab.active {
+  color: var(--text);
+  background: var(--panel-2);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* mini calendar */
+.mini-cal {
+  margin-top: 4px;
+}
+.mini-cal-header {
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: capitalize;
+}
+.mini-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+.mini-cal-cell {
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  font-size: 12px;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+  cursor: default;
+}
+.mini-cal-cell:hover {
+  transform: scale(1.05);
+  background: rgba(79, 140, 255, 0.2);
+  border-color: rgba(79, 140, 255, 0.5);
+  color: var(--text);
+}
+.mini-cal-cell.occ {
+  background: rgba(79, 140, 255, 0.12);
+  color: var(--text);
+  border-color: rgba(79, 140, 255, 0.35);
+}
+.mini-cal-cell.today {
+  outline: 2px solid var(--accent);
+  color: var(--text);
+}
+.mini-cal-cell.blank {
+  background: transparent;
+  border-color: transparent;
+}
+
+/* badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+.badge.arrival {
+  background: rgba(22, 163, 74, 0.15);
+  border-color: rgba(22, 163, 74, 0.35);
+}
+.badge.departure {
+  background: rgba(220, 38, 38, 0.15);
+  border-color: rgba(220, 38, 38, 0.35);
+}
+
+/* chips for client status */
+.chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  margin-left: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--muted);
+}
+.chip.new {
+  background: rgba(255, 215, 0, 0.12);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: #ffd700;
+}
+.chip.regular {
+  background: rgba(0, 209, 178, 0.12);
+  border-color: rgba(0, 209, 178, 0.35);
+  color: var(--accent);
+}
+
+/* progress bar */
+.progress {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.progress > .bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--brand), #00b7ff);
+  transition: width 1s ease-out;
+}
+
+/* animated number (for JS-driven count-up) */
+.countup {
+  display: inline-block;
 }

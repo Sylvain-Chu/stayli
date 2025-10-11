@@ -58,9 +58,17 @@ model Invoice {
   issueDate     DateTime @default(now())
   dueDate       DateTime
   amount        Float
-  status        String   @default("draft")
+  status        InvoiceStatus @default(draft)
   bookingId     String   @unique
   booking       Booking  @relation(fields: [bookingId], references: [id])
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
 }
