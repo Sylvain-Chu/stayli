@@ -17,6 +17,8 @@ if (existsSync(localEnv)) {
 }
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
+import { format, isToday as isTodayFn, formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -55,6 +57,42 @@ async function bootstrap() {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   });
+  // Pretty localized date: vendredi 10 octobre 2025
+  hbs.registerHelper('formatDate', function (value?: Date | string, pattern?: string) {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    try {
+      return format(d, pattern || 'EEEE d MMMM yyyy', { locale: fr });
+    } catch {
+      return '';
+    }
+  });
+  // Relative time like "dans 3 jours" or "il y a 2 jours"
+  hbs.registerHelper('fromNow', function (value?: Date | string) {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    try {
+      return formatDistanceToNow(d, { addSuffix: true, locale: fr });
+    } catch {
+      return '';
+    }
+  });
+  // Today helper to conditionally render special styles
+  hbs.registerHelper('isToday', function (value?: Date | string) {
+    if (!value) return false;
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return false;
+    return isTodayFn(d);
+  });
+  // Currency helper (EUR by default)
+  const eur = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('currency', function (value?: number) {
+    if (typeof value !== 'number' || !Number.isFinite(value)) return '';
+    return eur.format(value);
+  });
   // Simple equality helper for select preselection
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('eq', function (a: unknown, b: unknown) {
@@ -65,6 +103,17 @@ async function bootstrap() {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('year', function () {
     return new Date().getFullYear();
+  });
+  // Repeat N times helper (for rendering leading blank cells in calendar)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('times', function (n: unknown, block: any) {
+    const count = typeof n === 'number' ? n : Number(n);
+    let out = '';
+    for (let i = 0; i < (Number.isFinite(count) ? count : 0); i++) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+      out += block.fn(i);
+    }
+    return out;
   });
   // Attach body parsing and static asset serving to the underlying Express instance
   // so server-side forms still work and client JS can be served from /js.

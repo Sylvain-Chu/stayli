@@ -90,14 +90,20 @@ async function main() {
   const cabin = await prisma.property.findFirst({ where: { name: 'Mountain Cabin' } });
   const john = await prisma.client.findUnique({ where: { email: 'john.doe@example.com' } });
   const jane = await prisma.client.findUnique({ where: { email: 'jane.smith@example.com' } });
+  function daysFromNow(days: number) {
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    return d;
+  }
+
   if (seaside && john) {
     await prisma.booking.upsert({
       where: { id: '11111111-1111-4111-8111-111111111111' },
       update: {},
       create: {
         id: '11111111-1111-4111-8111-111111111111',
-        startDate: new Date(),
-        endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+        startDate: daysFromNow(0),
+        endDate: daysFromNow(7),
         totalPrice: 1200,
         propertyId: seaside.id,
         clientId: john.id,
@@ -110,11 +116,60 @@ async function main() {
       update: {},
       create: {
         id: '22222222-2222-4222-8222-222222222222',
-        startDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10),
-        endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 17),
+        startDate: daysFromNow(10),
+        endDate: daysFromNow(17),
         totalPrice: 800,
         propertyId: cabin.id,
         clientId: jane.id,
+      },
+    });
+  }
+
+  // Additional bookings to populate dashboard lists
+  const flat = await prisma.property.findFirst({ where: { name: 'City Flat' } });
+  if (flat && john) {
+    // Upcoming arrival within 7 days
+    await prisma.booking.upsert({
+      where: { id: '33333333-3333-4333-8333-333333333333' },
+      update: {},
+      create: {
+        id: '33333333-3333-4333-8333-333333333333',
+        startDate: daysFromNow(3),
+        endDate: daysFromNow(8),
+        totalPrice: 600,
+        propertyId: flat.id,
+        clientId: john.id,
+      },
+    });
+  }
+  if (seaside && jane) {
+    // Recent departure (ended yesterday)
+    await prisma.booking.upsert({
+      where: { id: '44444444-4444-4444-8444-444444444444' },
+      update: {},
+      create: {
+        id: '44444444-4444-4444-8444-444444444444',
+        startDate: daysFromNow(-6),
+        endDate: daysFromNow(-1),
+        totalPrice: 500,
+        propertyId: seaside.id,
+        clientId: jane.id,
+      },
+    });
+  }
+  if (cabin && john) {
+    // Cancelled booking (should not show in lists)
+    await prisma.booking.upsert({
+      where: { id: '55555555-5555-4555-8555-555555555555' },
+      update: { status: 'cancelled' as never },
+      create: {
+        id: '55555555-5555-4555-8555-555555555555',
+        startDate: daysFromNow(2),
+        endDate: daysFromNow(4),
+        totalPrice: 300,
+        status: 'cancelled' as never,
+        propertyId: cabin.id,
+        clientId: john.id,
       },
     });
   }
@@ -123,16 +178,37 @@ async function main() {
   const booking1 = await prisma.booking.findUnique({
     where: { id: '11111111-1111-4111-8111-111111111111' },
   });
+  const booking2 = await prisma.booking.findUnique({
+    where: { id: '22222222-2222-4222-8222-222222222222' },
+  });
+  // intentionally no invoice for booking3 to keep it eligible
+  const booking4 = await prisma.booking.findUnique({
+    where: { id: '44444444-4444-4444-8444-444444444444' },
+  });
+
+  // For booking1 (current stay): ensure an invoice exists and is paid
   if (booking1) {
     await prisma.invoice.upsert({
-      where: { invoiceNumber: 'INV-1000' },
-      update: {},
-      create: {
-        invoiceNumber: 'INV-1000',
-        dueDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 30),
-        amount: 1200,
-        bookingId: booking1.id,
-      },
+      where: { bookingId: booking1.id },
+      update: { amount: 1200, dueDate: daysFromNow(30), status: 'paid' },
+      create: { dueDate: daysFromNow(30), amount: 1200, status: 'paid', bookingId: booking1.id },
+    });
+  }
+  // For booking2 (future > 7 days): invoice in draft to count as pending
+  if (booking2) {
+    await prisma.invoice.upsert({
+      where: { bookingId: booking2.id },
+      update: { amount: 800, dueDate: daysFromNow(40), status: 'draft' },
+      create: { dueDate: daysFromNow(40), amount: 800, status: 'draft', bookingId: booking2.id },
+    });
+  }
+  // For booking3 (upcoming within 7 days): no invoice yet (eligible)
+  // For booking4 (recent departure): paid invoice
+  if (booking4) {
+    await prisma.invoice.upsert({
+      where: { bookingId: booking4.id },
+      update: { amount: 500, dueDate: daysFromNow(10), status: 'paid' },
+      create: { dueDate: daysFromNow(10), amount: 500, status: 'paid', bookingId: booking4.id },
     });
   }
 
