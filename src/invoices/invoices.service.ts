@@ -47,6 +47,13 @@ export class InvoicesService {
       bookingId?: string;
     },
   ): Promise<Invoice> {
-    return this.prisma.invoice.update({ where: { id }, data });
+    const { bookingId, ...rest } = data;
+    const updateData: any = { ...rest };
+    if (bookingId) {
+      updateData.booking = { connect: { id: bookingId } };
+      // Avoid passing scalar bookingId when using relation connect
+      delete (updateData as any).bookingId;
+    }
+    return this.prisma.invoice.update({ where: { id }, data: updateData });
   }
 }
