@@ -2,9 +2,12 @@
 {{> sidebar }}
 
 <h1>Properties</h1>
-<p>
-  <a href='/properties/create'>Add a new property</a>
-</p>
+<form method='GET' action='/properties' style='margin: 0 0 1rem;'>
+  <input type='text' name='q' placeholder='Search properties…' value='{{q}}' />
+  <button type='submit'>Search</button>
+  {{#if q}}<a href='/properties' style='margin-left: .5rem;'>Clear</a>{{/if}}
+  <span style='margin-left:1rem;'><a href='/properties/create'>Add a new property</a></span>
+  </form>
 <hr />
 <ul>
   {{#each properties}}

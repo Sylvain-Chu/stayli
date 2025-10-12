@@ -10,6 +10,7 @@ import {
   Delete,
   HttpCode,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
@@ -22,10 +23,10 @@ export class PropertiesController {
 
   @Get()
   @Render('properties/index')
-  async root() {
+  async root(@Query('q') q?: string) {
     try {
-      const properties = await this.propertiesService.findAll();
-      return { properties };
+      const properties = await this.propertiesService.findAll(q);
+      return { properties, q };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve properties.');
     }
