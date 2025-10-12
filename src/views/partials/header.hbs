@@ -18,6 +18,14 @@
       <a href="/clients">Clients</a>
       <a href="/properties">Properties</a>
       <a href="/invoices">Invoices</a>
+      {{#if user}}
+        <span class="user">{{user.email}}</span>
+        <form method="post" action="/auth/logout" style="display:inline">
+          <button type="submit">Logout</button>
+        </form>
+      {{else}}
+        <a href="/auth/login">Login</a>
+      {{/if}}
     </nav>
   </header>
   <div class="layout">
