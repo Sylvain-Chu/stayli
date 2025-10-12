@@ -2,18 +2,27 @@
 {{> sidebar }}
 
 <h1>Add a property</h1>
+{{#if errors}}
+  <div class='alert alert-error'>
+    <ul>
+      {{#each errors}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+{{/if}}
 <form method='post' action='/properties/create'>
   <div>
     <label>Name</label>
-    <input name='name' required />
+    <input name='name' value='{{payload.name}}' required />
   </div>
   <div>
     <label>Address</label>
-    <input name='address' />
+    <input name='address' value='{{payload.address}}' />
   </div>
   <div>
     <label>Description</label>
-    <textarea name='description'></textarea>
+    <textarea name='description'>{{payload.description}}</textarea>
   </div>
   <button type='submit'>Create</button>
 </form>

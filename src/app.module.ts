@@ -1,5 +1,6 @@
 // Fichier: src/app.module.ts
 import { Module } from '@nestjs/common';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -21,6 +22,6 @@ import { DashboardModule } from './dashboard/dashboard.module';
     DashboardModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, ValidationExceptionFilter],
 })
 export class AppModule {}

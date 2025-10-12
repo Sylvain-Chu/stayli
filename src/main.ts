@@ -17,6 +17,7 @@ if (existsSync(localEnv)) {
 }
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
+import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { format, isToday as isTodayFn, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -58,6 +59,7 @@ async function bootstrap() {
     return `${yyyy}-${mm}-${dd}`;
   });
   // Pretty localized date: vendredi 10 octobre 2025
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('formatDate', function (value?: Date | string, pattern?: string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
@@ -69,6 +71,7 @@ async function bootstrap() {
     }
   });
   // Relative time like "dans 3 jours" or "il y a 2 jours"
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('fromNow', function (value?: Date | string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
@@ -80,6 +83,7 @@ async function bootstrap() {
     }
   });
   // Today helper to conditionally render special styles
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('isToday', function (value?: Date | string) {
     if (!value) return false;
     const d = value instanceof Date ? value : new Date(value);
@@ -115,14 +119,20 @@ async function bootstrap() {
     }
     return out;
   });
+  // Logical OR helper for templates
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  hbs.registerHelper('or', function (a: unknown, b: unknown) {
+    return a ?? b;
+  });
   // Attach body parsing and static asset serving to the underlying Express instance
   // so server-side forms still work and client JS can be served from /js.
   const server = app.getHttpAdapter().getInstance();
   server.use(express.urlencoded({ extended: true }));
   server.use(express.static(join(process.cwd(), 'public')));
 
-  // Global validation (DTOs)
+  // Global validation (DTOs) and form error handling
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
+  app.useGlobalFilters(app.get(ValidationExceptionFilter));
 
   await app.listen(process.env.PORT ?? 3000);
 }
