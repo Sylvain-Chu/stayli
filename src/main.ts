@@ -4,10 +4,13 @@ import { join } from 'path';
 import { AppModule } from './app.module';
 import { existsSync } from 'fs';
 import * as dotenv from 'dotenv';
-// hbs types are minimal; use default import with any to avoid TS complaints
+// hbs types are minimal; define a narrow interface for helpers we use
 import hbsDefault from 'hbs';
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-const hbs: any = hbsDefault as any;
+interface HbsApi {
+  registerPartials: (path: string) => void;
+  registerHelper: (name: string, fn: (...args: unknown[]) => unknown) => void;
+}
+const hbs = hbsDefault as unknown as HbsApi;
 // Load env from .env.local if present, otherwise fallback to .env
 const localEnv = join(process.cwd(), '.env.local');
 if (existsSync(localEnv)) {
@@ -17,6 +20,7 @@ if (existsSync(localEnv)) {
 }
 import * as express from 'express';
 import { ValidationPipe } from '@nestjs/common';
+import session from 'express-session';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { format, isToday as isTodayFn, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -44,11 +48,9 @@ async function bootstrap() {
   app.setViewEngine('hbs');
   // Register partials for shared layout components (header/sidebar/footer)
   if (viewsDir && existsSync(join(viewsDir, 'partials'))) {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
     hbs.registerPartials(join(viewsDir, 'partials'));
   }
   // Register useful Handlebars helpers
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('date', function (value?: Date | string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
@@ -59,7 +61,6 @@ async function bootstrap() {
     return `${yyyy}-${mm}-${dd}`;
   });
   // Pretty localized date: vendredi 10 octobre 2025
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('formatDate', function (value?: Date | string, pattern?: string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
@@ -71,7 +72,6 @@ async function bootstrap() {
     }
   });
   // Relative time like "dans 3 jours" or "il y a 2 jours"
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('fromNow', function (value?: Date | string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
@@ -83,7 +83,6 @@ async function bootstrap() {
     }
   });
   // Today helper to conditionally render special styles
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('isToday', function (value?: Date | string) {
     if (!value) return false;
     const d = value instanceof Date ? value : new Date(value);
@@ -92,35 +91,29 @@ async function bootstrap() {
   });
   // Currency helper (EUR by default)
   const eur = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' });
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('currency', function (value?: number) {
     if (typeof value !== 'number' || !Number.isFinite(value)) return '';
     return eur.format(value);
   });
   // Simple equality helper for select preselection
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('eq', function (a: unknown, b: unknown) {
     // strict equality is fine for ids/strings used in templates
     return a === b;
   });
   // Current year helper for footer
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('year', function () {
     return new Date().getFullYear();
   });
   // Repeat N times helper (for rendering leading blank cells in calendar)
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-  hbs.registerHelper('times', function (n: unknown, block: any) {
+  hbs.registerHelper('times', function (n: unknown, block: { fn: (i: number) => string }) {
     const count = typeof n === 'number' ? n : Number(n);
     let out = '';
     for (let i = 0; i < (Number.isFinite(count) ? count : 0); i++) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
       out += block.fn(i);
     }
     return out;
   });
   // Logical OR helper for templates
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
   hbs.registerHelper('or', function (a: unknown, b: unknown) {
     return a ?? b;
   });
@@ -129,6 +122,40 @@ async function bootstrap() {
   const server = app.getHttpAdapter().getInstance();
   server.use(express.urlencoded({ extended: true }));
   server.use(express.static(join(process.cwd(), 'public')));
+
+  // Sessions and Passport initialization
+  const sessionMiddleware = session as unknown as (
+    options: session.SessionOptions,
+  ) => express.RequestHandler;
+  server.use(
+    sessionMiddleware({
+      secret: process.env.SESSION_SECRET || 'dev-secret-change-me',
+      resave: false,
+      saveUninitialized: false,
+      cookie: { maxAge: 1000 * 60 * 60 * 8 }, // 8 hours
+    }),
+  );
+  // Load passport via dynamic import with default fallback (CJS/ESM interop)
+  const passportMod = (await import('passport')) as
+    | {
+        default: {
+          initialize: () => express.RequestHandler;
+          session: () => express.RequestHandler;
+        };
+      }
+    | { initialize: () => express.RequestHandler; session: () => express.RequestHandler };
+  const passport = ('default' in passportMod ? passportMod.default : passportMod) as {
+    initialize: () => express.RequestHandler;
+    session: () => express.RequestHandler;
+  };
+  server.use(passport.initialize());
+  server.use(passport.session());
+  // Expose current user to templates
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Attach to res.locals for hbs
+    (res.locals as Record<string, unknown>).user = (req as unknown as { user?: unknown }).user;
+    next();
+  });
 
   // Global validation (DTOs) and form error handling
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
