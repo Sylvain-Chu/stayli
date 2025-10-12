@@ -10,6 +10,7 @@ import {
   HttpCode,
   BadRequestException,
   Redirect,
+  Query,
 } from '@nestjs/common';
 import { ClientsService } from './clients.service';
 import { CreateClientDto } from './dto/create-client.dto';
@@ -22,10 +23,10 @@ export class ClientsController {
 
   @Get()
   @Render('clients/index')
-  async index() {
+  async index(@Query('q') q?: string) {
     try {
-      const clients = await this.clientsService.findAll();
-      return { clients };
+      const clients = await this.clientsService.findAll(q);
+      return { clients, q };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve clients.');
     }

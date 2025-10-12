@@ -2,11 +2,17 @@
 {{> sidebar }}
 
 <h1>Bookings</h1>
-<p>
-  <a href='/bookings/create'>Create a new booking</a>
-  |
-  <a href='/bookings/calendar'>Open calendar</a>
-</p>
+<form method='GET' action='/bookings' style='margin: 0 0 1rem;'>
+  <label>From
+    <input type='date' name='from' value='{{from}}' />
+  </label>
+  <label style='margin-left:.5rem;'>To
+    <input type='date' name='to' value='{{to}}' />
+  </label>
+  <button type='submit' style='margin-left:.5rem;'>Filter</button>
+  {{#if from}}{{#if to}}<a href='/bookings' style='margin-left: .5rem;'>Clear</a>{{/if}}{{/if}}
+  <span style='margin-left:1rem;'><a href='/bookings/create'>Create a new booking</a> | <a href='/bookings/calendar'>Open calendar</a></span>
+  </form>
 <hr />
 <ul>
   {{#each bookings}}

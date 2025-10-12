@@ -22,9 +22,22 @@ function isValidBookingStatus(s: unknown): s is 'confirmed' | 'pending' | 'cance
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<BookingWithRelations[]> {
+  async findAll(range?: { from?: Date; to?: Date }): Promise<BookingWithRelations[]> {
+    const from = range?.from;
+    const to = range?.to;
+    const where: Prisma.BookingWhereInput | undefined =
+      from || to
+        ? {
+            AND: [
+              ...(from ? [{ endDate: { gte: from } }] : []),
+              ...(to ? [{ startDate: { lte: to } }] : []),
+            ],
+          }
+        : undefined;
     return this.prisma.booking.findMany({
+      where,
       include: { property: true, client: true, invoice: true },
+      orderBy: { startDate: 'asc' },
     });
   }
 

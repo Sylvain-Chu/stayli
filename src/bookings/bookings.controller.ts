@@ -10,12 +10,13 @@ import {
   Delete,
   HttpCode,
   BadRequestException,
+  Query,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
-import { HttpException, Query } from '@nestjs/common';
+import { HttpException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InvoicesService } from 'src/invoices/invoices.service';
 
@@ -31,10 +32,12 @@ export class BookingsController {
 
   @Get()
   @Render('bookings/index')
-  async index() {
+  async index(@Query('from') from?: string, @Query('to') to?: string) {
     try {
-      const bookings = await this.bookingsService.findAll();
-      return { bookings };
+      const fromDate = from ? new Date(from) : undefined;
+      const toDate = to ? new Date(to) : undefined;
+      const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+      return { bookings, from, to };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve bookings.');
     }
