@@ -36,9 +36,16 @@ export class BookingsController {
     try {
       const fromDate = from ? new Date(from) : undefined;
       const toDate = to ? new Date(to) : undefined;
+      if (from && (!fromDate || Number.isNaN(fromDate.getTime()))) {
+        throw new BadRequestException('Invalid "from" date. Expected YYYY-MM-DD');
+      }
+      if (to && (!toDate || Number.isNaN(toDate.getTime()))) {
+        throw new BadRequestException('Invalid "to" date. Expected YYYY-MM-DD');
+      }
       const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
       return { bookings, from, to };
-    } catch {
+    } catch (err: unknown) {
+      if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Failed to retrieve bookings.');
     }
   }
@@ -57,6 +64,12 @@ export class BookingsController {
   ) {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
+    if (start && (!startDate || Number.isNaN(startDate.getTime()))) {
+      throw new BadRequestException('Invalid "start" date. Expected YYYY-MM-DD');
+    }
+    if (end && (!endDate || Number.isNaN(endDate.getTime()))) {
+      throw new BadRequestException('Invalid "end" date. Expected YYYY-MM-DD');
+    }
 
     // Normalize and validate statuses
     const allowed = new Set(['confirmed', 'pending', 'cancelled', 'blocked']);
