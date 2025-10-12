@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { existsSync } from 'fs';
 import path from 'path';
 import * as dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
+const bcryptHash = bcrypt.hash;
 
 // Load .env.local if present, else .env so DATABASE_URL is available when running via ts-node
 const localEnv = path.join(process.cwd(), '.env.local');
@@ -43,6 +45,27 @@ if (existsSync(localEnv)) {
 const prisma = new PrismaClient();
 
 async function main() {
+  // Seed admin user if credentials provided
+  const { ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
+  if (ADMIN_EMAIL && ADMIN_PASSWORD) {
+    console.log('Seeding admin user...');
+  const passwordHash: string = await bcryptHash(ADMIN_PASSWORD, 12);
+    // Narrowly type the prisma.user model without using any
+    type Role = 'ADMIN' | 'USER';
+    type UserModel = {
+      upsert: (args: {
+        where: { email: string };
+        update: { passwordHash: string; role: Role };
+        create: { email: string; passwordHash: string; role: Role };
+      }) => Promise<unknown>;
+    };
+    const userModel = (prisma as unknown as { user: UserModel }).user;
+    await userModel.upsert({
+      where: { email: ADMIN_EMAIL },
+      update: { passwordHash, role: 'ADMIN' },
+      create: { email: ADMIN_EMAIL, passwordHash, role: 'ADMIN' },
+    });
+  }
   console.log('Seeding properties (upsert)...');
   const propertiesData = [
     { name: 'Seaside Villa', address: '1 Ocean Dr, Nice', description: 'Sea view' },
