@@ -1,13 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Client } from '@prisma/client';
+import { Client, Prisma } from '@prisma/client';
 
 @Injectable()
 export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<Client[]> {
-    return this.prisma.client.findMany();
+  async findAll(q?: string): Promise<Client[]> {
+    const where: Prisma.ClientWhereInput | undefined = q
+      ? {
+          OR: [
+            { firstName: { contains: q, mode: Prisma.QueryMode.insensitive } },
+            { lastName: { contains: q, mode: Prisma.QueryMode.insensitive } },
+            { email: { contains: q, mode: Prisma.QueryMode.insensitive } },
+            { phone: { contains: q, mode: Prisma.QueryMode.insensitive } },
+          ],
+        }
+      : undefined;
+    return this.prisma.client.findMany({
+      where,
+      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+    });
   }
 
   async create(data: {

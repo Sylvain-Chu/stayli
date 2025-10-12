@@ -2,9 +2,12 @@
 {{> sidebar }}
 
 <h1>Clients</h1>
-<p>
-  <a href='/clients/create'>Add a new client</a>
-</p>
+<form method='GET' action='/clients' style='margin: 0 0 1rem;'>
+  <input type='text' name='q' placeholder='Search clients…' value='{{q}}' />
+  <button type='submit'>Search</button>
+  {{#if q}}<a href='/clients' style='margin-left: .5rem;'>Clear</a>{{/if}}
+  <span style='margin-left:1rem;'><a href='/clients/create'>Add a new client</a></span>
+  </form>
 <hr />
 <ul>
   {{#each clients}}
