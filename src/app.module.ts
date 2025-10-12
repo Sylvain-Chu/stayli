@@ -14,6 +14,7 @@ import { InvoicesModule } from './invoices/invoices.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { AccountModule } from './account/account.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { UsersModule } from './users/users.module';
     DashboardModule,
     UsersModule,
     AuthModule,
+    AccountModule,
   ],
   controllers: [AppController],
   providers: [
