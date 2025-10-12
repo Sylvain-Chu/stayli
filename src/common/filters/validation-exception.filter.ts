@@ -12,6 +12,40 @@ import { PrismaService } from '../../prisma/prisma.service';
 @Injectable()
 export class ValidationExceptionFilter implements ExceptionFilter {
   constructor(private readonly prisma: PrismaService) {}
+  // Simple in-memory cache for lookup tables to avoid DB queries on unrelated validation errors
+  private static _cache: {
+    properties?: { ts: number; value: unknown };
+    clients?: { ts: number; value: unknown };
+  } = {};
+  private static CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
+  private async getCachedProperties() {
+    const now = Date.now();
+    if (
+      ValidationExceptionFilter._cache.properties &&
+      now - ValidationExceptionFilter._cache.properties.ts < ValidationExceptionFilter.CACHE_TTL
+    ) {
+      return ValidationExceptionFilter._cache.properties.value;
+    }
+    const properties = await this.prisma.property.findMany({ orderBy: { name: 'asc' } });
+    ValidationExceptionFilter._cache.properties = { ts: now, value: properties };
+    return properties;
+  }
+
+  private async getCachedClients() {
+    const now = Date.now();
+    if (
+      ValidationExceptionFilter._cache.clients &&
+      now - ValidationExceptionFilter._cache.clients.ts < ValidationExceptionFilter.CACHE_TTL
+    ) {
+      return ValidationExceptionFilter._cache.clients.value;
+    }
+    const clients = await this.prisma.client.findMany({
+      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+    });
+    ValidationExceptionFilter._cache.clients = { ts: now, value: clients };
+    return clients;
+  }
   catch(exception: BadRequestException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -60,16 +94,16 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       const locals: Record<string, unknown> = { errors, payload };
       if (view.startsWith('bookings/')) {
         // For bookings create/edit forms we need properties and clients
-        // Identify if it's create or edit, but for both we can provide lists
-        // Note: Keep it lightweight; order by names for UX similar to GET handlers
+        // Use cached lookups to avoid DB queries on unrelated validation errors
         const maybeId = parts.length >= 2 ? parts[1] : undefined;
-        return Promise.all([
-          this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
-          this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
+        const clientsPromise = this.getCachedClients();
+        const propertiesPromise = this.getCachedProperties();
+        const bookingPromise =
           view === 'bookings/edit' && maybeId
             ? this.prisma.booking.findUnique({ where: { id: maybeId } })
-            : Promise.resolve(null),
-        ])
+            : Promise.resolve(null);
+
+        return Promise.all([propertiesPromise, clientsPromise, bookingPromise])
           .then(([properties, clients, booking]) => {
             locals.properties = properties;
             locals.clients = clients;
