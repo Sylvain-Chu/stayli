@@ -16,7 +16,6 @@ import { BookingsService } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
-import { HttpException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InvoicesService } from 'src/invoices/invoices.service';
 
