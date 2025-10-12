@@ -9,11 +9,8 @@ export class CreateBookingDto {
 
   @Type(() => Date)
   @IsDate()
-  endDate!: Date;
   @IsAfter('startDate', { message: 'End date must be after start date' })
-  get _endAfterStart(): Date {
-    return this.endDate;
-  }
+  endDate!: Date;
 
   @Type(() => Number)
   @IsNumber()
