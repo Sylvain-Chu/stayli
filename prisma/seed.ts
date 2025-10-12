@@ -55,15 +55,15 @@ async function main() {
     type UserModel = {
       upsert: (args: {
         where: { email: string };
-        update: { passwordHash: string; role: Role };
-        create: { email: string; passwordHash: string; role: Role };
+        update: { passwordHash: string; role: Role; name?: string };
+        create: { email: string; passwordHash: string; role: Role; name?: string };
       }) => Promise<unknown>;
     };
     const userModel = (prisma as unknown as { user: UserModel }).user;
     await userModel.upsert({
       where: { email: ADMIN_EMAIL },
-      update: { passwordHash, role: 'ADMIN' },
-      create: { email: ADMIN_EMAIL, passwordHash, role: 'ADMIN' },
+      update: { passwordHash, role: 'ADMIN', name: 'Admin' },
+      create: { email: ADMIN_EMAIL, passwordHash, role: 'ADMIN', name: 'Admin' },
     });
   }
   console.log('Seeding properties (upsert)...');
