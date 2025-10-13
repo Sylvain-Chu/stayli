@@ -10,6 +10,7 @@ import {
   Delete,
   HttpCode,
   BadRequestException,
+  HttpException,
   Query,
 } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
