@@ -17,7 +17,7 @@ type MockInvoicesService = {
 };
 
 type MockPrisma = {
-  booking: { findMany: jest.Mock<Promise<unknown[]>, [args: unknown]> };
+  booking: { findMany: jest.Mock<Promise<unknown[]>, [args: Prisma.BookingFindManyArgs]> };
 };
 
 function prismaKnownError(code: string) {
@@ -49,7 +49,9 @@ describe('InvoicesController', () => {
       update: jest.fn<Promise<unknown>, [id: string, body: Record<string, unknown>]>(),
     };
     prisma = {
-      booking: { findMany: jest.fn<Promise<unknown[]>, [args: unknown]>() },
+      booking: {
+        findMany: jest.fn<Promise<unknown[]>, [Prisma.BookingFindManyArgs]>(),
+      },
     };
     controller = new InvoicesController(
       service as unknown as InvoicesService,
