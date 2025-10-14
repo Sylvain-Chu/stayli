@@ -19,6 +19,12 @@ export class ValidationExceptionFilter implements ExceptionFilter {
   } = {};
   private static CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
+  // Test-only helper to reset in-memory cache safely without poking private fields from specs.
+  // This is a no-op in production usage and only used in unit tests.
+  static __testResetCache(): void {
+    ValidationExceptionFilter._cache = {};
+  }
+
   private async getCachedProperties() {
     const now = Date.now();
     if (

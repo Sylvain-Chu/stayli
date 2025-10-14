@@ -1,11 +1,26 @@
 import { DashboardService } from './dashboard.service';
+import type { Prisma } from '@prisma/client';
+
+type DashboardBooking = {
+  id: string;
+  startDate: Date;
+  endDate: Date;
+  status: string;
+  client: { firstName: string; lastName: string; _count?: { bookings: number } };
+  property: { name: string };
+  totalPrice?: number;
+};
+type RevenueBooking = { totalPrice: number };
 
 type MockPrisma = {
-  property: { count: jest.Mock<Promise<number>, []> };
-  client: { count: jest.Mock<Promise<number>, []> };
-  invoice: { count: jest.Mock<Promise<number>, [args?: unknown]> };
+  property: { count: jest.Mock<Promise<number>, [args?: Prisma.PropertyCountArgs]> };
+  client: { count: jest.Mock<Promise<number>, [args?: Prisma.ClientCountArgs]> };
+  invoice: { count: jest.Mock<Promise<number>, [args?: Prisma.InvoiceCountArgs]> };
   booking: {
-    findMany: jest.Mock<Promise<any[]>, [args?: unknown]>;
+    findMany: jest.Mock<
+      Promise<Array<DashboardBooking | RevenueBooking>>,
+      [args?: Prisma.BookingFindManyArgs]
+    >;
   };
 };
 
@@ -17,10 +32,15 @@ describe('DashboardService', () => {
     jest.useFakeTimers();
     jest.setSystemTime(new Date('2025-01-15T00:00:00Z'));
     prisma = {
-      property: { count: jest.fn<Promise<number>, []>() },
-      client: { count: jest.fn<Promise<number>, []>() },
-      invoice: { count: jest.fn<Promise<number>, [args?: unknown]>() },
-      booking: { findMany: jest.fn<Promise<any[]>, [args?: unknown]>() },
+      property: { count: jest.fn<Promise<number>, [args?: Prisma.PropertyCountArgs]>() },
+      client: { count: jest.fn<Promise<number>, [args?: Prisma.ClientCountArgs]>() },
+      invoice: { count: jest.fn<Promise<number>, [args?: Prisma.InvoiceCountArgs]>() },
+      booking: {
+        findMany: jest.fn<
+          Promise<Array<DashboardBooking | RevenueBooking>>,
+          [args?: Prisma.BookingFindManyArgs]
+        >(),
+      },
     };
     service = new DashboardService(
       prisma as unknown as import('src/prisma/prisma.service').PrismaService,

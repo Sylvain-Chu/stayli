@@ -27,13 +27,18 @@ type MockBookingsService = {
   update: jest.Mock<Promise<unknown>, [id: string, body: unknown]>;
 };
 
+type LightProperty = { id: string; name?: string };
+type LightClient = { id: string; firstName?: string; lastName?: string };
 type MockPrisma = {
-  property: { findMany: jest.Mock<Promise<any[]>, [any?]> };
-  client: { findMany: jest.Mock<Promise<any[]>, [any?]> };
+  property: { findMany: jest.Mock<Promise<LightProperty[]>, [args?: Prisma.PropertyFindManyArgs]> };
+  client: { findMany: jest.Mock<Promise<LightClient[]>, [args?: Prisma.ClientFindManyArgs]> };
 };
 
 type MockInvoicesService = {
-  create: jest.Mock<Promise<{ id: string }>, [body: any]>;
+  create: jest.Mock<
+    Promise<{ id: string }>,
+    [body: { bookingId?: string; amount?: number; dueDate?: Date }]
+  >;
 };
 
 function prismaKnownError(code: string) {
@@ -67,8 +72,10 @@ describe('BookingsController', () => {
       update: jest.fn<Promise<unknown>, [id: string, body: unknown]>(),
     };
     prisma = {
-      property: { findMany: jest.fn<Promise<unknown[]>, [args?: unknown]>() },
-      client: { findMany: jest.fn<Promise<unknown[]>, [args?: unknown]>() },
+      property: {
+        findMany: jest.fn<Promise<LightProperty[]>, [args?: Prisma.PropertyFindManyArgs]>(),
+      },
+      client: { findMany: jest.fn<Promise<LightClient[]>, [args?: Prisma.ClientFindManyArgs]>() },
     };
     invoices = { create: jest.fn<Promise<{ id: string }>, [body: unknown]>() };
     controller = new BookingsController(

@@ -152,8 +152,8 @@ describe('ValidationExceptionFilter', () => {
   });
 
   it('falls back to render on bookings view when any enrichment promise rejects', async () => {
-    // Reset static cache to force DB calls
-    (ValidationExceptionFilter as unknown as { _cache: unknown })._cache = {} as unknown;
+    // Reset cache through test helper to avoid private member access
+    ValidationExceptionFilter.__testResetCache();
     const prisma = {
       property: {
         findMany: jest.fn<Promise<unknown[]>, [unknown?]>().mockRejectedValue(new Error('db')),
