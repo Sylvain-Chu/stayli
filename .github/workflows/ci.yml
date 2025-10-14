@@ -25,7 +25,6 @@ jobs:
     env:
       NODE_ENV: test
       SESSION_SECRET: test-secret
-      # In GitHub Actions, service containers are exposed on localhost via the mapped port
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/stayli_test
 
     steps:
