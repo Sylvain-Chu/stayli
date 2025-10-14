@@ -2,7 +2,7 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { UsersService } from '../users/users.service';
 import { UpdateAccountDto } from './dto/update-account.dto';
-import { UpdatePasswordDto } from './dto/update-password.dto.js';
+import { UpdatePasswordDto } from './dto/update-password.dto';
 
 @Controller('account')
 export class AccountController {

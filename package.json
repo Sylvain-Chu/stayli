@@ -82,13 +82,27 @@
       "ts"
     ],
     "rootDir": "src",
+    "moduleNameMapper": {
+      "^src/(.*)$": "<rootDir>/$1"
+    },
     "testRegex": ".*\\.spec\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
     "collectCoverageFrom": [
-      "**/*.(t|j)s"
+      "**/*.(t|j)s",
+      "!**/*.module.ts",
+      "!**/dto/**",
+      "!main.ts"
     ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "statements": 95,
+        "lines": 95,
+        "functions": 95
+      }
+    },
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
   }
