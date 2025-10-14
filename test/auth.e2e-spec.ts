@@ -24,7 +24,7 @@ describe('Auth flow (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-  app = moduleFixture.createNestApplication<NestExpressApplication>();
+    app = moduleFixture.createNestApplication<NestExpressApplication>();
 
     // Minimal app wiring to match main.ts for rendering/session/passport
     const candidates = [
@@ -43,7 +43,7 @@ describe('Auth flow (e2e)', () => {
       hbs.registerPartials(join(viewsDir, 'partials'));
     }
 
-  const server = app.getHttpAdapter().getInstance() as unknown as express.Express;
+    const server = app.getHttpAdapter().getInstance() as unknown as express.Express;
     server.use(express.urlencoded({ extended: true }));
     server.use(express.static(join(process.cwd(), 'public')));
     const sessionMiddleware = session as unknown as (
@@ -89,7 +89,7 @@ describe('Auth flow (e2e)', () => {
   });
 
   it('logs in and can access protected pages; logout locks them again', async () => {
-  const agent = request.agent(app.getHttpServer() as unknown as SupertestApp);
+    const agent = request.agent(app.getHttpServer() as unknown as SupertestApp);
     // Login and redirect to /clients
     const loginRes = await agent
       .post('/auth/login')
