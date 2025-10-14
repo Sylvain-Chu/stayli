@@ -5,10 +5,15 @@ import type { PrismaService } from 'src/prisma/prisma.service';
 type FindManyArgs = { where?: Prisma.PropertyWhereInput; orderBy: { name: 'asc' | 'desc' } };
 type PropertyModel = {
   findMany: (args: FindManyArgs) => Promise<Property[]>;
-  create: (args: { data: { name: string; address?: string; description?: string } }) => Promise<Property>;
+  create: (args: {
+    data: { name: string; address?: string; description?: string };
+  }) => Promise<Property>;
   delete: (args: { where: { id: string } }) => Promise<Property>;
   findUnique: (args: { where: { id: string } }) => Promise<Property | null>;
-  update: (args: { where: { id: string }; data: { name?: string; address?: string; description?: string } }) => Promise<Property>;
+  update: (args: {
+    where: { id: string };
+    data: { name?: string; address?: string; description?: string };
+  }) => Promise<Property>;
 };
 
 type MockPrisma = { property: jest.Mocked<PropertyModel> };
@@ -43,9 +48,9 @@ describe('PropertiesService', () => {
   it('findAll with q builds OR filters', async () => {
     prisma.property.findMany.mockResolvedValue([] as Property[]);
     await service.findAll('villa');
-    const calls = (prisma.property.findMany as unknown as jest.Mock).mock.calls as Array<[
-      FindManyArgs
-    ]>;
+    const calls = (prisma.property.findMany as unknown as jest.Mock).mock.calls as Array<
+      [FindManyArgs]
+    >;
     const arg = calls[0][0];
     expect(arg.where).toBeDefined();
     const OR = (arg.where as Prisma.PropertyWhereInput).OR as Array<Record<string, unknown>>;

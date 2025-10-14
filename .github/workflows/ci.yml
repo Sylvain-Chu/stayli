@@ -1,9 +1,6 @@
 name: CI
 
-on:
-  pull_request:
-    branches:
-      - '**'
+on: [pull_request]
 
 jobs:
   build-and-test:
@@ -27,7 +24,7 @@ jobs:
     env:
       NODE_ENV: test
       SESSION_SECRET: test-secret
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/stayli_test
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/stayli_test
 
     steps:
       - name: Checkout repository

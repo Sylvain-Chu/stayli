@@ -1,4 +1,5 @@
 import { UsersService } from './users.service';
+import bcryptDefault from 'bcrypt';
 
 // Mock bcrypt used by UsersService
 jest.mock('bcrypt', () => ({
@@ -9,6 +10,8 @@ jest.mock('bcrypt', () => ({
   },
 }));
 
+const bcrypt = bcryptDefault as unknown as { compare: jest.Mock; hash: jest.Mock };
+
 type UserRecord = {
   id: string;
   email: string;
@@ -18,10 +21,14 @@ type UserRecord = {
 };
 
 describe('UsersService', () => {
-  const bcrypt = require('bcrypt').default as { compare: jest.Mock; hash: jest.Mock };
-
   let usersService: UsersService;
-  let prismaMock: any;
+  let prismaMock: {
+    user: {
+      findUnique: jest.Mock;
+      create: jest.Mock;
+      update: jest.Mock;
+    };
+  };
 
   beforeEach(() => {
     prismaMock = {
@@ -31,7 +38,9 @@ describe('UsersService', () => {
         update: jest.fn(),
       },
     };
-    usersService = new UsersService(prismaMock);
+    usersService = new UsersService(
+      prismaMock as unknown as import('src/prisma/prisma.service').PrismaService,
+    );
     bcrypt.compare.mockReset();
     bcrypt.hash.mockReset();
   });
@@ -68,6 +77,14 @@ describe('UsersService', () => {
 
     prismaMock.user.findUnique.mockResolvedValueOnce(null);
     await expect(usersService.findByEmail('no@t.found')).resolves.toBeNull();
+  });
+
+  it('findById returns user or null', async () => {
+    const user: UserRecord = { id: '1', email: 'a@b.com', passwordHash: 'h', role: 'USER' };
+    prismaMock.user.findUnique.mockResolvedValueOnce(user);
+    await expect(usersService.findById('1')).resolves.toEqual(user);
+    prismaMock.user.findUnique.mockResolvedValueOnce(null);
+    await expect(usersService.findById('2')).resolves.toBeNull();
   });
 
   it('changePassword updates password when current is valid', async () => {
@@ -107,11 +124,41 @@ describe('UsersService', () => {
     );
   });
 
+  it('changePassword throws when user not found', async () => {
+    prismaMock.user.findUnique.mockResolvedValueOnce(null);
+    await expect(usersService.changePassword('missing', 'x', 'y')).rejects.toThrow(
+      'User not found',
+    );
+  });
+
   it('updateProfile maps Prisma P2002 to EMAIL_TAKEN error', async () => {
     prismaMock.user.update.mockRejectedValue({ code: 'P2002' });
     await expect(usersService.updateProfile('u1', { email: 'x@y.z' })).rejects.toMatchObject({
       message: 'EMAIL_TAKEN',
       code: 'EMAIL_TAKEN',
     });
+  });
+
+  it('updateProfile returns updated user on success', async () => {
+    const updated: UserRecord = {
+      id: 'u1',
+      email: 'new@y.z',
+      passwordHash: 'hash',
+      role: 'USER',
+      name: 'New Name',
+    };
+    prismaMock.user.update.mockResolvedValue(updated);
+    await expect(usersService.updateProfile('u1', { name: 'New Name' })).resolves.toEqual(updated);
+    expect(prismaMock.user.update).toHaveBeenCalledWith({
+      where: { id: 'u1' },
+      data: { name: 'New Name' },
+    });
+  });
+
+  it('updateProfile rethrows unknown errors', async () => {
+    const err = new Error('boom') as Error & { code?: string };
+    err.code = 'OTHER';
+    prismaMock.user.update.mockRejectedValue(err);
+    await expect(usersService.updateProfile('u1', { name: 'x' })).rejects.toBe(err);
   });
 });

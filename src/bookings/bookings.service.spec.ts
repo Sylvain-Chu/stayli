@@ -125,6 +125,30 @@ describe('BookingsService', () => {
     ).rejects.toBeInstanceOf(BadRequestException);
   });
 
+  it('create rejects NaN dates for start and end', async () => {
+    const badStart = new Date('invalid');
+    const badEnd = new Date('also invalid');
+    await expect(
+      service.create({
+        startDate: badStart,
+        endDate: new Date('2025-01-05'),
+        totalPrice: 100,
+        propertyId: 'p1',
+        clientId: 'c1',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    await expect(
+      service.create({
+        startDate: new Date('2025-01-01'),
+        endDate: badEnd,
+        totalPrice: 100,
+        propertyId: 'p1',
+        clientId: 'c1',
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
   it('create detects overlapping booking on same property', async () => {
     prisma.booking.findFirst.mockResolvedValue({ id: 'other' });
     await expect(
@@ -181,6 +205,36 @@ describe('BookingsService', () => {
     ).rejects.toBeInstanceOf(ConflictException);
   });
 
+  it('update rejects NaN dates and non-positive total price', async () => {
+    const current = {
+      id: 'b1',
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 100,
+      propertyId: 'p1',
+      clientId: 'c1',
+    };
+    prisma.booking.findUnique.mockResolvedValue(current);
+
+    await expect(
+      service.update('b1', {
+        startDate: new Date('invalid'),
+      } as unknown as import('./dto/update-booking.dto').UpdateBookingDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    await expect(
+      service.update('b1', {
+        endDate: new Date('invalid'),
+      } as unknown as import('./dto/update-booking.dto').UpdateBookingDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    await expect(
+      service.update('b1', {
+        totalPrice: 0,
+      } as unknown as import('./dto/update-booking.dto').UpdateBookingDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
   it('delete removes invoices first within a transaction', async () => {
     prisma.invoice.deleteMany.mockResolvedValue({});
     prisma.booking.delete.mockResolvedValue({ id: 'b1' });
@@ -189,11 +243,156 @@ describe('BookingsService', () => {
     expect(prisma.booking.delete).toHaveBeenCalledWith({ where: { id: 'b1' } });
   });
 
+  it('findOne returns booking with relations via prisma', async () => {
+    prisma.booking.findUnique.mockResolvedValue({ id: 'b1' } as unknown as never);
+    const res = await service.findOne('b1');
+    expect(res).toEqual({ id: 'b1' });
+    expect(prisma.booking.findUnique).toHaveBeenCalledWith({
+      where: { id: 'b1' },
+      include: { property: true, client: true, invoice: true },
+    });
+  });
+
   it('findOverlappingRange builds correct where when both dates provided', async () => {
     prisma.booking.findMany.mockResolvedValue([]);
     const start = new Date('2025-01-01');
     const end = new Date('2025-01-10');
     await service.findOverlappingRange({ start, end });
     expect(prisma.booking.findMany).toHaveBeenCalled();
+  });
+
+  it('findOverlappingRange without both dates uses no where filter', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findOverlappingRange({ start: new Date('2025-01-01') });
+    expect(prisma.booking.findMany).toHaveBeenCalledWith({
+      where: undefined,
+      include: { property: true, client: true, invoice: true },
+      orderBy: { startDate: 'asc' },
+    });
+  });
+
+  it('findOverlappingRange with undefined range uses no filter', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findOverlappingRange();
+    expect(prisma.booking.findMany).toHaveBeenCalledWith({
+      where: undefined,
+      include: { property: true, client: true, invoice: true },
+      orderBy: { startDate: 'asc' },
+    });
+  });
+
+  it('update throws when booking not found', async () => {
+    prisma.booking.findUnique.mockResolvedValueOnce(null as unknown as never);
+    await expect(
+      service.update(
+        'missing',
+        {} as unknown as import('./dto/update-booking.dto').UpdateBookingDto,
+      ),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('update rejects invalid status', async () => {
+    const current = {
+      id: 'b1',
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 100,
+      propertyId: 'p1',
+      clientId: 'c1',
+    };
+    prisma.booking.findUnique.mockResolvedValue(current);
+    await expect(
+      service.update('b1', {
+        status: 'nope',
+      } as unknown as import('./dto/update-booking.dto').UpdateBookingDto),
+    ).rejects.toBeInstanceOf(BadRequestException);
+  });
+
+  it('update succeeds with status and relation connects', async () => {
+    const current = {
+      id: 'b1',
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 100,
+      propertyId: 'p1',
+      clientId: 'c1',
+    };
+    prisma.booking.findUnique.mockResolvedValue(current);
+    prisma.booking.findFirst.mockResolvedValue(null);
+    prisma.booking.update.mockResolvedValue({ id: 'b1' });
+    await service.update('b1', {
+      startDate: new Date('2025-01-02'),
+      endDate: new Date('2025-01-05'),
+      totalPrice: 200,
+      status: 'confirmed',
+      propertyId: 'p2',
+      clientId: 'c2',
+    } as unknown as import('./dto/update-booking.dto').UpdateBookingDto);
+    const updateCalls = (prisma.booking.update as unknown as jest.Mock).mock.calls as Array<
+      [{ where: { id: string }; data: Record<string, unknown> }]
+    >;
+    const args = updateCalls[0][0];
+    expect(args.where).toEqual({ id: 'b1' });
+    expect(args.data).toEqual(
+      expect.objectContaining({
+        startDate: new Date('2025-01-02'),
+        endDate: new Date('2025-01-05'),
+        totalPrice: 200,
+        status: 'confirmed',
+        property: { connect: { id: 'p2' } },
+        client: { connect: { id: 'c2' } },
+      }),
+    );
+  });
+
+  it('update supports other valid statuses and avoids no-op connects', async () => {
+    const current = {
+      id: 'b1',
+      startDate: new Date('2025-01-01'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 100,
+      propertyId: 'p1',
+      clientId: 'c1',
+    };
+    prisma.booking.findUnique.mockResolvedValue(current);
+    prisma.booking.findFirst.mockResolvedValue(null);
+    prisma.booking.update.mockResolvedValue({ id: 'b1' });
+
+    await service.update('b1', {
+      // keep relations the same to avoid connect blocks
+      startDate: new Date('2025-01-02'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 150,
+      status: 'pending',
+      propertyId: 'p1',
+      clientId: 'c1',
+    } as unknown as import('./dto/update-booking.dto').UpdateBookingDto);
+
+    const updateCalls = (prisma.booking.update as unknown as jest.Mock).mock.calls as Array<
+      [{ where: { id: string }; data: Record<string, unknown> }]
+    >;
+    const args = updateCalls.pop()?.[0] as { where: { id: string }; data: Record<string, unknown> };
+    expect(args.data).toEqual(
+      expect.objectContaining({
+        status: 'pending',
+        // no property/client connect when ids unchanged
+      }),
+    );
+    expect('property' in args.data).toBe(false);
+    expect('client' in args.data).toBe(false);
+
+    // try another valid status
+    await service.update('b1', {
+      startDate: new Date('2025-01-02'),
+      endDate: new Date('2025-01-03'),
+      totalPrice: 150,
+      status: 'blocked',
+    } as unknown as import('./dto/update-booking.dto').UpdateBookingDto);
+    const args2 = (
+      (prisma.booking.update as unknown as jest.Mock).mock.calls as Array<
+        [{ where: { id: string }; data: Record<string, unknown> }]
+      >
+    ).pop()?.[0].data as Record<string, unknown>;
+    expect(args2.status).toBe('blocked');
   });
 });
