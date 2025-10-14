@@ -152,12 +152,8 @@ describe('ValidationExceptionFilter', () => {
   });
 
   it('falls back to render on bookings view when any enrichment promise rejects', async () => {
-    // Reset cache through test helper to avoid private member access
-    ValidationExceptionFilter.__testResetCache();
     const prisma = {
-      property: {
-        findMany: jest.fn<Promise<unknown[]>, [unknown?]>().mockRejectedValue(new Error('db')),
-      },
+      property: { findMany: jest.fn<Promise<unknown[]>, [unknown?]>() },
       client: { findMany: jest.fn<Promise<unknown[]>, [unknown?]>().mockResolvedValue([]) },
       booking: {
         findUnique: jest
@@ -166,11 +162,20 @@ describe('ValidationExceptionFilter', () => {
       },
     } as const;
     const filter = new ValidationExceptionFilter(prisma as unknown as PrismaService);
+    // Simulate a rejection from one of the enrichment calls
+    const spy = jest
+      .spyOn(
+        ValidationExceptionFilter.prototype as unknown as {
+          getCachedProperties: () => Promise<unknown>;
+        },
+        'getCachedProperties',
+      )
+      .mockRejectedValueOnce(new Error('db'));
     const ex = new BadRequestException({ message: ['bad'] });
     const host = makeCtx({ method: 'POST', path: '/bookings/create', body: {} });
     await filter.catch(ex, host as unknown as ArgumentsHost);
-    // should still render bookings/create despite rejection
     expect(host._res.render).toHaveBeenCalledWith('bookings/create', expect.any(Object));
+    spy.mockRestore();
   });
 
   it('parses string error message when raw getResponse is a string', async () => {
