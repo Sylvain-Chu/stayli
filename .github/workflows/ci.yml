@@ -20,6 +20,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=5
+          --health-start-period=30s
 
     env:
       NODE_ENV: test
@@ -44,6 +45,12 @@ jobs:
       - name: Install dependencies
         run: |
           yarn install --frozen-lockfile || yarn install
+
+      - name: Wait for Postgres to be ready
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+          until pg_isready -h postgres -p 5432 -U postgres; do echo "Waiting for postgres..."; sleep 2; done
 
       - name: Generate Prisma Client
         run: npx prisma generate
