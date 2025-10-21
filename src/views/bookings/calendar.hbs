@@ -1,22 +1,22 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Bookings Calendar</h1>
-<p><a href='/bookings'>Back to bookings list</a></p>
+<h1>{{t 'bookings.calendarTitle'}}</h1>
+<p><a href='/bookings'>{{t 'bookings.backToList'}}</a></p>
 
 <section id='controls' style='margin: 1rem 0;'>
   <fieldset
     id='status-filters'
     style='display:flex; gap:1rem; align-items:center; flex-wrap: wrap;'
   >
-    <legend style='font-weight:600; margin-right: .5rem;'>Filter by status:</legend>
+      <legend style='font-weight:600; margin-right: .5rem;'>{{t 'bookings.filterByStatus'}}</legend>
     <label style='display:flex; align-items:center; gap:.35rem;'>
       <input type='checkbox' name='status' value='confirmed' checked />
       <span style='display:inline-flex; align-items:center; gap:.35rem;'>
         <span
           style='width:12px; height:12px; background:#16a34a; border:1px solid #15803d; display:inline-block;'
         ></span>
-        Confirmed
+          {{t 'bookings.statusConfirmed'}}
       </span>
     </label>
     <label style='display:flex; align-items:center; gap:.35rem;'>
@@ -25,7 +25,7 @@
         <span
           style='width:12px; height:12px; background:#f59e0b; border:1px solid #d97706; display:inline-block;'
         ></span>
-        Pending
+          {{t 'bookings.statusPending'}}
       </span>
     </label>
     <label style='display:flex; align-items:center; gap:.35rem;'>
@@ -34,7 +34,7 @@
         <span
           style='width:12px; height:12px; background:#dc2626; border:1px solid #b91c1c; display:inline-block;'
         ></span>
-        Cancelled
+          {{t 'bookings.statusCancelled'}}
       </span>
     </label>
     <label style='display:flex; align-items:center; gap:.35rem;'>
@@ -43,12 +43,11 @@
         <span
           style='width:12px; height:12px; background:#6b7280; border:1px solid #4b5563; display:inline-block;'
         ></span>
-        Blocked
+          {{t 'bookings.statusBlocked'}}
       </span>
     </label>
   </fieldset>
-  <small style='display:block; margin-top:.5rem; color:#6b7280;'>Uncheck to hide specific statuses.
-    With none selected, the calendar shows no events.</small>
+    <small style='display:block; margin-top:.5rem; color:#6b7280;'>{{t 'bookings.filterNote'}}</small>
 </section>
 
 <div id='calendar'></div>

@@ -126,9 +126,89 @@ async function bootstrap() {
   });
 
   // i18n translation helper for Handlebars templates
-  hbs.registerHelper('t', function (key: string) {
-    const translations = (this as Record<string, unknown>).translations || {};
-    return (translations as Record<string, unknown>)[key] || key;
+  // Be defensive about Handlebars runtime shapes: helpers can be called with
+  // different arguments and the root context may be available as
+  // options.data.root, this.data.root, or this._root depending on the runtime.
+  // small in-memory cache to avoid re-reading translation files for each helper call
+  const translationsCache: Record<string, Record<string, string>> = {};
+
+  function flattenTranslations(obj: Record<string, unknown>, prefix = ''): Record<string, string> {
+    const result: Record<string, string> = {};
+    const walk = (o: Record<string, unknown>, p: string) => {
+      for (const k of Object.keys(o)) {
+        const v = o[k];
+        const nk = p ? `${p}.${k}` : k;
+        if (v && typeof v === 'object' && !Array.isArray(v)) {
+          walk(v as Record<string, unknown>, nk);
+        } else {
+          result[nk] = String(v ?? '');
+        }
+      }
+    };
+    walk(obj, prefix);
+    return result;
+  }
+
+  function loadTranslationsFromFs(lang: string): Record<string, string> {
+    if (translationsCache[lang]) return translationsCache[lang];
+    const candidates = [
+      join(__dirname, 'i18n'),
+      join(__dirname, '..', 'i18n'),
+      join(process.cwd(), 'src', 'i18n'),
+      join(process.cwd(), 'dist', 'src', 'i18n'),
+    ];
+    const base = candidates.find((p) => existsSync(p));
+    if (!base) return {};
+    try {
+      const filePath = join(base, lang, 'translation.json');
+      if (!existsSync(filePath)) return {};
+      const raw = fs.readFileSync(filePath, 'utf8');
+      const parsed = JSON.parse(raw) as Record<string, unknown>;
+      const flat = flattenTranslations(parsed);
+      translationsCache[lang] = flat;
+      return flat;
+    } catch {
+      return {};
+    }
+  }
+
+  function isOptions(x: unknown): x is { data?: { root?: Record<string, unknown> } } {
+    return typeof x === 'object' && x !== null && Object.prototype.hasOwnProperty.call(x, 'data');
+  }
+
+  hbs.registerHelper('t', function (this: unknown, key: string, ...rest: unknown[]) {
+    const maybeOptions = rest.length ? rest[rest.length - 1] : undefined;
+
+    let root: Record<string, unknown> | undefined;
+    if (isOptions(maybeOptions)) root = maybeOptions.data?.root;
+    if (!root && typeof this === 'object' && this !== null) {
+      const t = this as Record<string, unknown>;
+      if (t.data && typeof t.data === 'object' && (t.data as any).root)
+        root = (t.data as any).root as Record<string, unknown>;
+      else if ((t as any)._root) root = (t as any)._root as Record<string, unknown>;
+    }
+
+    const rootTranslations =
+      root && 'translations' in root ? (root.translations as Record<string, unknown>) : undefined;
+    const selfTranslations =
+      typeof this === 'object' &&
+      this !== null &&
+      'translations' in (this as Record<string, unknown>)
+        ? ((this as Record<string, unknown>).translations as Record<string, unknown>)
+        : undefined;
+
+    let translationsAny = rootTranslations || selfTranslations;
+
+    // If no translations present in the template context, or it's an empty object,
+    // try loading from fs cache. This avoids showing raw keys when middleware set
+    // res.locals.translations = {}.
+    if (!translationsAny || Object.keys(translationsAny).length === 0) {
+      const lang = root && 'currentLang' in root ? String(root.currentLang) : 'en';
+      translationsAny = loadTranslationsFromFs(lang);
+    }
+
+    const val = translationsAny ? translationsAny[key] : undefined;
+    return typeof val === 'string' && val !== '' ? val : key;
   });
 
   // Attach body parsing and static asset serving to the underlying Express instance

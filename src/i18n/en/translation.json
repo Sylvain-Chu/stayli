@@ -68,11 +68,16 @@
     "name": "Name",
     "address": "Address",
     "description": "Description",
+    "addressLabel": "Address",
+    "descriptionLabel": "Description",
     "pricePerNight": "Price per night",
     "confirmDelete": "Delete this property?",
     "noProperties": "No properties yet.",
     "bookings": "Bookings",
     "noBookings": "No bookings for this property."
+  },
+  "index": {
+    "welcome": "Welcome to Stayli. Choose a section below:"
   },
   "clients": {
     "title": "Clients",
@@ -99,7 +104,7 @@
     "createTitle": "Create Booking",
     "editTitle": "Edit Booking",
     "showTitle": "Booking Details",
-    "calendarTitle": "Calendar",
+
     "addNew": "Create a new booking",
     "openCalendar": "Open calendar",
     "property": "Property",
@@ -116,7 +121,20 @@
     "statusPending": "Pending",
     "statusConfirmed": "Confirmed",
     "statusCancelled": "Cancelled",
-    "statusCompleted": "Completed"
+    "statusCompleted": "Completed",
+    "propertyLabel": "Property",
+    "clientLabel": "Client",
+    "periodLabel": "Period",
+    "priceLabel": "Price",
+    "viewInvoice": "View invoice",
+    "generateInvoice": "Generate Invoice",
+    "generateInvoiceConfirm": "Generate an invoice for this booking?",
+    "cancelNote": "Cancelling will free up the dates for new bookings.",
+    "filterByStatus": "Filter by status:",
+    "statusBlocked": "Blocked",
+    "filterNote": "Uncheck to hide specific statuses. With none selected, the calendar shows no events.",
+    "calendarTitle": "Bookings Calendar",
+    "backToList": "Back to bookings list"
   },
   "invoices": {
     "title": "Invoices",
@@ -125,6 +143,14 @@
     "showTitle": "Invoice Details",
     "addNew": "Create a new invoice",
     "invoiceNumber": "Invoice Number",
+    "invoiceNumberLabel": "Invoice Number",
+    "bookingLabel": "Booking",
+    "amountLabel": "Amount",
+    "dueDateLabel": "Due date",
+    "selectEligibleBooking": "Select an eligible booking",
+    "from": "from",
+    "to": "to",
+    "noEligibleBooking": "No eligible booking available. Create a booking without an invoice to be able to issue one.",
     "client": "Client",
     "booking": "Booking",
     "amount": "Amount",
