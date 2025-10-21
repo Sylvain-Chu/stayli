@@ -16,7 +16,7 @@
     <label>{{t 'bookings.property'}}</label>
     <select name='propertyId' required>
       {{#each properties}}
-        <option value='{{this.id}}' {{#if (eq this.id ../(or payload.propertyId ../booking.propertyId))}}selected{{/if}}>
+        <option value='{{this.id}}' {{#if (eq this.id (or ../payload.propertyId ../booking.propertyId))}}selected{{/if}}>
           {{this.name}}
         </option>
       {{/each}}
@@ -26,7 +26,7 @@
     <label>{{t 'bookings.client'}}</label>
     <select name='clientId' required>
       {{#each clients}}
-        <option value='{{this.id}}' {{#if (eq this.id ../(or payload.clientId ../booking.clientId))}}selected{{/if}}>
+        <option value='{{this.id}}' {{#if (eq this.id (or ../payload.clientId ../booking.clientId))}}selected{{/if}}>
           {{this.lastName}} {{this.firstName}} - {{this.email}}
         </option>
       {{/each}}

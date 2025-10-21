@@ -66,19 +66,19 @@ export class BookingsService {
   }): Promise<Booking> {
     // Basic validations
     if (!data.startDate || !data.endDate) {
-      throw new BadRequestException('Start and end dates are required.');
+      throw new BadRequestException('Start and end dates are required');
     }
     if (!(data.startDate instanceof Date) || Number.isNaN(data.startDate.getTime())) {
-      throw new BadRequestException('Invalid start date.');
+      throw new BadRequestException('Invalid start date');
     }
     if (!(data.endDate instanceof Date) || Number.isNaN(data.endDate.getTime())) {
-      throw new BadRequestException('Invalid end date.');
+      throw new BadRequestException('Invalid end date');
     }
     if (data.endDate <= data.startDate) {
-      throw new BadRequestException('End date must be after start date.');
+      throw new BadRequestException('End date must be after start date');
     }
     if (data.totalPrice == null || data.totalPrice <= 0) {
-      throw new BadRequestException('Total price must be greater than 0.');
+      throw new BadRequestException('Total price must be greater than 0');
     }
 
     // Prevent overlapping bookings on the same property
@@ -91,7 +91,7 @@ export class BookingsService {
       select: { id: true },
     });
     if (overlap) {
-      throw new ConflictException('Overlapping booking exists for this property.');
+      throw new ConflictException('Overlapping booking exists');
     }
 
     return this.prisma.booking.create({ data });
@@ -116,7 +116,7 @@ export class BookingsService {
     // Fetch current booking to have base values for validation
     const current = await this.prisma.booking.findUnique({ where: { id } });
     if (!current) {
-      throw new BadRequestException('Booking not found.');
+      throw new BadRequestException('Booking not found');
     }
 
     const startDate = data.startDate ?? current.startDate;
@@ -125,16 +125,16 @@ export class BookingsService {
     const totalPrice = data.totalPrice ?? current.totalPrice;
 
     if (!(startDate instanceof Date) || Number.isNaN(startDate.getTime())) {
-      throw new BadRequestException('Invalid start date.');
+      throw new BadRequestException('Invalid start date');
     }
     if (!(endDate instanceof Date) || Number.isNaN(endDate.getTime())) {
-      throw new BadRequestException('Invalid end date.');
+      throw new BadRequestException('Invalid end date');
     }
     if (endDate <= startDate) {
-      throw new BadRequestException('End date must be after start date.');
+      throw new BadRequestException('End date must be after start date');
     }
     if (totalPrice == null || totalPrice <= 0) {
-      throw new BadRequestException('Total price must be greater than 0.');
+      throw new BadRequestException('Total price must be greater than 0');
     }
 
     // Overlap check, excluding this booking id
@@ -148,7 +148,7 @@ export class BookingsService {
       select: { id: true },
     });
     if (overlap) {
-      throw new ConflictException('Overlapping booking exists for this property.');
+      throw new ConflictException('Overlapping booking exists');
     }
 
     // Build Prisma-compliant update payload
@@ -160,7 +160,7 @@ export class BookingsService {
 
     if (typeof data.status !== 'undefined') {
       if (!isValidBookingStatus(data.status)) {
-        throw new BadRequestException('Invalid status.');
+        throw new BadRequestException('Invalid status');
       }
       updateData.status = data.status;
     }
