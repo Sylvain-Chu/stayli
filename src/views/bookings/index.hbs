@@ -27,21 +27,46 @@
         —
         {{this.totalPrice}}€ —
         {{this.status}}</small>
-      <button
-        data-delete
-        data-id='{{this.id}}'
-        data-base='/bookings'
-        data-confirm='{{t "bookings.confirmDelete"}}'
-      >{{t 'common.delete'}}</button>
-      {{#unless (eq this.status 'cancelled')}}
-        <button
-          data-post
-          data-url='/bookings/{{this.id}}/cancel'
-          data-confirm='{{t "bookings.confirmCancel"}}'
-        >{{t 'common.cancel'}}</button>
-      {{/unless}}
-      <a href='/bookings/{{this.id}}'>{{t 'common.view'}}</a>
-      <a href='/bookings/{{this.id}}/edit'>{{t 'common.edit'}}</a>
+      
+      <div class="action-group">
+        {{#if this.canDelete}}
+          <button
+            data-delete
+            data-id='{{this.id}}'
+            data-base='/bookings'
+            data-confirm='{{t "bookings.confirmDelete"}}'
+          >{{t 'common.delete'}}</button>
+        {{else}}
+          <span class="action-wrap">
+            <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-delete-{{this.id}}" tabindex="-1">{{t 'common.delete'}}</button>
+            <span id="reason-delete-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canDeleteReason}}</span>
+          </span>
+        {{/if}}
+
+        {{#if this.canCancel}}
+          <button
+            data-post
+            data-url='/bookings/{{this.id}}/cancel'
+            data-confirm='{{t "bookings.confirmCancel"}}'
+          >{{t 'common.cancel'}}</button>
+        {{else}}
+          <span class="action-wrap">
+            <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-{{this.id}}" tabindex="-1">{{t 'common.cancel'}}</button>
+            <span id="reason-cancel-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canCancelReason}}</span>
+          </span>
+        {{/if}}
+
+        <a href='/bookings/{{this.id}}'>{{t 'common.view'}}</a>
+
+        {{#if this.canEdit}}
+          <a href='/bookings/{{this.id}}/edit'>{{t 'common.edit'}}</a>
+        {{else}}
+          <span class="action-wrap">
+            <span class="link-disabled" aria-disabled="true" aria-describedby="reason-edit-{{this.id}}" tabindex="-1">{{t 'common.edit'}}</span>
+            <span id="reason-edit-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canEditReason}}</span>
+          </span>
+        {{/if}}
+      </div>
     </li>
   {{else}}
     <li>{{t 'bookings.noBookings'}}</li>

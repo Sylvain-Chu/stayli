@@ -6,29 +6,53 @@
 <p><strong>{{t 'bookings.clientLabel'}}:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
 <p><strong>{{t 'bookings.periodLabel'}}:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
 <p><strong>{{t 'bookings.priceLabel'}}:</strong> {{currency booking.totalPrice}}</p>
+
 {{#if booking.invoice}}
   <p><strong>Invoice:</strong>
   <a href='/invoices/{{booking.invoice.id}}'>{{t 'bookings.viewInvoice'}} {{booking.invoice.invoiceNumber}}</a>
   </p>
 {{else}}
   <p>
-    <button
-      data-post
-      data-url='/bookings/{{booking.id}}/invoice'
-    data-confirm='{{t "bookings.generateInvoiceConfirm"}}'
-    >{{t 'bookings.generateInvoice'}}</button>
+    {{#if canGenerateInvoice}}
+      <button
+        data-post
+        data-url='/bookings/{{booking.id}}/invoice'
+        data-confirm='{{t "bookings.generateInvoiceConfirm"}}'
+      >{{t 'bookings.generateInvoice'}}</button>
+    {{else}}
+      <span class="action-wrap">
+        <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-invoice-{{booking.id}}" tabindex="-1">{{t 'bookings.generateInvoice'}}</button>
+        <span id="reason-invoice-{{booking.id}}" class="btn-reason" role="tooltip">{{t canGenerateInvoiceReason}}</span>
+      </span>
+    {{/if}}
   </p>
 {{/if}}
+
 <p>
-  <a href='/bookings/{{booking.id}}/edit'>{{t 'common.edit'}}</a>
-  {{#unless (eq booking.status 'cancelled')}}
+  {{#if canEdit}}
+    <a href='/bookings/{{booking.id}}/edit'>{{t 'common.edit'}}</a>
+  {{else}}
+    <span class="action-wrap">
+      <span class="link-disabled" aria-disabled="true" aria-describedby="reason-edit-show-{{booking.id}}" tabindex="-1">{{t 'common.edit'}}</span>
+      <span id="reason-edit-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canEditReason}}</span>
+    </span>
+  {{/if}}
+
+  {{#if canCancel}}
     |
     <button
       data-post
       data-url='/bookings/{{booking.id}}/cancel'
       data-confirm='{{t "bookings.confirmCancel"}}'
     >{{t 'common.cancel'}}</button>
-  {{/unless}}
+  {{else}}
+    | 
+    <span class="action-wrap">
+      <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-show-{{booking.id}}" tabindex="-1">{{t 'common.cancel'}}</button>
+      <span id="reason-cancel-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canCancelReason}}</span>
+    </span>
+  {{/if}}
+
   |
   <a href='/bookings'>{{t 'common.back'}}</a>
   <small style='color:#6b7280; display:block; margin-top:.5rem;'>{{t 'bookings.cancelNote'}}</small>

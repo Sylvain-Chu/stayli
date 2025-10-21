@@ -152,7 +152,15 @@
     "statusBlocked": "Bloqué",
     "filterNote": "Décochez pour masquer des statuts spécifiques. Si aucun n'est sélectionné, le calendrier n'affiche aucun événement.",
     "calendarTitle": "Calendrier des réservations",
-    "backToList": "Retour à la liste des réservations"
+    "backToList": "Retour à la liste des réservations",
+    "cannotEditCancelled": "Impossible de modifier — la réservation est annulée",
+    "cannotEditStarted": "Impossible de modifier — le séjour a déjà commencé",
+    "alreadyCancelled": "Cette réservation est déjà annulée",
+    "cannotCancelEnded": "Impossible d'annuler — le séjour est terminé",
+    "cannotDeleteHasInvoice": "Impossible de supprimer — une facture liée existe",
+    "cannotDeleteActive": "Impossible de supprimer — réservation active ou confirmée",
+    "invoiceAlreadyExists": "Une facture existe déjà pour cette réservation",
+    "invalidPrice": "Prix manquant ou invalide"
   },
   "invoices": {
     "title": "Factures",

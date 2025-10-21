@@ -37,16 +37,53 @@ export class BookingsController {
       const fromDate = from ? new Date(from) : undefined;
       const toDate = to ? new Date(to) : undefined;
       if (from && (!fromDate || Number.isNaN(fromDate.getTime()))) {
-        throw new BadRequestException('Invalid "from" date. Expected YYYY-MM-DD');
+        throw new BadRequestException('Invalid from date');
       }
       if (to && (!toDate || Number.isNaN(toDate.getTime()))) {
-        throw new BadRequestException('Invalid "to" date. Expected YYYY-MM-DD');
+        throw new BadRequestException('Invalid to date');
       }
       const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
-      return { bookings, from, to, activeNav: 'bookings' };
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Compute action flags for each booking
+      const enrichedBookings = bookings.map((b) => {
+        const startDate = new Date(b.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(b.endDate);
+        endDate.setHours(0, 0, 0, 0);
+        const isCancelled = b.status === 'cancelled';
+        const hasStarted = startDate <= today;
+        const hasEnded = endDate < today;
+        const hasInvoice = !!b.invoice;
+
+        return {
+          ...b,
+          canEdit: !isCancelled && !hasStarted,
+          canEditReason: isCancelled
+            ? 'bookings.cannotEditCancelled'
+            : hasStarted
+              ? 'bookings.cannotEditStarted'
+              : '',
+          canCancel: !isCancelled && !hasEnded,
+          canCancelReason: isCancelled
+            ? 'bookings.alreadyCancelled'
+            : hasEnded
+              ? 'bookings.cannotCancelEnded'
+              : '',
+          canDelete: !hasInvoice && isCancelled,
+          canDeleteReason: hasInvoice
+            ? 'bookings.cannotDeleteHasInvoice'
+            : !isCancelled
+              ? 'bookings.cannotDeleteActive'
+              : '',
+        };
+      });
+
+      return { bookings: enrichedBookings, from, to, activeNav: 'bookings' };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
-      throw new InternalServerErrorException('Failed to retrieve bookings.');
+      throw new InternalServerErrorException('Unable to load bookings');
     }
   }
 
@@ -65,10 +102,10 @@ export class BookingsController {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
     if (start && (!startDate || Number.isNaN(startDate.getTime()))) {
-      throw new BadRequestException('Invalid "start" date. Expected YYYY-MM-DD');
+      throw new BadRequestException('Invalid start date');
     }
     if (end && (!endDate || Number.isNaN(endDate.getTime()))) {
-      throw new BadRequestException('Invalid "end" date. Expected YYYY-MM-DD');
+      throw new BadRequestException('Invalid end date');
     }
 
     // Normalize and validate statuses
@@ -164,7 +201,47 @@ export class BookingsController {
     if (!booking) {
       throw new InternalServerErrorException('Booking not found');
     }
-    return { booking };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(booking.startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(booking.endDate);
+    endDate.setHours(0, 0, 0, 0);
+    const isCancelled = booking.status === 'cancelled';
+    const hasStarted = startDate <= today;
+    const hasEnded = endDate < today;
+    const hasInvoice = !!booking.invoice;
+    const hasValidPrice = booking.totalPrice != null && booking.totalPrice > 0;
+
+    const canEdit = !isCancelled && !hasStarted;
+    const canEditReason = isCancelled
+      ? 'bookings.cannotEditCancelled'
+      : hasStarted
+        ? 'bookings.cannotEditStarted'
+        : '';
+    const canCancel = !isCancelled && !hasEnded;
+    const canCancelReason = isCancelled
+      ? 'bookings.alreadyCancelled'
+      : hasEnded
+        ? 'bookings.cannotCancelEnded'
+        : '';
+    const canGenerateInvoice = !hasInvoice && hasValidPrice;
+    const canGenerateInvoiceReason = hasInvoice
+      ? 'bookings.invoiceAlreadyExists'
+      : !hasValidPrice
+        ? 'bookings.invalidPrice'
+        : '';
+
+    return {
+      booking,
+      canEdit,
+      canEditReason,
+      canCancel,
+      canCancelReason,
+      canGenerateInvoice,
+      canGenerateInvoiceReason,
+    };
   }
 
   @Get(':id/edit')

@@ -152,7 +152,15 @@
     "statusBlocked": "Blocked",
     "filterNote": "Uncheck to hide specific statuses. With none selected, the calendar shows no events.",
     "calendarTitle": "Bookings Calendar",
-    "backToList": "Back to bookings list"
+    "backToList": "Back to bookings list",
+    "cannotEditCancelled": "Cannot edit — booking cancelled",
+    "cannotEditStarted": "Cannot edit — stay already started",
+    "alreadyCancelled": "Booking already cancelled",
+    "cannotCancelEnded": "Cannot cancel — stay already ended",
+    "cannotDeleteHasInvoice": "Cannot delete — linked invoice exists",
+    "cannotDeleteActive": "Cannot delete — booking active or confirmed",
+    "invoiceAlreadyExists": "Invoice already exists for this booking",
+    "invalidPrice": "Missing or invalid price"
   },
   "invoices": {
     "title": "Invoices",
