@@ -43,6 +43,7 @@ The app ships with server-rendered pages (Handlebars) and a tiny amount of progr
 - Database: PostgreSQL
 - ORM/Client: Prisma
 - Views: Handlebars (hbs)
+- Internationalization: Custom i18n with nestjs-i18n (EN/FR support)
 - Packaging/Infra: Docker
 
 ## Project status
@@ -55,8 +56,10 @@ The app ships with server-rendered pages (Handlebars) and a tiny amount of progr
 ## Repository structure
 
 - `src/views/` — Handlebars templates
+- `src/i18n/` — Translation files (en/fr)
 - `src/**` — Nest modules (controllers, services)
 - `prisma/schema.prisma` — Prisma schema
+- `docs/` — Documentation (including I18N.md for internationalization)
 - `.env` — Docker environment (DB host = `db`)
 - `.env.local` — Local environment (app on host, DB on `localhost`)
 
@@ -160,6 +163,24 @@ Notes:
 - View not found (Handlebars):
   - Views live under `src/views`. The app auto-detects the correct path depending on runtime (source vs dist).
 
+## Internationalization (i18n)
+
+Stayli supports multiple languages out of the box. Users can switch between English and French using the language switcher in the header. The selected language is persisted in cookies for future visits.
+
+For more information about the i18n implementation, see [docs/I18N.md](docs/I18N.md).
+
+### Changing Language
+
+Click on "EN" or "FR" in the top header to switch languages. All UI text and date formatting will adapt automatically.
+
+### Adding Translations
+
+To add or modify translations:
+
+1. Edit `src/i18n/en/translation.json` for English
+2. Edit `src/i18n/fr/translation.json` for French
+3. Use the `{{t 'key'}}` helper in Handlebars templates
+
 ## Why this project?
 
-Stayli aims to be a free, sovereign alternative to rental management SaaS. It’s designed to be approachable for non-technical users and easy to self-host, while using a modern, maintainable stack under the hood.
+Stayli aims to be a free, sovereign alternative to rental management SaaS. It's designed to be approachable for non-technical users and easy to self-host, while using a modern, maintainable stack under the hood.

@@ -1,12 +1,12 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Properties</h1>
+<h1>{{t 'properties.title'}}</h1>
 <form method='GET' action='/properties' style='margin: 0 0 1rem;'>
-  <input type='text' name='q' placeholder='Search properties…' value='{{q}}' />
-  <button type='submit'>Search</button>
-  {{#if q}}<a href='/properties' style='margin-left: .5rem;'>Clear</a>{{/if}}
-  <span style='margin-left:1rem;'><a href='/properties/create'>Add a new property</a></span>
+  <input type='text' name='q' placeholder='{{t "properties.searchPlaceholder"}}' value='{{q}}' />
+  <button type='submit'>{{t 'common.search'}}</button>
+  {{#if q}}<a href='/properties' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}
+  <span style='margin-left:1rem;'><a href='/properties/create'>{{t 'properties.addNew'}}</a></span>
   </form>
 <hr />
 <ul>
@@ -18,13 +18,13 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/properties'
-        data-confirm='Delete this property?'
-      >Delete</button>
-      <a href='/properties/{{this.id}}'>View</a>
-      <a href='/properties/{{this.id}}/edit'>Edit</a>
+        data-confirm='{{t "properties.confirmDelete"}}'
+      >{{t 'common.delete'}}</button>
+      <a href='/properties/{{this.id}}'>{{t 'common.view'}}</a>
+      <a href='/properties/{{this.id}}/edit'>{{t 'common.edit'}}</a>
     </li>
   {{else}}
-    <li>No properties yet.</li>
+    <li>{{t 'properties.noProperties'}}</li>
   {{/each}}
 </ul>
 

@@ -1,12 +1,12 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Clients</h1>
+<h1>{{t 'clients.title'}}</h1>
 <form method='GET' action='/clients' style='margin: 0 0 1rem;'>
-  <input type='text' name='q' placeholder='Search clients…' value='{{q}}' />
-  <button type='submit'>Search</button>
-  {{#if q}}<a href='/clients' style='margin-left: .5rem;'>Clear</a>{{/if}}
-  <span style='margin-left:1rem;'><a href='/clients/create'>Add a new client</a></span>
+  <input type='text' name='q' placeholder='{{t "clients.searchPlaceholder"}}' value='{{q}}' />
+  <button type='submit'>{{t 'common.search'}}</button>
+  {{#if q}}<a href='/clients' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}
+  <span style='margin-left:1rem;'><a href='/clients/create'>{{t 'clients.addNew'}}</a></span>
   </form>
 <hr />
 <ul>
@@ -18,13 +18,13 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/clients'
-        data-confirm='Delete this client?'
-      >Delete</button>
-      <a href='/clients/{{this.id}}'>View</a>
-      <a href='/clients/{{this.id}}/edit'>Edit</a>
+        data-confirm='{{t "clients.confirmDelete"}}'
+      >{{t 'common.delete'}}</button>
+      <a href='/clients/{{this.id}}'>{{t 'common.view'}}</a>
+      <a href='/clients/{{this.id}}/edit'>{{t 'common.edit'}}</a>
     </li>
   {{else}}
-    <li>No clients yet.</li>
+    <li>{{t 'clients.noClients'}}</li>
   {{/each}}
 </ul>
 

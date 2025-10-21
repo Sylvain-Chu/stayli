@@ -1,7 +1,7 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Add a client</h1>
+<h1>{{t 'clients.createTitle'}}</h1>
 {{#if errors}}
   <div class='alert alert-error'>
     <ul>
@@ -13,24 +13,24 @@
 {{/if}}
 <form method='post' action='/clients/create'>
   <div>
-    <label>First name</label>
+    <label>{{t 'clients.firstName'}}</label>
     <input name='firstName' value='{{payload.firstName}}' required />
   </div>
   <div>
-    <label>Last name</label>
+    <label>{{t 'clients.lastName'}}</label>
     <input name='lastName' value='{{payload.lastName}}' required />
   </div>
   <div>
-    <label>Email</label>
+    <label>{{t 'clients.email'}}</label>
     <input type='email' name='email' value='{{payload.email}}' required />
   </div>
   <div>
-    <label>Phone</label>
+    <label>{{t 'clients.phone'}}</label>
     <input name='phone' value='{{payload.phone}}' />
   </div>
 
-  <button type='submit'>Create</button>
+  <button type='submit'>{{t 'common.create'}}</button>
 </form>
-<p><a href='/clients'>Back</a></p>
+<p><a href='/clients'>{{t 'common.back'}}</a></p>
 
 {{> footer }}
