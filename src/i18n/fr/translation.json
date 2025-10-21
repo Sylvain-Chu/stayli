@@ -68,11 +68,16 @@
     "name": "Nom",
     "address": "Adresse",
     "description": "Description",
+    "addressLabel": "Adresse",
+    "descriptionLabel": "Description",
     "pricePerNight": "Prix par nuit",
     "confirmDelete": "Supprimer cette propriété?",
     "noProperties": "Aucune propriété pour le moment.",
     "bookings": "Réservations",
     "noBookings": "Aucune réservation pour cette propriété."
+  },
+  "index": {
+    "welcome": "Bienvenue sur Stayli. Choisissez une section ci-dessous :"
   },
   "clients": {
     "title": "Clients",
@@ -99,7 +104,7 @@
     "createTitle": "Créer une Réservation",
     "editTitle": "Modifier la Réservation",
     "showTitle": "Détails de la Réservation",
-    "calendarTitle": "Calendrier",
+
     "addNew": "Créer une nouvelle réservation",
     "openCalendar": "Ouvrir le calendrier",
     "property": "Propriété",
@@ -116,7 +121,20 @@
     "statusPending": "En attente",
     "statusConfirmed": "Confirmé",
     "statusCancelled": "Annulé",
-    "statusCompleted": "Terminé"
+    "statusCompleted": "Terminé",
+    "propertyLabel": "Propriété",
+    "clientLabel": "Client",
+    "periodLabel": "Période",
+    "priceLabel": "Prix",
+    "viewInvoice": "Voir la facture",
+    "generateInvoice": "Générer la facture",
+    "generateInvoiceConfirm": "Générer une facture pour cette réservation?",
+    "cancelNote": "Annuler libérera les dates pour de nouvelles réservations.",
+    "filterByStatus": "Filtrer par statut:",
+    "statusBlocked": "Bloqué",
+    "filterNote": "Décochez pour masquer des statuts spécifiques. Si aucun n'est sélectionné, le calendrier n'affiche aucun événement.",
+    "calendarTitle": "Calendrier des réservations",
+    "backToList": "Retour à la liste des réservations"
   },
   "invoices": {
     "title": "Factures",
@@ -125,6 +143,14 @@
     "showTitle": "Détails de la Facture",
     "addNew": "Créer une nouvelle facture",
     "invoiceNumber": "Numéro de facture",
+    "invoiceNumberLabel": "Numéro de facture",
+    "bookingLabel": "Réservation",
+    "amountLabel": "Montant",
+    "dueDateLabel": "Date d'échéance",
+    "selectEligibleBooking": "Sélectionnez une réservation éligible",
+    "from": "du",
+    "to": "au",
+    "noEligibleBooking": "Aucune réservation éligible. Créez une réservation sans facture pour pouvoir en émettre une.",
     "client": "Client",
     "booking": "Réservation",
     "amount": "Montant",

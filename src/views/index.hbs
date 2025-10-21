@@ -2,7 +2,8 @@
 {{> sidebar }}
 
   <h1>{{title}}</h1>
-  <p>Welcome to Stayli. Choose a section below:</p>
+  <p>{{t 'index.welcome'}}</p>
+  
 
   <nav>
     <ul>
@@ -22,13 +23,13 @@
   <hr />
   <p>
     Shortcuts:
-    <a href='/bookings'>Bookings</a>
+  <a href='/bookings'>{{t 'nav.bookings'}}</a>
     |
-    <a href='/clients'>Clients</a>
+  <a href='/clients'>{{t 'nav.clients'}}</a>
     |
-    <a href='/properties'>Properties</a>
+  <a href='/properties'>{{t 'nav.properties'}}</a>
     |
-    <a href='/invoices'>Invoices</a>
+  <a href='/invoices'>{{t 'nav.invoices'}}</a>
   </p>
 
 {{> footer }}

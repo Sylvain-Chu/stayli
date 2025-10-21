@@ -1,38 +1,37 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Booking</h1>
-<p><strong>Property:</strong> {{booking.property.name}}</p>
-<p><strong>Client:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
-<p><strong>Period:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
-<p><strong>Price:</strong> {{booking.totalPrice}}€</p>
+<h1>{{t 'bookings.title'}}</h1>
+<p><strong>{{t 'bookings.propertyLabel'}}:</strong> {{booking.property.name}}</p>
+<p><strong>{{t 'bookings.clientLabel'}}:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
+<p><strong>{{t 'bookings.periodLabel'}}:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
+<p><strong>{{t 'bookings.priceLabel'}}:</strong> {{currency booking.totalPrice}}</p>
 {{#if booking.invoice}}
   <p><strong>Invoice:</strong>
-    <a href='/invoices/{{booking.invoice.id}}'>View invoice {{booking.invoice.invoiceNumber}}</a>
+  <a href='/invoices/{{booking.invoice.id}}'>{{t 'bookings.viewInvoice'}} {{booking.invoice.invoiceNumber}}</a>
   </p>
 {{else}}
   <p>
     <button
       data-post
       data-url='/bookings/{{booking.id}}/invoice'
-      data-confirm='Generate an invoice for this booking?'
-    >Generate Invoice</button>
+    data-confirm='{{t "bookings.generateInvoiceConfirm"}}'
+    >{{t 'bookings.generateInvoice'}}</button>
   </p>
 {{/if}}
 <p>
-  <a href='/bookings/{{booking.id}}/edit'>Edit</a>
+  <a href='/bookings/{{booking.id}}/edit'>{{t 'common.edit'}}</a>
   {{#unless (eq booking.status 'cancelled')}}
     |
     <button
       data-post
       data-url='/bookings/{{booking.id}}/cancel'
-      data-confirm='Cancel this booking?'
-    >Cancel</button>
+      data-confirm='{{t "bookings.confirmCancel"}}'
+    >{{t 'common.cancel'}}</button>
   {{/unless}}
   |
-  <a href='/bookings'>Back</a>
-  <small style='color:#6b7280; display:block; margin-top:.5rem;'>Cancelling will free up the dates
-    for new bookings.</small>
+  <a href='/bookings'>{{t 'common.back'}}</a>
+  <small style='color:#6b7280; display:block; margin-top:.5rem;'>{{t 'bookings.cancelNote'}}</small>
 </p>
 
 {{> footer }}
