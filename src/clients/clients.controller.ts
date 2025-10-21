@@ -26,7 +26,7 @@ export class ClientsController {
   async index(@Query('q') q?: string) {
     try {
       const clients = await this.clientsService.findAll(q);
-      return { clients, q };
+      return { clients, q, activeNav: 'clients' };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve clients.');
     }

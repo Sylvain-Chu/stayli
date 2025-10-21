@@ -17,6 +17,22 @@
     "noResults": "Aucun résultat trouvé",
     "confirm": "Êtes-vous sûr?"
   },
+  "header": {
+    "searchPlaceholder": "Rechercher..."
+  },
+  "calendar": {
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mer",
+    "thursday": "Jeu",
+    "friday": "Ven",
+    "saturday": "Sam",
+    "sunday": "Dim"
+  },
+  "clientStatus": {
+    "new": "Nouveau",
+    "regular": "Régulier"
+  },
   "nav": {
     "dashboard": "Tableau de bord",
     "bookings": "Réservations",
@@ -40,18 +56,20 @@
     "thisWeek": "Cette semaine",
     "thisMonth": "Ce mois",
     "filterScope": "Filtre l'étendue des arrivées et départs",
-    "totalProperties": "Total Propriétés",
-    "currentlyOccupied": "Actuellement occupé",
-    "totalClients": "Total Clients",
-    "monthRevenue": "Revenu du mois",
-    "revenueGoal": "Objectif",
+    "occupancyRate": "Taux d'occupation",
+    "monthlyRevenue": "Revenu du mois",
+    "bookingsThisMonth": "Réservations du mois",
     "pendingInvoices": "Factures en attente",
+    "occupied": "occupé(s)",
+    "activeBookings": "réservations actives",
+    "awaitingPayment": "en attente de paiement",
+    "activity": "Activité récente",
     "currentStays": "Occupations en cours",
     "upcomingArrivals": "Prochaines Arrivées",
     "recentDepartures": "Départs Récents",
     "noCurrentStays": "Aucun logement n'est actuellement occupé.",
-    "noUpcomingArrivals": "Aucune arrivée prévue pour la période sélectionnée.",
-    "noDepartures": "Aucun départ pour la période sélectionnée.",
+    "noUpcomingArrivals": "Aucune arrivée prévue pour les 7 prochains jours.",
+    "noDepartures": "Aucun départ dans les 7 derniers jours.",
     "arrival": "Arrivée",
     "departure": "Départ",
     "stay": "Séjour",

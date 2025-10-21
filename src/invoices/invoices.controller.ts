@@ -29,7 +29,7 @@ export class InvoicesController {
   async index() {
     try {
       const invoices = await this.invoicesService.findAll();
-      return { invoices };
+      return { invoices, activeNav: 'invoices' };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve invoices.');
     }

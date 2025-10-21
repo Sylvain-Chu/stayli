@@ -43,7 +43,7 @@ export class BookingsController {
         throw new BadRequestException('Invalid "to" date. Expected YYYY-MM-DD');
       }
       const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
-      return { bookings, from, to };
+      return { bookings, from, to, activeNav: 'bookings' };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Failed to retrieve bookings.');
@@ -53,7 +53,7 @@ export class BookingsController {
   @Get('calendar')
   @Render('bookings/calendar')
   calendar() {
-    return {};
+    return { activeNav: 'calendar' };
   }
 
   @Get('events')

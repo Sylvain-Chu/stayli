@@ -17,6 +17,22 @@
     "noResults": "No results found",
     "confirm": "Are you sure?"
   },
+  "header": {
+    "searchPlaceholder": "Search for anything..."
+  },
+  "calendar": {
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun"
+  },
+  "clientStatus": {
+    "new": "New",
+    "regular": "Regular"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "bookings": "Bookings",
@@ -40,18 +56,20 @@
     "thisWeek": "This week",
     "thisMonth": "This month",
     "filterScope": "Filters arrivals and departures scope",
-    "totalProperties": "Total Properties",
-    "currentlyOccupied": "Currently occupied",
-    "totalClients": "Total Clients",
-    "monthRevenue": "Monthly Revenue",
-    "revenueGoal": "Goal",
+    "occupancyRate": "Occupancy Rate",
+    "monthlyRevenue": "Monthly Revenue",
+    "bookingsThisMonth": "Bookings This Month",
     "pendingInvoices": "Pending Invoices",
+    "occupied": "occupied",
+    "activeBookings": "active bookings",
+    "awaitingPayment": "awaiting payment",
+    "activity": "Recent Activity",
     "currentStays": "Current Stays",
     "upcomingArrivals": "Upcoming Arrivals",
     "recentDepartures": "Recent Departures",
     "noCurrentStays": "No properties currently occupied.",
-    "noUpcomingArrivals": "No arrivals scheduled for the selected period.",
-    "noDepartures": "No departures for the selected period.",
+    "noUpcomingArrivals": "No arrivals scheduled for the next 7 days.",
+    "noDepartures": "No departures in the last 7 days.",
     "arrival": "Arrival",
     "departure": "Departure",
     "stay": "Stay",
