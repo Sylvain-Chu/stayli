@@ -1,7 +1,7 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Create an invoice</h1>
+<h1>{{t 'invoices.createTitle'}}</h1>
 {{#if bookings.length}}
   {{#if errors}}
     <div class='alert alert-error'>
@@ -14,35 +14,35 @@
   {{/if}}
   <form method='post' action='/invoices/create'>
     <div>
-      <label for='bookingId'>Booking</label>
+  <label for='bookingId'>{{t 'invoices.bookingLabel'}}</label>
       <select id='bookingId' name='bookingId' required>
-        <option value='' disabled {{#unless payload.bookingId}}selected{{/unless}}>Select an eligible booking</option>
+  <option value='' disabled {{#unless payload.bookingId}}selected{{/unless}}>{{t 'invoices.selectEligibleBooking'}}</option>
         {{#each bookings}}
           <option value='{{this.id}}' {{#if (eq this.id ../payload.bookingId)}}selected{{/if}}>
             {{this.property.name}}
             —
             {{this.client.firstName}}
             {{this.client.lastName}}
-            — from
+            — {{t 'invoices.from'}}
             {{date this.startDate}}
-            to
+            {{t 'invoices.to'}}
             {{date this.endDate}}
           </option>
         {{/each}}
       </select>
     </div>
     <div>
-      <label for='dueDate'>Due date</label>
+      <label for='dueDate'>{{t 'invoices.dueDateLabel'}}</label>
       <input type='date' id='dueDate' name='dueDate' value='{{payload.dueDate}}' required />
     </div>
     <div>
-      <label for='amount'>Amount</label>
+      <label for='amount'>{{t 'invoices.amountLabel'}}</label>
       <input type='number' id='amount' name='amount' min='0' step='0.01' value='{{payload.amount}}' required />
     </div>
-    <button type='submit'>Create</button>
+    <button type='submit'>{{t 'common.create'}}</button>
   </form>
 {{else}}
-  <p>No eligible booking available. Create a booking without an invoice to be able to issue one.</p>
+  <p>{{t 'invoices.noEligibleBooking'}}</p>
 {{/if}}
 
 {{> footer }}

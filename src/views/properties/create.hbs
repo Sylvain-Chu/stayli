@@ -1,7 +1,7 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Add a property</h1>
+<h1>{{t 'properties.createTitle'}}</h1>
 {{#if errors}}
   <div class='alert alert-error'>
     <ul>
@@ -13,19 +13,19 @@
 {{/if}}
 <form method='post' action='/properties/create'>
   <div>
-    <label>Name</label>
+    <label>{{t 'properties.name'}}</label>
     <input name='name' value='{{payload.name}}' required />
   </div>
   <div>
-    <label>Address</label>
+    <label>{{t 'properties.address'}}</label>
     <input name='address' value='{{payload.address}}' />
   </div>
   <div>
-    <label>Description</label>
+    <label>{{t 'properties.description'}}</label>
     <textarea name='description'>{{payload.description}}</textarea>
   </div>
-  <button type='submit'>Create</button>
+  <button type='submit'>{{t 'common.create'}}</button>
 </form>
-<p><a href='/properties'>Back</a></p>
+<p><a href='/properties'>{{t 'common.back'}}</a></p>
 
 {{> footer }}

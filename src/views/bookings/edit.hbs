@@ -1,7 +1,7 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Edit booking</h1>
+<h1>{{t 'bookings.editTitle'}}</h1>
 {{#if errors}}
   <div class='alert alert-error'>
     <ul>
@@ -13,7 +13,7 @@
 {{/if}}
 <form method='post' action='/bookings/{{booking.id}}/edit'>
   <div>
-    <label>Property</label>
+    <label>{{t 'bookings.property'}}</label>
     <select name='propertyId' required>
       {{#each properties}}
         <option value='{{this.id}}' {{#if (eq this.id ../(or payload.propertyId ../booking.propertyId))}}selected{{/if}}>
@@ -23,7 +23,7 @@
     </select>
   </div>
   <div>
-    <label>Client</label>
+    <label>{{t 'bookings.client'}}</label>
     <select name='clientId' required>
       {{#each clients}}
         <option value='{{this.id}}' {{#if (eq this.id ../(or payload.clientId ../booking.clientId))}}selected{{/if}}>
@@ -33,30 +33,30 @@
     </select>
   </div>
   <div>
-    <label>Start Date</label>
+    <label>{{t 'bookings.startDate'}}</label>
     <input type='date' name='startDate' value='{{#if payload.startDate}}{{payload.startDate}}{{else}}{{date booking.startDate}}{{/if}}' required />
   </div>
   <div>
-    <label>End Date</label>
+    <label>{{t 'bookings.endDate'}}</label>
     <input type='date' name='endDate' value='{{#if payload.endDate}}{{payload.endDate}}{{else}}{{date booking.endDate}}{{/if}}' required />
   </div>
   <div>
-    <label>Total Price</label>
+    <label>{{t 'bookings.totalPrice'}}</label>
     <input type='number' step='0.01' name='totalPrice' value='{{#if payload.totalPrice}}{{payload.totalPrice}}{{else}}{{booking.totalPrice}}{{/if}}' />
   </div>
   <div>
-    <label>Status</label>
+    <label>{{t 'bookings.status'}}</label>
     <select name='status'>
       {{#with (or payload.status booking.status) as |st|}}
-        <option value='confirmed' {{#if (eq st 'confirmed')}}selected{{/if}}>Confirmed</option>
-        <option value='pending' {{#if (eq st 'pending')}}selected{{/if}}>Pending</option>
-        <option value='cancelled' {{#if (eq st 'cancelled')}}selected{{/if}}>Cancelled</option>
-        <option value='blocked' {{#if (eq st 'blocked')}}selected{{/if}}>Blocked</option>
+  <option value='confirmed' {{#if (eq st 'confirmed')}}selected{{/if}}>{{t 'bookings.statusConfirmed'}}</option>
+  <option value='pending' {{#if (eq st 'pending')}}selected{{/if}}>{{t 'bookings.statusPending'}}</option>
+  <option value='cancelled' {{#if (eq st 'cancelled')}}selected{{/if}}>{{t 'bookings.statusCancelled'}}</option>
+  <option value='blocked' {{#if (eq st 'blocked')}}selected{{/if}}>{{t 'bookings.statusBlocked'}}</option>
       {{/with}}
     </select>
   </div>
-  <button type='submit'>Save</button>
+  <button type='submit'>{{t 'common.save'}}</button>
 </form>
-<p><a href='/bookings'>Back</a></p>
+<p><a href='/bookings'>{{t 'common.back'}}</a></p>
 
 {{> footer }}

@@ -1,17 +1,17 @@
-{{> auth_header title="Login"}}
-  <h1>Connexion</h1>
+{{> auth_header title=(t 'auth.loginTitle')}}
+  <h1>{{t 'auth.loginTitle'}}</h1>
   <form method="post" action="/auth/login">
     {{#if next}}
       <input type="hidden" name="next" value="{{next}}" />
     {{/if}}
     <div class="form-row">
-      <label for="email">Email</label>
+      <label for="email">{{t 'auth.email'}}</label>
       <input type="email" id="email" name="email" required />
     </div>
     <div class="form-row">
-      <label for="password">Password</label>
+      <label for="password">{{t 'auth.password'}}</label>
       <input type="password" id="password" name="password" required />
     </div>
-    <button type="submit">Login</button>
+    <button type="submit">{{t 'auth.loginButton'}}</button>
   </form>
 {{> auth_footer}}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{lang}}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,17 +14,22 @@
     <div class="logo">Stayli</div>
     <nav class="top-nav">
       <a href="/">Home</a>
-      <a href="/bookings">Bookings</a>
-      <a href="/clients">Clients</a>
-      <a href="/properties">Properties</a>
-      <a href="/invoices">Invoices</a>
+      <a href="/bookings">{{t 'nav.bookings'}}</a>
+      <a href="/clients">{{t 'nav.clients'}}</a>
+      <a href="/properties">{{t 'nav.properties'}}</a>
+      <a href="/invoices">{{t 'nav.invoices'}}</a>
+      <div class="language-switcher">
+        <a href="/i18n/set-language?lang=en" class="lang-link {{#if (eq currentLang 'en')}}active{{/if}}" title="English">EN</a>
+        <span class="separator">|</span>
+        <a href="/i18n/set-language?lang=fr" class="lang-link {{#if (eq currentLang 'fr')}}active{{/if}}" title="Français">FR</a>
+      </div>
       {{#if user}}
         <span class="user">{{user.email}}</span>
         <form method="post" action="/auth/logout" style="display:inline">
-          <button type="submit">Logout</button>
+          <button type="submit">{{t 'auth.logout'}}</button>
         </form>
       {{else}}
-        <a href="/auth/login">Login</a>
+        <a href="/auth/login">{{t 'auth.login'}}</a>
       {{/if}}
     </nav>
   </header>
