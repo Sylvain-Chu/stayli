@@ -77,7 +77,12 @@ describe('BookingsController', () => {
       },
       client: { findMany: jest.fn<Promise<LightClient[]>, [args?: Prisma.ClientFindManyArgs]>() },
     };
-    invoices = { create: jest.fn<Promise<{ id: string }>, [body: unknown]>() };
+    invoices = {
+      create: jest.fn<
+        Promise<{ id: string }>,
+        [body: { bookingId?: string; amount?: number; dueDate?: Date }]
+      >(),
+    };
     controller = new BookingsController(
       service as unknown as BookingsService,
       prisma as unknown as PrismaService,

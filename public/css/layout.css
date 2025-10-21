@@ -1,0 +1,82 @@
+/* ===================================
+   Layout
+   =================================== */
+
+.layout {
+  display: contents;
+}
+
+/* ===================================
+   Main Content Area
+   =================================== */
+
+.content {
+  grid-area: content;
+  padding: var(--space-md) var(--space-xl);
+  background: var(--bg-subtle);
+  overflow-y: auto;
+}
+
+.content h1,
+.content h2,
+.content h3 {
+  margin-top: 0;
+}
+
+.content > h1 {
+  margin-bottom: var(--space-lg);
+  color: var(--text-dark);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Section Headers - Style maquette */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+}
+
+.section-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+}
+
+/* Dropdown Filter - Style maquette */
+.filter-dropdown {
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--bg-card);
+  color: var(--text-dark);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: var(--shadow-card);
+  appearance: none;
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.filter-dropdown:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* ===================================
+   Footer
+   =================================== */
+
+.site-footer {
+  grid-area: footer;
+  border-top: 1px solid var(--border-light);
+  padding: var(--space-sm) var(--space-lg);
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  font-size: var(--font-size-sm);
+  text-align: center;
+}

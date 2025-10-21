@@ -9,6 +9,9 @@ export class DashboardController {
   @Render('dashboard')
   async getDashboard(@Query('scope') scope?: 'week' | 'month') {
     const data = await this.dashboardService.getDashboardData(scope);
-    return data;
+    return {
+      ...data,
+      activeNav: 'dashboard',
+    };
   }
 }

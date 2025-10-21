@@ -26,7 +26,7 @@ export class PropertiesController {
   async root(@Query('q') q?: string) {
     try {
       const properties = await this.propertiesService.findAll(q);
-      return { properties, q };
+      return { properties, q, activeNav: 'properties' };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve properties.');
     }
