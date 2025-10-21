@@ -1,33 +1,33 @@
 {{> header }}
 {{> sidebar }}
-<h1>Dashboard</h1>
+<h1>{{t 'dashboard.title'}}</h1>
 
 <div class="tabs">
-  <a class="tab {{#if (eq scope 'week')}}active{{/if}}" href="/dashboard?scope=week">Cette semaine</a>
-  <a class="tab {{#if (eq scope 'month')}}active{{/if}}" href="/dashboard?scope=month">Ce mois</a>
-  <span class="muted" style="margin-left:8px; font-size:12px;">Filtre l’étendue des arrivées et départs</span>
+  <a class="tab {{#if (eq scope 'week')}}active{{/if}}" href="/dashboard?scope=week">{{t 'dashboard.thisWeek'}}</a>
+  <a class="tab {{#if (eq scope 'month')}}active{{/if}}" href="/dashboard?scope=month">{{t 'dashboard.thisMonth'}}</a>
+  <span class="muted" style="margin-left:8px; font-size:12px;">{{t 'dashboard.filterScope'}}</span>
 </div>
 
 <section class="cards">
   <div class="card">
-    <div class="card-title"><i data-feather="home"></i> Total Properties</div>
+    <div class="card-title"><i data-feather="home"></i> {{t 'dashboard.totalProperties'}}</div>
     <div class="card-value countup" data-count="{{stats.propertiesCount}}">0</div>
-    <div class="muted" style="margin-top:6px; font-size:12px;">Currently occupied: {{stats.currentlyOccupiedProperties}} ({{stats.occupancyPercent}}%)</div>
+    <div class="muted" style="margin-top:6px; font-size:12px;">{{t 'dashboard.currentlyOccupied'}}: {{stats.currentlyOccupiedProperties}} ({{stats.occupancyPercent}}%)</div>
   </div>
   <div class="card">
-    <div class="card-title"><i data-feather="users"></i> Total Clients</div>
+    <div class="card-title"><i data-feather="users"></i> {{t 'dashboard.totalClients'}}</div>
     <div class="card-value countup" data-count="{{stats.clientsCount}}">0</div>
   </div>
   <div class="card">
-    <div class="card-title"><i data-feather="trending-up"></i> Revenu du mois</div>
+    <div class="card-title"><i data-feather="trending-up"></i> {{t 'dashboard.monthRevenue'}}</div>
     <div class="card-value countup" data-count="{{stats.revenueThisMonth}}">{{currency 0}}</div>
-    <div class="muted" style="margin-top:4px; font-size:12px;">Objectif: {{currency stats.revenueGoal}} — {{stats.revenueProgressPercent}}%</div>
+    <div class="muted" style="margin-top:4px; font-size:12px;">{{t 'dashboard.revenueGoal'}}: {{currency stats.revenueGoal}} — {{stats.revenueProgressPercent}}%</div>
     <div class="progress" aria-label="Revenue goal progress">
       <div class="bar" style="width: {{stats.revenueProgressPercent}}%"></div>
     </div>
   </div>
   <div class="card">
-    <div class="card-title"><i data-feather="clock"></i> Factures en attente</div>
+    <div class="card-title"><i data-feather="clock"></i> {{t 'dashboard.pendingInvoices'}}</div>
     <div class="card-value countup" data-count="{{stats.pendingInvoices}}">0</div>
   </div>
 
@@ -50,65 +50,65 @@
 
 <section class="dashboard-grid">
   <div class="column">
-    <h2>Occupations en cours</h2>
+    <h2>{{t 'dashboard.currentStays'}}</h2>
     {{#if currentStays.length}}
       <ul class="list">
         {{#each currentStays}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge" title="Séjour"><i data-feather="moon"></i></span>
+              <span class="badge" title="{{t 'dashboard.stay'}}"><i data-feather="moon"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
               <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
             </div>
             <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">Départ: ({{fromNow this.endDate}})</div>
+            <div class="item-meta">{{t 'dashboard.departureLabel'}} ({{fromNow this.endDate}})</div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">Aucun logement n'est actuellement occupé.</p>
+      <p class="muted">{{t 'dashboard.noCurrentStays'}}</p>
     {{/if}}
   </div>
 
   <div class="column">
-    <h2>Prochaines Arrivées</h2>
+    <h2>{{t 'dashboard.upcomingArrivals'}}</h2>
     {{#if arrivals.length}}
       <ul class="list">
         {{#each arrivals}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge arrival" title="Arrivée"><i data-feather="corner-down-right"></i></span>
+              <span class="badge arrival" title="{{t 'dashboard.arrival'}}"><i data-feather="corner-down-right"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
               <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
             </div>
             <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">Arrivée: ({{fromNow this.startDate}})</div>
+            <div class="item-meta">{{t 'dashboard.arrivalLabel'}} ({{fromNow this.startDate}})</div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">Aucune arrivée prévue pour la période sélectionnée.</p>
+      <p class="muted">{{t 'dashboard.noUpcomingArrivals'}}</p>
     {{/if}}
   </div>
 
   <div class="column">
-    <h2>Départs Récents</h2>
+    <h2>{{t 'dashboard.recentDepartures'}}</h2>
     {{#if departures.length}}
       <ul class="list">
         {{#each departures}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge departure" title="Départ"><i data-feather="corner-up-left"></i></span>
+              <span class="badge departure" title="{{t 'dashboard.departure'}}"><i data-feather="corner-up-left"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
               <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
             </div>
             <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">Départ: ({{fromNow this.endDate}})</div>
+            <div class="item-meta">{{t 'dashboard.departureLabel'}} ({{fromNow this.endDate}})</div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">Aucun départ enregistré pour la période sélectionnée.</p>
+      <p class="muted">{{t 'dashboard.noDepartures'}}</p>
     {{/if}}
   </div>
 </section>

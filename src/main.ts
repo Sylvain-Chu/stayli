@@ -19,8 +19,10 @@ if (existsSync(localEnv)) {
   dotenv.config();
 }
 import * as express from 'express';
+import * as fs from 'fs';
 import { ValidationPipe } from '@nestjs/common';
 import session from 'express-session';
+import cookieParser from 'cookie-parser';
 import { ValidationExceptionFilter } from './common/filters/validation-exception.filter';
 import { format, isToday as isTodayFn, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -60,24 +62,29 @@ async function bootstrap() {
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
   });
-  // Pretty localized date: vendredi 10 octobre 2025
-  hbs.registerHelper('formatDate', function (value?: Date | string, pattern?: string) {
+  // Pretty localized date: vendredi 10 octobre 2025 / Friday October 10, 2025
+  hbs.registerHelper(
+    'formatDate',
+    function (this: { lang?: string }, value?: Date | string, pattern?: string) {
+      if (!value) return '';
+      const d = value instanceof Date ? value : new Date(value);
+      if (Number.isNaN(d.getTime())) return '';
+      try {
+        const locale = this.lang === 'fr' ? fr : undefined;
+        return format(d, pattern || 'EEEE d MMMM yyyy', { locale });
+      } catch {
+        return '';
+      }
+    },
+  );
+  // Relative time like "dans 3 jours" / "in 3 days"
+  hbs.registerHelper('fromNow', function (this: { lang?: string }, value?: Date | string) {
     if (!value) return '';
     const d = value instanceof Date ? value : new Date(value);
     if (Number.isNaN(d.getTime())) return '';
     try {
-      return format(d, pattern || 'EEEE d MMMM yyyy', { locale: fr });
-    } catch {
-      return '';
-    }
-  });
-  // Relative time like "dans 3 jours" or "il y a 2 jours"
-  hbs.registerHelper('fromNow', function (value?: Date | string) {
-    if (!value) return '';
-    const d = value instanceof Date ? value : new Date(value);
-    if (Number.isNaN(d.getTime())) return '';
-    try {
-      return formatDistanceToNow(d, { addSuffix: true, locale: fr });
+      const locale = this.lang === 'fr' ? fr : undefined;
+      return formatDistanceToNow(d, { addSuffix: true, locale });
     } catch {
       return '';
     }
@@ -117,9 +124,17 @@ async function bootstrap() {
   hbs.registerHelper('or', function (a: unknown, b: unknown) {
     return a ?? b;
   });
+
+  // i18n translation helper for Handlebars templates
+  hbs.registerHelper('t', function (key: string) {
+    const translations = (this as Record<string, unknown>).translations || {};
+    return (translations as Record<string, unknown>)[key] || key;
+  });
+
   // Attach body parsing and static asset serving to the underlying Express instance
   // so server-side forms still work and client JS can be served from /js.
   const server = app.getHttpAdapter().getInstance();
+  server.use(cookieParser());
   server.use(express.urlencoded({ extended: true }));
   server.use(express.static(join(process.cwd(), 'public')));
 
@@ -150,6 +165,63 @@ async function bootstrap() {
   };
   server.use(passport.initialize());
   server.use(passport.session());
+
+  // i18n middleware: inject translations into res.locals for Handlebars
+  app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Get language from cookie, query param, or default to 'en'
+    const cookieLang = typeof req.cookies?.lang === 'string' ? req.cookies.lang : undefined;
+    const queryLang = typeof req.query.lang === 'string' ? req.query.lang : undefined;
+    const lang = cookieLang || queryLang || 'en';
+    const validLangs = ['en', 'fr'];
+    const selectedLang = validLangs.includes(lang) ? lang : 'en';
+
+    // Load translations dynamically from a computed i18n path (support src and dist)
+    const candidates = [
+      join(__dirname, 'i18n'),
+      join(__dirname, '..', 'i18n'),
+      join(process.cwd(), 'src', 'i18n'),
+      join(process.cwd(), 'dist', 'src', 'i18n'),
+    ];
+    const i18nBase = candidates.find((p) => existsSync(p));
+
+    if (!i18nBase) {
+      (res.locals as Record<string, unknown>).translations = {};
+      (res.locals as Record<string, unknown>).lang = 'en';
+      (res.locals as Record<string, unknown>).currentLang = 'en';
+      return next();
+    }
+
+    try {
+      const filePath = join(i18nBase, selectedLang, 'translation.json');
+      if (!existsSync(filePath)) throw new Error('missing translation file');
+      const raw = fs.readFileSync(filePath, 'utf8');
+      const translations = JSON.parse(raw) as Record<string, unknown>;
+
+      const flatTranslations: Record<string, string> = {};
+      const flatten = (obj: Record<string, unknown>, prefix = '') => {
+        for (const key in obj) {
+          const value = obj[key];
+          const newKey = prefix ? `${prefix}.${key}` : key;
+          if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+            flatten(value as Record<string, unknown>, newKey);
+          } else {
+            flatTranslations[newKey] = String(value);
+          }
+        }
+      };
+      flatten(translations);
+
+      (res.locals as Record<string, unknown>).translations = flatTranslations;
+      (res.locals as Record<string, unknown>).lang = selectedLang;
+      (res.locals as Record<string, unknown>).currentLang = selectedLang;
+    } catch {
+      (res.locals as Record<string, unknown>).translations = {};
+      (res.locals as Record<string, unknown>).lang = 'en';
+      (res.locals as Record<string, unknown>).currentLang = 'en';
+    }
+    next();
+  });
+
   // Expose current user to templates
   app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
     // Attach to res.locals for hbs

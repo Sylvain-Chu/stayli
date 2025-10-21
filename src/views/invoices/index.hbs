@@ -1,9 +1,9 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Invoices</h1>
+<h1>{{t 'invoices.title'}}</h1>
 <p>
-  <a href='/invoices/create'>Create a new invoice</a>
+  <a href='/invoices/create'>{{t 'invoices.addNew'}}</a>
 </p>
 <hr />
 <ul>
@@ -19,13 +19,13 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/invoices'
-        data-confirm='Delete this invoice?'
-      >Delete</button>
-      <a href='/invoices/{{this.id}}'>View</a>
-      <a href='/invoices/{{this.id}}/edit'>Edit</a>
+        data-confirm='{{t "invoices.confirmDelete"}}'
+      >{{t 'common.delete'}}</button>
+      <a href='/invoices/{{this.id}}'>{{t 'common.view'}}</a>
+      <a href='/invoices/{{this.id}}/edit'>{{t 'common.edit'}}</a>
     </li>
   {{else}}
-    <li>No invoices yet.</li>
+    <li>{{t 'invoices.noInvoices'}}</li>
   {{/each}}
 </ul>
 
