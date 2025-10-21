@@ -1,22 +1,22 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Edit property</h1>
+<h1>{{t 'properties.editTitle'}}</h1>
 <form method='post' action='/properties/{{property.id}}/edit'>
   <div>
-    <label>Name</label>
+  <label>{{t 'properties.name'}}</label>
     <input name='name' value='{{property.name}}' required />
   </div>
   <div>
-    <label>Address</label>
+  <label>{{t 'properties.address'}}</label>
     <input name='address' value='{{property.address}}' />
   </div>
   <div>
-    <label>Description</label>
+  <label>{{t 'properties.description'}}</label>
     <textarea name='description'>{{property.description}}</textarea>
   </div>
-  <button type='submit'>Save</button>
+  <button type='submit'>{{t 'common.save'}}</button>
 </form>
-<p><a href='/properties'>Back</a></p>
+<p><a href='/properties'>{{t 'common.back'}}</a></p>
 
 {{> footer }}

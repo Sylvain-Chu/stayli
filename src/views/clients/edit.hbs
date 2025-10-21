@@ -1,26 +1,26 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Edit client</h1>
+<h1>{{t 'clients.editTitle'}}</h1>
 <form method='post' action='/clients/{{client.id}}/edit'>
   <div>
-    <label>First name</label>
+  <label>{{t 'clients.firstName'}}</label>
     <input name='firstName' value='{{client.firstName}}' required />
   </div>
   <div>
-    <label>Last name</label>
+  <label>{{t 'clients.lastName'}}</label>
     <input name='lastName' value='{{client.lastName}}' required />
   </div>
   <div>
-    <label>Email</label>
+  <label>{{t 'clients.email'}}</label>
     <input name='email' value='{{client.email}}' required />
   </div>
   <div>
-    <label>Phone</label>
+  <label>{{t 'clients.phone'}}</label>
     <input name='phone' value='{{client.phone}}' />
   </div>
-  <button type='submit'>Save</button>
+  <button type='submit'>{{t 'common.save'}}</button>
 </form>
-<p><a href='/clients'>Back</a></p>
+<p><a href='/clients'>{{t 'common.back'}}</a></p>
 
 {{> footer }}

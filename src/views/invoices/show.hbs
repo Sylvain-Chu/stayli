@@ -1,10 +1,10 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Invoice {{invoice.invoiceNumber}}</h1>
-<p><strong>Booking:</strong> {{invoice.bookingId}}</p>
-<p><strong>Amount:</strong> {{invoice.amount}}€</p>
-<p><strong>Due date:</strong> {{date invoice.dueDate}}</p>
-<p><a href='/invoices/{{invoice.id}}/edit'>Edit</a> | <a href='/invoices'>Back</a></p>
+<h1>{{t 'invoices.title'}} {{invoice.invoiceNumber}}</h1>
+<p><strong>{{t 'invoices.bookingLabel'}}:</strong> {{invoice.bookingId}}</p>
+<p><strong>{{t 'invoices.amountLabel'}}:</strong> {{currency invoice.amount}}</p>
+<p><strong>{{t 'invoices.dueDateLabel'}}:</strong> {{date invoice.dueDate}}</p>
+<p><a href='/invoices/{{invoice.id}}/edit'>{{t 'common.edit'}}</a> | <a href='/invoices'>{{t 'common.back'}}</a></p>
 
 {{> footer }}

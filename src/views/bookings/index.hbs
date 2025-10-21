@@ -1,17 +1,17 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>Bookings</h1>
+<h1>{{t 'bookings.title'}}</h1>
 <form method='GET' action='/bookings' style='margin: 0 0 1rem;'>
-  <label>From
+  <label>{{t 'common.from'}}
     <input type='date' name='from' value='{{from}}' />
   </label>
-  <label style='margin-left:.5rem;'>To
+  <label style='margin-left:.5rem;'>{{t 'common.to'}}
     <input type='date' name='to' value='{{to}}' />
   </label>
-  <button type='submit' style='margin-left:.5rem;'>Filter</button>
-  {{#if from}}{{#if to}}<a href='/bookings' style='margin-left: .5rem;'>Clear</a>{{/if}}{{/if}}
-  <span style='margin-left:1rem;'><a href='/bookings/create'>Create a new booking</a> | <a href='/bookings/calendar'>Open calendar</a></span>
+  <button type='submit' style='margin-left:.5rem;'>{{t 'common.filter'}}</button>
+  {{#if from}}{{#if to}}<a href='/bookings' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}{{/if}}
+  <span style='margin-left:1rem;'><a href='/bookings/create'>{{t 'bookings.addNew'}}</a> | <a href='/bookings/calendar'>{{t 'bookings.openCalendar'}}</a></span>
   </form>
 <hr />
 <ul>
@@ -31,20 +31,20 @@
         data-delete
         data-id='{{this.id}}'
         data-base='/bookings'
-        data-confirm='Delete this booking?'
-      >Delete</button>
+        data-confirm='{{t "bookings.confirmDelete"}}'
+      >{{t 'common.delete'}}</button>
       {{#unless (eq this.status 'cancelled')}}
         <button
           data-post
           data-url='/bookings/{{this.id}}/cancel'
-          data-confirm='Cancel this booking?'
-        >Cancel</button>
+          data-confirm='{{t "bookings.confirmCancel"}}'
+        >{{t 'common.cancel'}}</button>
       {{/unless}}
-      <a href='/bookings/{{this.id}}'>View</a>
-      <a href='/bookings/{{this.id}}/edit'>Edit</a>
+      <a href='/bookings/{{this.id}}'>{{t 'common.view'}}</a>
+      <a href='/bookings/{{this.id}}/edit'>{{t 'common.edit'}}</a>
     </li>
   {{else}}
-    <li>No bookings yet.</li>
+    <li>{{t 'bookings.noBookings'}}</li>
   {{/each}}
 </ul>
 

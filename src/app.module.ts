@@ -15,10 +15,12 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AccountModule } from './account/account.module';
+import { I18nConfigModule } from './i18n/i18n.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    I18nConfigModule,
     PrismaModule,
     PropertiesModule,
     ClientsModule,
