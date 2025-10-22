@@ -13,6 +13,8 @@
     "filter": "Filtrer",
     "from": "Du",
     "to": "Au",
+    "status": "Statut",
+    "all": "Tous",
     "loading": "Chargement...",
     "noResults": "Aucun résultat trouvé",
     "confirm": "Êtes-vous sûr?",

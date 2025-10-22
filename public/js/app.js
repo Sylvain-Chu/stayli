@@ -128,8 +128,18 @@
       })
       .catch((err) => alert(err.message || 'Error'));
   }
+  function onUserProfileClick(e) {
+    const link = e.target.closest('.user-profile-link');
+    if (!link) return;
+    const href = link.getAttribute('href');
+    if (href) {
+      window.location.href = href;
+    }
+  }
+
   document.addEventListener('click', onDeleteClick);
   document.addEventListener('click', onPostClick);
+  document.addEventListener('click', onUserProfileClick);
   initMiniCalendarInteractivity();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initCountUps);

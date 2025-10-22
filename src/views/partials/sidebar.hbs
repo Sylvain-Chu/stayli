@@ -26,12 +26,14 @@
           <a href="/i18n/set-language?lang=fr" class="lang-link {{#if (eq currentLang 'fr')}}active{{/if}}" title="Français">FR</a>
         </div>
         {{#if user}}
-          <div class="user-profile">
-            <div class="avatar">{{initials user.name user.email}}</div>
-            <div class="user-info">
-              <div class="user-name">{{#if user.name}}{{capitalize user.name}}{{else}}{{capitalize (substr user.email 0 (indexOf user.email '@'))}}{{/if}}</div>
+          <a href="/account" class="user-profile-link">
+            <div class="user-profile">
+              <div class="avatar">{{initials user.name user.email}}</div>
+              <div class="user-info">
+                <div class="user-name">{{#if user.name}}{{capitalize user.name}}{{else}}{{capitalize (substr user.email 0 (indexOf user.email '@'))}}{{/if}}</div>
+              </div>
             </div>
-          </div>
+          </a>
         {{else}}
           <a href="/auth/login">{{t 'auth.login'}}</a>
         {{/if}}

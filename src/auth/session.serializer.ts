@@ -14,12 +14,15 @@ export class SessionSerializer extends PassportSerializer {
 
   async deserializeUser(
     id: string,
-    done: (err: unknown, user?: { id: string; email: string; role: string } | null) => void,
+    done: (
+      err: unknown,
+      user?: { id: string; email: string; role: string; name: string | null } | null,
+    ) => void,
   ): Promise<void> {
     try {
       const user = await this.users.findById(id);
       if (!user) return done(null, null);
-      done(null, { id: user.id, email: user.email, role: user.role });
+      done(null, { id: user.id, email: user.email, role: user.role, name: user.name ?? null });
     } catch (e) {
       done(e);
     }
