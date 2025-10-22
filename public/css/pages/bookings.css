@@ -215,7 +215,7 @@
 }
 
 .detail-status-bar {
-  background: var(--bg-subtle);
+  background: var(--bg-card);
   padding: var(--space-md) var(--space-xl);
   border-bottom: 1px solid var(--border-light);
   display: flex;
@@ -226,7 +226,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-2xl);
-  padding: var(--space-2xl) var(--space-xl);
+  padding: var(--space-xl) var(--space-xl);
 }
 
 .detail-section {
@@ -415,7 +415,7 @@
 
 /* Back Link */
 .back-link {
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-sm);
 }
 
 .back-link a {

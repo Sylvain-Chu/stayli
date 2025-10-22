@@ -74,9 +74,10 @@
 .site-footer {
   grid-area: footer;
   border-top: 1px solid var(--border-light);
-  padding: var(--space-sm) var(--space-lg);
   color: var(--text-muted);
   background: var(--bg-subtle);
   font-size: var(--font-size-sm);
   text-align: center;
+  margin: 0 0 var(--space-xs);
+  height: 100%;
 }
