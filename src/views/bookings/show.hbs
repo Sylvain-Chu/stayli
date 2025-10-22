@@ -1,61 +1,358 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'bookings.title'}}</h1>
-<p><strong>{{t 'bookings.propertyLabel'}}:</strong> {{booking.property.name}}</p>
-<p><strong>{{t 'bookings.clientLabel'}}:</strong> {{booking.client.firstName}} {{booking.client.lastName}}</p>
-<p><strong>{{t 'bookings.periodLabel'}}:</strong> {{date booking.startDate}} → {{date booking.endDate}}</p>
-<p><strong>{{t 'bookings.priceLabel'}}:</strong> {{currency booking.totalPrice}}</p>
-
-{{#if booking.invoice}}
-  <p><strong>Invoice:</strong>
-  <a href='/invoices/{{booking.invoice.id}}'>{{t 'bookings.viewInvoice'}} {{booking.invoice.invoiceNumber}}</a>
-  </p>
-{{else}}
-  <p>
-    {{#if canGenerateInvoice}}
-      <button
-        data-post
-        data-url='/bookings/{{booking.id}}/invoice'
-        data-confirm='{{t "bookings.generateInvoiceConfirm"}}'
-      >{{t 'bookings.generateInvoice'}}</button>
+<div class="page-header">
+  <h1 id="property-name-display">{{booking.property.name}}</h1>
+  <div class="page-actions">
+    {{#if canEdit}}
+      <button id="edit-mode-toggle" class="btn btn-primary">
+        <i data-feather="edit-2"></i>
+        <span id="edit-button-text">{{t 'common.edit'}}</span>
+      </button>
+      <button id="save-changes" class="btn btn-success" style="display: none;">
+        <i data-feather="save"></i>
+        {{t 'common.save'}}
+      </button>
+      <button id="cancel-edit" class="btn btn-ghost" style="display: none;">
+        {{t 'common.cancel'}}
+      </button>
     {{else}}
       <span class="action-wrap">
-        <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-invoice-{{booking.id}}" tabindex="-1">{{t 'bookings.generateInvoice'}}</button>
-        <span id="reason-invoice-{{booking.id}}" class="btn-reason" role="tooltip">{{t canGenerateInvoiceReason}}</span>
+        <button class="btn btn-primary btn-disabled" aria-disabled="true" aria-describedby="reason-edit-show-{{booking.id}}" tabindex="-1">
+          <i data-feather="edit-2"></i>
+          {{t 'common.edit'}}
+        </button>
+        <span id="reason-edit-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canEditReason}}</span>
       </span>
     {{/if}}
-  </p>
-{{/if}}
 
-<p>
-  {{#if canEdit}}
-    <a href='/bookings/{{booking.id}}/edit'>{{t 'common.edit'}}</a>
-  {{else}}
-    <span class="action-wrap">
-      <span class="link-disabled" aria-disabled="true" aria-describedby="reason-edit-show-{{booking.id}}" tabindex="-1">{{t 'common.edit'}}</span>
-      <span id="reason-edit-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canEditReason}}</span>
+    {{#if canCancel}}
+      <button
+        data-post
+        data-url='/bookings/{{booking.id}}/cancel'
+        data-confirm='{{t "bookings.confirmCancel"}}'
+        class="btn btn-danger"
+      >
+        <i data-feather="x-circle"></i>
+        {{t 'bookings.cancelBooking'}}
+      </button>
+    {{else}}
+      <span class="action-wrap">
+        <button class="btn btn-danger btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-show-{{booking.id}}" tabindex="-1">
+          <i data-feather="x-circle"></i>
+          {{t 'bookings.cancelBooking'}}
+        </button>
+        <span id="reason-cancel-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canCancelReason}}</span>
+      </span>
+    {{/if}}
+
+    {{#if booking.invoice}}
+      <a href='/invoices/{{booking.invoice.id}}' class="btn btn-secondary">
+        <i data-feather="file-text"></i>
+        {{t 'bookings.viewInvoice'}}
+      </a>
+    {{else}}
+      {{#if canGenerateInvoice}}
+        <button
+          data-post
+          data-url='/bookings/{{booking.id}}/invoice'
+          data-confirm='{{t "bookings.generateInvoiceConfirm"}}'
+          class="btn btn-secondary"
+        >
+          <i data-feather="plus"></i>
+          {{t 'bookings.generateInvoice'}}
+        </button>
+      {{else}}
+        <span class="action-wrap">
+          <button class="btn btn-secondary btn-disabled" aria-disabled="true" aria-describedby="reason-invoice-{{booking.id}}" tabindex="-1">
+            <i data-feather="plus"></i>
+            {{t 'bookings.generateInvoice'}}
+          </button>
+          <span id="reason-invoice-{{booking.id}}" class="btn-reason" role="tooltip">{{t canGenerateInvoiceReason}}</span>
+        </span>
+      {{/if}}
+    {{/if}}
+  </div>
+</div>
+
+<div id="success-message" class="alert alert-success" style="display: none;">
+  <i data-feather="check-circle"></i>
+  <span>{{t 'bookings.updateSuccess'}}</span>
+</div>
+
+<div class="detail-card" id="booking-detail-card">
+  <div class="detail-status-bar">
+    <span class="booking-status status-{{booking.status}}" id="status-badge">
+      {{#if (eq booking.status 'confirmed')}}{{t 'bookings.statusConfirmed'}}{{/if}}
+      {{#if (eq booking.status 'pending')}}{{t 'bookings.statusPending'}}{{/if}}
+      {{#if (eq booking.status 'cancelled')}}{{t 'bookings.statusCancelled'}}{{/if}}
+      {{#if (eq booking.status 'completed')}}{{t 'bookings.statusCompleted'}}{{/if}}
+      {{#if (eq booking.status 'blocked')}}{{t 'bookings.statusBlocked'}}{{/if}}
     </span>
+  </div>
+
+  <div class="detail-grid">
+    <!-- Section Client -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <i data-feather="user"></i>
+        {{t 'bookings.clientSection'}}
+      </h3>
+      <div class="section-content">
+        <!-- View Mode -->
+        <div class="view-mode">
+          <p class="client-name">
+            <a href='/clients/{{booking.client.id}}' class="client-link">
+              {{booking.client.firstName}} {{booking.client.lastName}}
+            </a>
+            <span class="chip regular">Regular</span>
+          </p>
+          <p class="client-contact">
+            <i data-feather="mail"></i>
+            <span>client@example.com</span>
+          </p>
+          <p class="client-contact">
+            <i data-feather="phone"></i>
+            <span>+33 6 12 34 56 78</span>
+          </p>
+        </div>
+        <!-- Edit Mode -->
+        <div class="edit-mode" style="display: none;">
+          <div class="form-group">
+            <label for="edit-propertyId">{{t 'bookings.property'}}</label>
+            <select id="edit-propertyId" name="propertyId" class="form-control">
+              {{#each properties}}
+                <option value="{{this.id}}" {{#if (eq this.id ../booking.propertyId)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-clientId">{{t 'bookings.client'}}</label>
+            <select id="edit-clientId" name="clientId" class="form-control">
+              {{#each clients}}
+                <option value="{{this.id}}" {{#if (eq this.id ../booking.clientId)}}selected{{/if}}>{{this.firstName}} {{this.lastName}}</option>
+              {{/each}}
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Séjour -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <i data-feather="calendar"></i>
+        {{t 'bookings.staySection'}}
+      </h3>
+      <div class="section-content">
+        <!-- View Mode -->
+        <div class="view-mode">
+          <div class="date-range-display">
+            <span class="date-badge" id="start-date-display">{{formatDate booking.startDate}}</span>
+            <i data-feather="arrow-right" class="date-arrow"></i>
+            <span class="date-badge" id="end-date-display">{{formatDate booking.endDate}}</span>
+          </div>
+          <p class="stay-duration">
+            <i data-feather="moon"></i>
+            <span>2 nuits</span>
+          </p>
+          <p class="stay-guests">
+            <i data-feather="users"></i>
+            <span>2 Adultes</span>
+          </p>
+        </div>
+        <!-- Edit Mode -->
+        <div class="edit-mode" style="display: none;">
+          <div class="form-group">
+            <label for="edit-startDate">{{t 'bookings.startDate'}}</label>
+            <input type="date" id="edit-startDate" name="startDate" class="form-control" value="{{date booking.startDate}}" />
+          </div>
+          <div class="form-group">
+            <label for="edit-endDate">{{t 'bookings.endDate'}}</label>
+            <input type="date" id="edit-endDate" name="endDate" class="form-control" value="{{date booking.endDate}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Tarification -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <i data-feather="dollar-sign"></i>
+        {{t 'bookings.pricingSection'}}
+      </h3>
+      <div class="section-content">
+        <!-- View Mode -->
+        <div class="view-mode">
+          <div class="pricing-line">
+            <span class="pricing-label">Tarif de base</span>
+            <span class="pricing-value" id="price-display">{{currency booking.totalPrice}}</span>
+          </div>
+          <div class="pricing-line">
+            <span class="pricing-label">Linge</span>
+            <span class="pricing-value">20,00 €</span>
+          </div>
+          <div class="pricing-line">
+            <span class="pricing-label">Ménage</span>
+            <span class="pricing-value">35,00 €</span>
+          </div>
+          <div class="pricing-line">
+            <span class="pricing-label">Taxe de séjour</span>
+            <span class="pricing-value">4,50 €</span>
+          </div>
+          <div class="pricing-line discount">
+            <span class="pricing-label">Réduction</span>
+            <span class="pricing-value">-10,00 €</span>
+          </div>
+          <div class="pricing-line total">
+            <span class="pricing-label">Total Facturé</span>
+            <span class="pricing-value">{{currency booking.totalPrice}}</span>
+          </div>
+        </div>
+        <!-- Edit Mode -->
+        <div class="edit-mode" style="display: none;">
+          <div class="form-group">
+            <label for="edit-totalPrice">{{t 'bookings.totalPrice'}}</label>
+            <input type="number" step="0.01" id="edit-totalPrice" name="totalPrice" class="form-control" value="{{booking.totalPrice}}" />
+          </div>
+          <div class="form-group">
+            <label for="edit-status">{{t 'bookings.status'}}</label>
+            <select id="edit-status" name="status" class="form-control">
+              <option value="pending" {{#if (eq booking.status 'pending')}}selected{{/if}}>{{t 'bookings.statusPending'}}</option>
+              <option value="confirmed" {{#if (eq booking.status 'confirmed')}}selected{{/if}}>{{t 'bookings.statusConfirmed'}}</option>
+              <option value="cancelled" {{#if (eq booking.status 'cancelled')}}selected{{/if}}>{{t 'bookings.statusCancelled'}}</option>
+              <option value="blocked" {{#if (eq booking.status 'blocked')}}selected{{/if}}>{{t 'bookings.statusBlocked'}}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Assurance -->
+    <div class="detail-section">
+      <h3 class="section-title">
+        <i data-feather="shield"></i>
+        {{t 'bookings.insuranceSection'}}
+      </h3>
+      <div class="section-content">
+        <div class="pricing-line">
+          <span class="pricing-label">Montant</span>
+          <span class="pricing-value">45,00 €</span>
+        </div>
+        <p class="insurance-note">
+          <i data-feather="info"></i>
+          <small>Paiement séparé requis. Chèque à l'ordre de Assurance Vacances.</small>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {{#if (eq booking.status 'cancelled')}}
+    <div class="detail-note">
+      <i data-feather="alert-circle"></i>
+      <small>{{t 'bookings.cancelNote'}}</small>
+    </div>
   {{/if}}
+</div>
 
-  {{#if canCancel}}
-    |
-    <button
-      data-post
-      data-url='/bookings/{{booking.id}}/cancel'
-      data-confirm='{{t "bookings.confirmCancel"}}'
-    >{{t 'common.cancel'}}</button>
-  {{else}}
-    | 
-    <span class="action-wrap">
-      <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-show-{{booking.id}}" tabindex="-1">{{t 'common.cancel'}}</button>
-      <span id="reason-cancel-show-{{booking.id}}" class="btn-reason" role="tooltip">{{t canCancelReason}}</span>
-    </span>
-  {{/if}}
+<div class="back-link">
+  <a href='/bookings'>
+    <i data-feather="arrow-left"></i>
+    {{t 'bookings.backToList'}}
+  </a>
+</div>
 
-  |
-  <a href='/bookings'>{{t 'common.back'}}</a>
-  <small style='color:#6b7280; display:block; margin-top:.5rem;'>{{t 'bookings.cancelNote'}}</small>
-</p>
+<script>
+// Inline Edit Mode
+(function() {
+  const editToggle = document.getElementById('edit-mode-toggle');
+  const saveBtn = document.getElementById('save-changes');
+  const cancelBtn = document.getElementById('cancel-edit');
+  const viewModes = document.querySelectorAll('.view-mode');
+  const editModes = document.querySelectorAll('.edit-mode');
+  const successMessage = document.getElementById('success-message');
+  
+  let isEditMode = false;
+  
+  if (editToggle) {
+    editToggle.addEventListener('click', function() {
+      isEditMode = true;
+      toggleEditMode(true);
+    });
+  }
+  
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', function() {
+      isEditMode = false;
+      toggleEditMode(false);
+      // Reset form values to original
+      location.reload();
+    });
+  }
+  
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async function() {
+      const bookingId = '{{booking.id}}';
+      const formData = {
+        propertyId: document.getElementById('edit-propertyId').value,
+        clientId: document.getElementById('edit-clientId').value,
+        startDate: document.getElementById('edit-startDate').value,
+        endDate: document.getElementById('edit-endDate').value,
+        totalPrice: parseFloat(document.getElementById('edit-totalPrice').value),
+        status: document.getElementById('edit-status').value
+      };
+      
+      try {
+        const response = await fetch(`/bookings/${bookingId}/edit`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          // Show success message
+          successMessage.style.display = 'flex';
+          setTimeout(() => {
+            successMessage.style.display = 'none';
+          }, 3000);
+          
+          // Reload page to show updated data
+          setTimeout(() => {
+            location.reload();
+          }, 1000);
+        } else {
+          alert('{{t "bookings.updateError"}}');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('{{t "bookings.updateError"}}');
+      }
+    });
+  }
+  
+  function toggleEditMode(enable) {
+    if (enable) {
+      editToggle.style.display = 'none';
+      saveBtn.style.display = 'inline-flex';
+      cancelBtn.style.display = 'inline-flex';
+      viewModes.forEach(el => el.style.display = 'none');
+      editModes.forEach(el => el.style.display = 'block');
+    } else {
+      editToggle.style.display = 'inline-flex';
+      saveBtn.style.display = 'none';
+      cancelBtn.style.display = 'none';
+      viewModes.forEach(el => el.style.display = 'block');
+      editModes.forEach(el => el.style.display = 'none');
+    }
+    
+    // Refresh feather icons
+    if (window.feather) {
+      window.feather.replace();
+    }
+  }
+})();
+</script>
 
-{{> footer }}
+{{> footer}}

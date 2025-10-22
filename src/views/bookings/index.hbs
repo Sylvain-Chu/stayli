@@ -1,45 +1,92 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'bookings.title'}}</h1>
-<form method='GET' action='/bookings' style='margin: 0 0 1rem;'>
-  <label>{{t 'common.from'}}
-    <input type='date' name='from' value='{{from}}' />
-  </label>
-  <label style='margin-left:.5rem;'>{{t 'common.to'}}
-    <input type='date' name='to' value='{{to}}' />
-  </label>
-  <button type='submit' style='margin-left:.5rem;'>{{t 'common.filter'}}</button>
-  {{#if from}}{{#if to}}<a href='/bookings' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}{{/if}}
-  <span style='margin-left:1rem;'><a href='/bookings/create'>{{t 'bookings.addNew'}}</a> | <a href='/bookings/calendar'>{{t 'bookings.openCalendar'}}</a></span>
+<div class="page-header">
+  <h1>{{t 'bookings.title'}}</h1>
+  <div class="page-actions">
+    <a href='/bookings/create' class="btn btn-primary">
+      <i data-feather="plus"></i>
+      {{t 'bookings.addNew'}}
+    </a>
+    <a href='/bookings/calendar' class="btn btn-secondary">
+      <i data-feather="calendar"></i>
+      {{t 'bookings.openCalendar'}}
+    </a>
+  </div>
+</div>
+
+<div class="filters-section">
+  <form method='GET' action='/bookings' class="filters-form">
+    <div class="filter-group">
+      <input 
+        type='search' 
+        name='q' 
+        placeholder='{{t "bookings.searchPlaceholder"}}' 
+        value='{{q}}'
+        class="search-input"
+      />
+    </div>
+    <div class="filter-group">
+      <label>{{t 'common.from'}}</label>
+      <input type='date' name='from' value='{{from}}' />
+    </div>
+    <div class="filter-group">
+      <label>{{t 'common.to'}}</label>
+      <input type='date' name='to' value='{{to}}' />
+    </div>
+    <button type='submit' class="btn btn-secondary">
+      <i data-feather="search"></i>
+      {{t 'common.filter'}}
+    </button>
+    {{#if from}}{{#if to}}
+      <a href='/bookings' class="btn btn-ghost">{{t 'common.clear'}}</a>
+    {{/if}}{{/if}}
   </form>
-<hr />
-<ul>
+</div>
+
+<div class="bookings-list">
   {{#each bookings}}
-    <li>
-      <strong>{{this.property.name}}
-        —
-        {{this.client.firstName}}
-        {{this.client.lastName}}</strong><br />
-      <small>{{date this.startDate}}
-        →
-        {{date this.endDate}}
-        —
-        {{this.totalPrice}}€ —
-        {{this.status}}</small>
-      
-      <div class="action-group">
-        {{#if this.canDelete}}
-          <button
-            data-delete
-            data-id='{{this.id}}'
-            data-base='/bookings'
-            data-confirm='{{t "bookings.confirmDelete"}}'
-          >{{t 'common.delete'}}</button>
+    <div class="booking-card">
+      <div class="booking-info">
+        <h3 class="booking-property">{{this.property.name}}</h3>
+        <p class="booking-client">{{this.client.firstName}} {{this.client.lastName}}</p>
+      </div>
+      <div class="booking-dates">
+        <div class="date-range">
+          <span class="date-start">{{formatDate this.startDate}}</span>
+          <i data-feather="arrow-right" class="date-arrow"></i>
+          <span class="date-end">{{formatDate this.endDate}}</span>
+        </div>
+        <p class="booking-duration"><!-- Duration will be calculated via JS or helper if needed --></p>
+      </div>
+      <div class="booking-details">
+        <p class="booking-price">{{currency this.totalPrice}}</p>
+        <span class="booking-status status-{{this.status}}">
+          {{#if (eq this.status 'confirmed')}}{{t 'bookings.statusConfirmed'}}{{/if}}
+          {{#if (eq this.status 'pending')}}{{t 'bookings.statusPending'}}{{/if}}
+          {{#if (eq this.status 'cancelled')}}{{t 'bookings.statusCancelled'}}{{/if}}
+          {{#if (eq this.status 'completed')}}{{t 'bookings.statusCompleted'}}{{/if}}
+          {{#if (eq this.status 'blocked')}}{{t 'bookings.statusBlocked'}}{{/if}}
+        </span>
+      </div>
+      <div class="booking-actions">
+        <a href='/bookings/{{this.id}}' class="btn btn-primary btn-sm">
+          <i data-feather="eye"></i>
+          {{t 'common.view'}}
+        </a>
+
+        {{#if this.canEdit}}
+          <a href='/bookings/{{this.id}}' class="btn btn-secondary btn-sm">
+            <i data-feather="edit-2"></i>
+            {{t 'common.edit'}}
+          </a>
         {{else}}
           <span class="action-wrap">
-            <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-delete-{{this.id}}" tabindex="-1">{{t 'common.delete'}}</button>
-            <span id="reason-delete-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canDeleteReason}}</span>
+            <button class="btn btn-secondary btn-sm btn-disabled" aria-disabled="true" aria-describedby="reason-edit-{{this.id}}" tabindex="-1">
+              <i data-feather="edit-2"></i>
+              {{t 'common.edit'}}
+            </button>
+            <span id="reason-edit-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canEditReason}}</span>
           </span>
         {{/if}}
 
@@ -48,29 +95,47 @@
             data-post
             data-url='/bookings/{{this.id}}/cancel'
             data-confirm='{{t "bookings.confirmCancel"}}'
-          >{{t 'common.cancel'}}</button>
+            class="btn btn-ghost btn-sm"
+          >
+            <i data-feather="x-circle"></i>
+            {{t 'common.cancel'}}
+          </button>
         {{else}}
           <span class="action-wrap">
-            <button class="btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-{{this.id}}" tabindex="-1">{{t 'common.cancel'}}</button>
+            <button class="btn btn-ghost btn-sm btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-{{this.id}}" tabindex="-1">
+              <i data-feather="x-circle"></i>
+              {{t 'common.cancel'}}
+            </button>
             <span id="reason-cancel-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canCancelReason}}</span>
           </span>
         {{/if}}
 
-        <a href='/bookings/{{this.id}}'>{{t 'common.view'}}</a>
-
-        {{#if this.canEdit}}
-          <a href='/bookings/{{this.id}}/edit'>{{t 'common.edit'}}</a>
+        {{#if this.canDelete}}
+          <button
+            data-delete
+            data-id='{{this.id}}'
+            data-base='/bookings'
+            data-confirm='{{t "bookings.confirmDelete"}}'
+            class="btn btn-danger btn-sm btn-icon"
+          >
+            <i data-feather="trash-2"></i>
+          </button>
         {{else}}
           <span class="action-wrap">
-            <span class="link-disabled" aria-disabled="true" aria-describedby="reason-edit-{{this.id}}" tabindex="-1">{{t 'common.edit'}}</span>
-            <span id="reason-edit-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canEditReason}}</span>
+            <button class="btn btn-danger btn-sm btn-icon btn-disabled" aria-disabled="true" aria-describedby="reason-delete-{{this.id}}" tabindex="-1">
+              <i data-feather="trash-2"></i>
+            </button>
+            <span id="reason-delete-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canDeleteReason}}</span>
           </span>
         {{/if}}
       </div>
-    </li>
+    </div>
   {{else}}
-    <li>{{t 'bookings.noBookings'}}</li>
+    <div class="empty-state">
+      <i data-feather="calendar" class="empty-icon"></i>
+      <p>{{t 'bookings.noBookings'}}</p>
+    </div>
   {{/each}}
-</ul>
+</div>
 
 {{> footer }}

@@ -3,33 +3,31 @@
    =================================== */
 
 :root {
-  /* Color Palette - Inspired by modern dashboard design */
-  --color-primary: #f34d21; /* Orange vif - Primary actions */
-  --color-secondary: #2581f7; /* Bleu lumineux - Links, secondary actions */
-  --color-success: #4caf50; /* Vert - Success states */
-  --color-warning: #ffc107; /* Jaune-orange - Warnings */
-  --color-danger: #f44336; /* Rouge - Errors, critical actions */
+  --color-primary: #f34d21;
+  --color-secondary: #2581f7;
+  --color-success: #4caf50;
+  --color-warning: #ffc107;
+  --color-danger: #f44336;
 
   /* Icon Colors - Soft pastels for dashboard cards */
-  --icon-purple: #a78bfa; /* Violet doux */
-  --icon-orange: #fb923c; /* Orange doux */
-  --icon-blue: #60a5fa; /* Bleu ciel */
-  --icon-yellow: #fbbf24; /* Jaune doux */
-  --icon-pink: #f472b6; /* Rose doux */
-  --icon-green: #34d399; /* Vert menthe */
+  --icon-purple: #a78bfa;
+  --icon-orange: #fb923c;
+  --icon-blue: #60a5fa;
+  --icon-yellow: #fbbf24;
+  --icon-pink: #f472b6;
+  --icon-green: #34d399;
 
   /* Backgrounds */
-  --bg-light: #ffffff; /* Blanc pur - Cards, main sections */
-  --bg-dark: #1a1a1a; /* Noir profond - Sidebar */
-  --bg-subtle: #f5f1ed; /* Beige/crème - Body background (maquette) */
-  --bg-hover: #f9f6f2; /* Hover states - légèrement plus foncé */
-  --bg-card: #ffffff; /* Cartes blanches */
-
+  --bg-light: #ffffff;
+  --bg-dark: #1a1a1a;
+  --bg-subtle: #f5f1ed;
+  --bg-hover: #f9f6f2;
+  --bg-card: #ffffff;
   /* Text Colors */
-  --text-dark: #1f2937; /* Presque noir - Main text */
-  --text-light: #9ca3af; /* Gris clair - Secondary text */
-  --text-white: #ffffff; /* Blanc - Text on dark backgrounds */
-  --text-muted: #6b7280; /* Medium gray - Muted text */
+  --text-dark: #1f2937;
+  --text-light: #9ca3af;
+  --text-white: #ffffff;
+  --text-muted: #6b7280;
 
   /* Borders & Separators */
   --border-light: #f3f4f6; /* Light borders */

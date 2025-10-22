@@ -111,3 +111,132 @@ textarea.error {
   font-size: var(--font-size-sm);
   margin-top: var(--space-xs);
 }
+
+/* ===================================
+   Form Layout
+   =================================== */
+
+.form-card {
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  padding: var(--space-2xl);
+  box-shadow: var(--shadow-card);
+  margin-bottom: var(--space-xl);
+}
+
+.form-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xl);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.form-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  margin: 0;
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+}
+
+.form-section-title i {
+  width: 18px;
+  height: 18px;
+  color: var(--color-primary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.form-group label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--text-dark);
+  margin: 0;
+}
+
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-with-icon i {
+  position: absolute;
+  left: var(--space-md);
+  width: 16px;
+  height: 16px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.input-with-icon input {
+  padding-left: calc(var(--space-md) + 16px + var(--space-sm));
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: flex-end;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-light);
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--space-sm);
+  transition: color var(--transition-fast);
+}
+
+.breadcrumb:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb i {
+  width: 16px;
+  height: 16px;
+}
+
+/* Responsive Forms */
+@media (max-width: 768px) {
+  .form-card {
+    padding: var(--space-lg);
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
