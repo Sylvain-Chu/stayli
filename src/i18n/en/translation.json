@@ -96,6 +96,7 @@
     "pricePerNight": "Price per night",
     "confirmDelete": "Delete this property?",
     "noProperties": "No properties yet.",
+    "properties": "properties",
     "bookings": "Bookings",
     "noBookings": "No bookings for this property."
   },
@@ -208,8 +209,12 @@
     "statusDraft": "Draft",
     "statusSent": "Sent",
     "statusPaid": "Paid",
+    "statusPending": "Pending",
     "statusOverdue": "Overdue",
-    "statusCancelled": "Cancelled"
+    "statusCancelled": "Cancelled",
+    "invoices": "invoices",
+    "searchPlaceholder": "Search by invoice number or client...",
+    "allStatuses": "All statuses"
   },
   "account": {
     "title": "My Account",

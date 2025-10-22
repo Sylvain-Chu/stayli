@@ -1,31 +1,97 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'properties.title'}}</h1>
-<form method='GET' action='/properties' style='margin: 0 0 1rem;'>
-  <input type='text' name='q' placeholder='{{t "properties.searchPlaceholder"}}' value='{{q}}' />
-  <button type='submit'>{{t 'common.search'}}</button>
-  {{#if q}}<a href='/properties' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}
-  <span style='margin-left:1rem;'><a href='/properties/create'>{{t 'properties.addNew'}}</a></span>
-  </form>
-<hr />
-<ul>
+<div class="page-header">
+  <h1>{{t 'properties.title'}}</h1>
+  <div class="page-actions">
+    <form method="GET" action="/properties" style="display: flex; gap: var(--space-sm); align-items: center;">
+      <input 
+        type="search" 
+        name="q" 
+        placeholder="{{t 'properties.searchPlaceholder'}}" 
+        value="{{q}}" 
+        class="search-input"
+        style="width: 250px; padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-size-sm);" 
+      />
+      <button type="submit" class="btn btn-secondary">
+        <span data-feather="search"></span>
+      </button>
+      {{#if q}}<a href="/properties" class="btn btn-ghost">{{t 'common.clear'}}</a>{{/if}}
+    </form>
+    <a href="/properties/create" class="btn btn-primary">
+      <span data-feather="home"></span> {{t 'properties.addNew'}}
+    </a>
+  </div>
+</div>
+
+<div class="properties-list">
   {{#each properties}}
-    <li>
-      <strong>{{this.name}}</strong><br />
-      <small>{{this.address}}</small>
-      <button
-        data-delete
-        data-id='{{this.id}}'
-        data-base='/properties'
-        data-confirm='{{t "properties.confirmDelete"}}'
-      >{{t 'common.delete'}}</button>
-      <a href='/properties/{{this.id}}'>{{t 'common.view'}}</a>
-      <a href='/properties/{{this.id}}/edit'>{{t 'common.edit'}}</a>
-    </li>
+    <div class="property-card" onclick="window.location='/properties/{{this.id}}'" style="cursor:pointer;">
+      <div class="property-info">
+        <h3 class="property-name">
+          <span data-feather="home"></span>
+          {{this.name}}
+        </h3>
+        {{#if this.address}}
+          <span class="property-address">
+            <span data-feather="map-pin"></span> {{this.address}}
+          </span>
+        {{/if}}
+        {{#if this.description}}
+          <span class="property-description">
+            <span data-feather="file-text"></span> {{substr this.description 0 100}}{{#if (gt (indexOf this.description "") 100)}}...{{/if}}
+          </span>
+        {{/if}}
+      </div>
+      <div class="property-actions" onclick="event.stopPropagation();">
+        <a href="/properties/{{this.id}}" class="btn btn-icon btn-ghost" title="{{t 'common.view'}}"><span data-feather="eye"></span></a>
+        <a href="/properties/{{this.id}}/edit" class="btn btn-icon btn-secondary" title="{{t 'common.edit'}}"><span data-feather="edit-2"></span></a>
+        <button data-delete data-id="{{this.id}}" data-base="/properties" data-confirm="{{t 'properties.confirmDelete'}}" class="btn btn-icon btn-danger" title="{{t 'common.delete'}}"><span data-feather="trash-2"></span></button>
+      </div>
+    </div>
   {{else}}
-    <li>{{t 'properties.noProperties'}}</li>
+    <div class="empty-state">
+      <span class="empty-icon" data-feather="home"></span>
+      <p>{{t 'properties.noProperties'}}</p>
+    </div>
   {{/each}}
-</ul>
+</div>
+
+{{#if pagination}}
+  {{#if pagination.totalPages}}
+    {{#if (gt pagination.totalPages 1)}}
+      <div class="pagination">
+        <div class="pagination-info">
+          {{t 'common.showing'}} {{properties.length}} {{t 'common.of'}} {{pagination.total}} {{t 'properties.properties'}}
+        </div>
+        <div class="pagination-controls">
+          {{#if pagination.hasPrev}}
+            <a href="/properties?page={{sub pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </button>
+          {{/if}}
+          
+          <span class="pagination-pages">
+            {{t 'common.page'}} {{pagination.currentPage}} {{t 'common.of'}} {{pagination.totalPages}}
+          </span>
+          
+          {{#if pagination.hasNext}}
+            <a href="/properties?page={{add pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </button>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/if}}
 
 {{> footer }}

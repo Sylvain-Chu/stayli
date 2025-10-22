@@ -14,7 +14,7 @@ html {
 }
 
 body {
-  height: 100%;
+  height: 100vh;
   margin: 0;
   font-family: var(--font-family);
   font-size: var(--font-size-base);
@@ -31,6 +31,7 @@ body {
     'sidebar header'
     'sidebar content'
     'sidebar footer';
+  overflow: hidden;
 }
 
 /* ===================================
