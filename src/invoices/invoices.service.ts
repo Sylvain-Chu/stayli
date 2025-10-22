@@ -1,13 +1,54 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Invoice } from '@prisma/client';
+import { Invoice, Prisma } from '@prisma/client';
 
 @Injectable()
 export class InvoicesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(): Promise<Invoice[]> {
-    return this.prisma.invoice.findMany({ include: { booking: true } });
+  async findAll(
+    page: number = 1,
+    pageSize: number = 15,
+    searchQuery?: string,
+    statusFilter?: string,
+  ): Promise<{ invoices: Invoice[]; total: number }> {
+    const where: Prisma.InvoiceWhereInput = {};
+
+    // Search filter
+    if (searchQuery) {
+      where.OR = [
+        { invoiceNumber: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+        {
+          booking: {
+            client: {
+              OR: [
+                { firstName: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+                { lastName: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+                { email: { contains: searchQuery, mode: Prisma.QueryMode.insensitive } },
+              ],
+            },
+          },
+        },
+      ];
+    }
+
+    // Status filter
+    if (statusFilter && statusFilter !== '') {
+      where.status = statusFilter as 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+    }
+
+    const [invoices, total] = await Promise.all([
+      this.prisma.invoice.findMany({
+        where,
+        include: { booking: { include: { client: true, property: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.invoice.count({ where }),
+    ]);
+
+    return { invoices, total };
   }
 
   async create(data: { dueDate: Date; amount: number; bookingId: string }): Promise<Invoice> {
@@ -33,8 +74,18 @@ export class InvoicesService {
     return this.prisma.invoice.delete({ where: { id } });
   }
 
-  async findOne(id: string): Promise<Invoice | null> {
-    return this.prisma.invoice.findUnique({ where: { id }, include: { booking: true } });
+  async findOne(id: string) {
+    return this.prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        booking: {
+          include: {
+            client: true,
+            property: true,
+          },
+        },
+      },
+    });
   }
 
   async update(

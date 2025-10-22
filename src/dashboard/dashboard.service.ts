@@ -25,9 +25,8 @@ export class DashboardService {
     const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
     const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 1); // exclusive
 
-    const [propertiesCount, clientsCount, monthlyBookings, pendingInvoices] = await Promise.all([
+    const [propertiesCount, monthlyBookings, pendingInvoices] = await Promise.all([
       this.prisma.property.count(),
-      this.prisma.client.count(),
       this.prisma.booking.findMany({
         where: {
           status: 'confirmed',
@@ -42,19 +41,13 @@ export class DashboardService {
     const revenueThisMonth = monthlyBookings.reduce((sum, booking) => sum + booking.totalPrice, 0);
     const occupancyPercent =
       propertiesCount > 0 ? Math.round((currentlyOccupiedProperties / propertiesCount) * 100) : 0;
-    const revenueGoal = 3000; // You can make this configurable later
-    const revenueProgressPercent =
-      revenueGoal > 0 ? Math.min(100, Math.round((revenueThisMonth / revenueGoal) * 100)) : 0;
 
     return {
       propertiesCount,
-      clientsCount,
       revenueThisMonth,
       pendingInvoices,
       currentlyOccupiedProperties,
       occupancyPercent,
-      revenueGoal,
-      revenueProgressPercent,
     };
   }
 

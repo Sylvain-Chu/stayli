@@ -149,4 +149,94 @@ export function registerHandlebarsHelpers(): void {
     const val = translationsAny ? translationsAny[key] : undefined;
     return typeof val === 'string' && val !== '' ? val : key;
   });
+
+  // Substring helper: {{substr str 0 2}}
+  hbs.registerHelper('substr', function (str?: string, start?: number, end?: number) {
+    if (!str || typeof str !== 'string') return '';
+    if (typeof start !== 'number') return str;
+    if (typeof end !== 'number') return str.substring(start);
+    return str.substring(start, end);
+  });
+
+  // IndexOf helper: {{indexOf str '@'}}
+  hbs.registerHelper('indexOf', function (str?: string, searchString?: string) {
+    if (!str || typeof str !== 'string') return -1;
+    if (!searchString || typeof searchString !== 'string') return -1;
+    return str.indexOf(searchString);
+  });
+
+  // Format date helper: {{formatDate date}}
+  hbs.registerHelper('formatDate', function (date?: Date | string) {
+    if (!date) return '';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return '';
+
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    };
+
+    return d.toLocaleDateString('fr-FR', options);
+  });
+
+  // Concat helper: {{concat 'str1' 'str2'}}
+  hbs.registerHelper('concat', function (...args: any[]) {
+    // Remove the last argument which is the Handlebars options object
+    const strings = args.slice(0, -1);
+    return strings.join('');
+  });
+
+  // Initials helper: {{initials user.name user.email}} -> "JS" or "JD"
+  hbs.registerHelper('initials', function (name?: string, email?: string) {
+    try {
+      let out = '';
+      if (name && typeof name === 'string' && name.trim().length > 0) {
+        const parts = name.trim().split(/\s+/);
+        if (parts.length === 1) {
+          out = parts[0].slice(0, 2);
+        } else {
+          out = (parts[0][0] || '') + (parts[1][0] || '');
+        }
+      } else if (email && typeof email === 'string' && email.indexOf('@') !== -1) {
+        const local = email.split('@')[0];
+        out = local.slice(0, 2);
+      } else if (email && typeof email === 'string') {
+        out = email.slice(0, 2);
+      }
+      return String(out).toUpperCase();
+    } catch {
+      return '';
+    }
+  });
+
+  // Capitalize helper: {{capitalize 'john'}} -> 'John'
+  hbs.registerHelper('capitalize', function (str?: string) {
+    if (!str || typeof str !== 'string') return '';
+    const s = str.trim();
+    if (s.length === 0) return '';
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  });
+
+  // Math helpers for pagination
+  hbs.registerHelper('add', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return 0;
+    return numA + numB;
+  });
+
+  hbs.registerHelper('sub', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return 0;
+    return numA - numB;
+  });
+
+  hbs.registerHelper('gt', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return false;
+    return numA > numB;
+  });
 }

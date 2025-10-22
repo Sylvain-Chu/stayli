@@ -10,7 +10,7 @@ describe('DashboardController', () => {
     } as unknown as DashboardService;
     const ctrl = new DashboardController(svc);
     const res = await ctrl.getDashboard('month');
-    expect(res).toEqual({ ok: true });
+    expect(res).toEqual({ ok: true, activeNav: 'dashboard' });
     expect(
       (svc as unknown as { getDashboardData: jest.Mock }).getDashboardData,
     ).toHaveBeenCalledTimes(1);

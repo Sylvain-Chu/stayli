@@ -4,35 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{{#if title}}{{title}} · {{/if}}Stayli</title>
-  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/main.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <header class="site-header">
-    <div class="logo">Stayli</div>
-    <nav class="top-nav">
-      <a href="/">Home</a>
-      <a href="/bookings">{{t 'nav.bookings'}}</a>
-      <a href="/clients">{{t 'nav.clients'}}</a>
-      <a href="/properties">{{t 'nav.properties'}}</a>
-      <a href="/invoices">{{t 'nav.invoices'}}</a>
-      <div class="language-switcher">
-        <a href="/i18n/set-language?lang=en" class="lang-link {{#if (eq currentLang 'en')}}active{{/if}}" title="English">EN</a>
-        <span class="separator">|</span>
-        <a href="/i18n/set-language?lang=fr" class="lang-link {{#if (eq currentLang 'fr')}}active{{/if}}" title="Français">FR</a>
-      </div>
-      {{#if user}}
-        <span class="user">{{user.email}}</span>
-        <form method="post" action="/auth/logout" style="display:inline">
-          <button type="submit">{{t 'auth.logout'}}</button>
-        </form>
-      {{else}}
-        <a href="/auth/login">{{t 'auth.login'}}</a>
-      {{/if}}
-    </nav>
-  </header>
   <div class="layout">
-    <!-- sidebar will be inserted here by sidebar partial -->
     

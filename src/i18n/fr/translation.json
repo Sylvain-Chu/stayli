@@ -13,9 +13,32 @@
     "filter": "Filtrer",
     "from": "Du",
     "to": "Au",
+    "status": "Statut",
+    "all": "Tous",
     "loading": "Chargement...",
     "noResults": "Aucun résultat trouvé",
-    "confirm": "Êtes-vous sûr?"
+    "confirm": "Êtes-vous sûr?",
+    "showing": "Affichage de",
+    "of": "sur",
+    "page": "Page",
+    "previous": "Précédent",
+    "next": "Suivant"
+  },
+  "header": {
+    "searchPlaceholder": "Rechercher..."
+  },
+  "calendar": {
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mer",
+    "thursday": "Jeu",
+    "friday": "Ven",
+    "saturday": "Sam",
+    "sunday": "Dim"
+  },
+  "clientStatus": {
+    "new": "Nouveau",
+    "regular": "Régulier"
   },
   "nav": {
     "dashboard": "Tableau de bord",
@@ -40,18 +63,20 @@
     "thisWeek": "Cette semaine",
     "thisMonth": "Ce mois",
     "filterScope": "Filtre l'étendue des arrivées et départs",
-    "totalProperties": "Total Propriétés",
-    "currentlyOccupied": "Actuellement occupé",
-    "totalClients": "Total Clients",
-    "monthRevenue": "Revenu du mois",
-    "revenueGoal": "Objectif",
+    "occupancyRate": "Taux d'occupation",
+    "monthlyRevenue": "Revenu du mois",
+    "bookingsThisMonth": "Réservations du mois",
     "pendingInvoices": "Factures en attente",
+    "occupied": "occupé(s)",
+    "activeBookings": "réservations actives",
+    "awaitingPayment": "en attente de paiement",
+    "activity": "Activité récente",
     "currentStays": "Occupations en cours",
     "upcomingArrivals": "Prochaines Arrivées",
     "recentDepartures": "Départs Récents",
     "noCurrentStays": "Aucun logement n'est actuellement occupé.",
-    "noUpcomingArrivals": "Aucune arrivée prévue pour la période sélectionnée.",
-    "noDepartures": "Aucun départ pour la période sélectionnée.",
+    "noUpcomingArrivals": "Aucune arrivée prévue pour les 7 prochains jours.",
+    "noDepartures": "Aucun départ dans les 7 derniers jours.",
     "arrival": "Arrivée",
     "departure": "Départ",
     "stay": "Séjour",
@@ -73,8 +98,10 @@
     "pricePerNight": "Prix par nuit",
     "confirmDelete": "Supprimer cette propriété?",
     "noProperties": "Aucune propriété pour le moment.",
+    "properties": "propriétés",
     "bookings": "Réservations",
-    "noBookings": "Aucune réservation pour cette propriété."
+    "noBookings": "Aucune réservation pour cette propriété.",
+    "propertyInfo": "Informations de la propriété"
   },
   "index": {
     "welcome": "Bienvenue sur Stayli. Choisissez une section ci-dessous :"
@@ -93,11 +120,16 @@
     "status": "Statut",
     "confirmDelete": "Supprimer ce client?",
     "noClients": "Aucun client pour le moment.",
+    "clients": "clients",
     "bookings": "Réservations",
     "noBookings": "Aucune réservation pour ce client.",
     "statusActive": "Actif",
     "statusInactive": "Inactif",
-    "statusBlacklisted": "Liste noire"
+    "statusBlacklisted": "Liste noire",
+    "clientInfo": "Informations du client",
+    "fullName": "Nom complet",
+    "memberSince": "Membre depuis",
+    "noClient": "Aucun client"
   },
   "bookings": {
     "title": "Réservations",
@@ -107,6 +139,7 @@
 
     "addNew": "Créer une nouvelle réservation",
     "openCalendar": "Ouvrir le calendrier",
+    "searchPlaceholder": "Rechercher par client ou propriété...",
     "property": "Propriété",
     "client": "Client",
     "startDate": "Date de début",
@@ -122,6 +155,7 @@
     "statusConfirmed": "Confirmé",
     "statusCancelled": "Annulé",
     "statusCompleted": "Terminé",
+    "noProperty": "Aucune propriété",
     "propertyLabel": "Propriété",
     "clientLabel": "Client",
     "periodLabel": "Période",
@@ -134,7 +168,26 @@
     "statusBlocked": "Bloqué",
     "filterNote": "Décochez pour masquer des statuts spécifiques. Si aucun n'est sélectionné, le calendrier n'affiche aucun événement.",
     "calendarTitle": "Calendrier des réservations",
-    "backToList": "Retour à la liste des réservations"
+    "backToList": "Retour à la liste des réservations",
+    "cancelBooking": "Annuler la réservation",
+    "clientSection": "Client",
+    "staySection": "Séjour",
+    "pricingSection": "Tarification",
+    "insuranceSection": "Assurance Annulation",
+    "invoiceLabel": "Facture",
+    "backToDetails": "Retour aux détails",
+    "propertyAndClient": "Propriété et Client",
+    "datesAndPrice": "Dates et Prix",
+    "updateSuccess": "Réservation mise à jour avec succès !",
+    "updateError": "Erreur lors de la mise à jour de la réservation",
+    "cannotEditCancelled": "Impossible de modifier — la réservation est annulée",
+    "cannotEditStarted": "Impossible de modifier — le séjour a déjà commencé",
+    "alreadyCancelled": "Cette réservation est déjà annulée",
+    "cannotCancelEnded": "Impossible d'annuler — le séjour est terminé",
+    "cannotDeleteHasInvoice": "Impossible de supprimer — une facture liée existe",
+    "cannotDeleteActive": "Impossible de supprimer — réservation active ou confirmée",
+    "invoiceAlreadyExists": "Une facture existe déjà pour cette réservation",
+    "invalidPrice": "Prix manquant ou invalide"
   },
   "invoices": {
     "title": "Factures",
@@ -164,8 +217,21 @@
     "statusDraft": "Brouillon",
     "statusSent": "Envoyé",
     "statusPaid": "Payé",
+    "statusPending": "En attente",
     "statusOverdue": "En retard",
-    "statusCancelled": "Annulé"
+    "statusCancelled": "Annulé",
+    "invoices": "factures",
+    "searchPlaceholder": "Rechercher par numéro ou client...",
+    "allStatuses": "Tous les statuts",
+    "clientAndBooking": "Client & Réservation",
+    "invoiceDetails": "Détails de la facture",
+    "costBreakdown": "Détail des coûts",
+    "stayPeriod": "Période du séjour",
+    "baseRate": "Tarif de base",
+    "options": "Options",
+    "totalAmount": "Montant total",
+    "downloadPdf": "Télécharger PDF",
+    "markAsPaid": "Marquer comme payé"
   },
   "account": {
     "title": "Mon Compte",

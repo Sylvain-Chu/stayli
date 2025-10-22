@@ -77,7 +77,12 @@ describe('BookingsController', () => {
       },
       client: { findMany: jest.fn<Promise<LightClient[]>, [args?: Prisma.ClientFindManyArgs]>() },
     };
-    invoices = { create: jest.fn<Promise<{ id: string }>, [body: unknown]>() };
+    invoices = {
+      create: jest.fn<
+        Promise<{ id: string }>,
+        [body: { bookingId?: string; amount?: number; dueDate?: Date }]
+      >(),
+    };
     controller = new BookingsController(
       service as unknown as BookingsService,
       prisma as unknown as PrismaService,
@@ -95,6 +100,9 @@ describe('BookingsController', () => {
       bookings: [expect.objectContaining({ id: 'b1' })],
       from: '2025-01-01',
       to: '2025-01-10',
+      q: undefined,
+      status: undefined,
+      activeNav: 'bookings',
     });
   });
 
@@ -183,11 +191,9 @@ describe('BookingsController', () => {
     await expect(controller.remove('1')).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
-  it('show/editForm not found throws 500', async () => {
+  it('show not found throws 500', async () => {
     service.findOne.mockResolvedValueOnce(null);
     await expect(controller.show('1')).rejects.toBeInstanceOf(InternalServerErrorException);
-    service.findOne.mockResolvedValueOnce(null);
-    await expect(controller.editForm('1')).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
   it('update maps P2025 to 400 and unknown to 500', async () => {

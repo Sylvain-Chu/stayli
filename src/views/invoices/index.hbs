@@ -1,32 +1,142 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'invoices.title'}}</h1>
-<p>
-  <a href='/invoices/create'>{{t 'invoices.addNew'}}</a>
-</p>
-<hr />
-<ul>
+<div class="page-header">
+  <h1>{{t 'invoices.title'}}</h1>
+  <div class="page-actions">
+    <a href="/invoices/create" class="btn btn-primary">
+      <span data-feather="file-plus"></span> {{t 'invoices.addNew'}}
+    </a>
+  </div>
+</div>
+
+<div class="filters-section">
+  <form class="filters-form" method="GET" action="/invoices">
+    <div class="filter-group">
+      <label for="search">{{t "invoices.searchPlaceholder"}}</label>
+      <input type="search" id="search" name="q" placeholder="{{t 'invoices.searchPlaceholder'}}" value="{{q}}" class="search-input" />
+    </div>
+    <div class="filter-group">
+      <label for="status">{{t "invoices.status"}}</label>
+      <select id="status" name="status">
+        <option value="">{{t 'invoices.allStatuses'}}</option>
+        <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>{{t 'invoices.statusDraft'}}</option>
+        <option value="sent" {{#if (eq status 'sent')}}selected{{/if}}>{{t 'invoices.statusSent'}}</option>
+        <option value="paid" {{#if (eq status 'paid')}}selected{{/if}}>{{t 'invoices.statusPaid'}}</option>
+        <option value="overdue" {{#if (eq status 'overdue')}}selected{{/if}}>{{t 'invoices.statusOverdue'}}</option>
+        <option value="cancelled" {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'invoices.statusCancelled'}}</option>
+      </select>
+    </div>
+    <div>
+      <button type="submit" class="btn btn-primary">
+        <span data-feather="search"></span> {{t 'common.search'}}
+      </button>
+    </div>
+    {{#if (or q status)}}<a href="/invoices" class="btn btn-ghost">{{t 'common.clear'}}</a>{{/if}}
+  </form>
+</div>
+
+<div class="invoices-list">
   {{#each invoices}}
-    <li>
-      <strong>{{this.invoiceNumber}}</strong>
-      —
-      {{this.bookingId}}
-      —
-      {{this.amount}}€ —
-      {{this.status}}
-      <button
-        data-delete
-        data-id='{{this.id}}'
-        data-base='/invoices'
-        data-confirm='{{t "invoices.confirmDelete"}}'
-      >{{t 'common.delete'}}</button>
-      <a href='/invoices/{{this.id}}'>{{t 'common.view'}}</a>
-      <a href='/invoices/{{this.id}}/edit'>{{t 'common.edit'}}</a>
-    </li>
+    <div class="invoice-card{{#if this.isOverdue}} overdue{{/if}}" onclick="window.location='/invoices/{{this.id}}'" style="cursor:pointer;">
+      <div class="invoice-number">
+        <span data-feather="file-text"></span>
+        {{this.invoiceNumber}}
+      </div>
+      
+      <div class="invoice-info">
+        {{#if this.booking}}
+          <div class="invoice-booking">
+            <span data-feather="user"></span>
+            {{#if this.booking.client}}
+              {{this.booking.client.firstName}} {{this.booking.client.lastName}}
+            {{/if}}
+            {{#if this.booking.property}}
+              • {{this.booking.property.name}}
+            {{/if}}
+          </div>
+          {{#if this.dueDate}}
+            <div class="invoice-due-date{{#if this.isOverdue}} overdue{{/if}}">
+              {{#if this.isOverdue}}
+                <span data-feather="alert-circle"></span>
+              {{else}}
+                <span data-feather="clock"></span>
+              {{/if}}
+              {{t 'invoices.dueDate'}}: {{formatDate this.dueDate}}
+            </div>
+          {{/if}}
+        {{/if}}
+      </div>
+
+      <div class="invoice-amount">
+        {{currency this.amount}}
+      </div>
+
+      <div class="invoice-status">
+        {{#if (eq this.status 'paid')}}
+          <span class="badge badge-paid">{{t 'invoices.statusPaid'}}</span>
+        {{else if (eq this.status 'sent')}}
+          <span class="badge badge-pending">{{t 'invoices.statusSent'}}</span>
+        {{else if (eq this.status 'draft')}}
+          <span class="badge badge-pending">{{t 'invoices.statusDraft'}}</span>
+        {{else if (eq this.status 'overdue')}}
+          <span class="badge badge-overdue">{{t 'invoices.statusOverdue'}}</span>
+        {{else if (eq this.status 'cancelled')}}
+          <span class="badge badge-cancelled">{{t 'invoices.statusCancelled'}}</span>
+        {{else}}
+          <span class="badge badge-pending">{{capitalize this.status}}</span>
+        {{/if}}
+      </div>
+
+      <div class="invoice-actions" onclick="event.stopPropagation();">
+        <a href="/invoices/{{this.id}}" class="btn btn-icon btn-ghost" title="{{t 'common.view'}}"><span data-feather="eye"></span></a>
+        <a href="/invoices/{{this.id}}/edit" class="btn btn-icon btn-secondary" title="{{t 'common.edit'}}"><span data-feather="edit-2"></span></a>
+        <button data-delete data-id="{{this.id}}" data-base="/invoices" data-confirm="{{t 'invoices.confirmDelete'}}" class="btn btn-icon btn-danger" title="{{t 'common.delete'}}"><span data-feather="trash-2"></span></button>
+      </div>
+    </div>
   {{else}}
-    <li>{{t 'invoices.noInvoices'}}</li>
+    <div class="empty-state">
+      <span class="empty-icon" data-feather="file-text"></span>
+      <p>{{t 'invoices.noInvoices'}}</p>
+    </div>
   {{/each}}
-</ul>
+</div>
+
+{{#if pagination}}
+  {{#if pagination.totalPages}}
+    {{#if (gt pagination.totalPages 1)}}
+      <div class="pagination">
+        <div class="pagination-info">
+          {{t 'common.showing'}} {{invoices.length}} {{t 'common.of'}} {{pagination.total}} {{t 'invoices.invoices'}}
+        </div>
+        <div class="pagination-controls">
+          {{#if pagination.hasPrev}}
+            <a href="/invoices?page={{sub pagination.currentPage 1}}" class="btn btn-secondary">
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </button>
+          {{/if}}
+          
+          <span class="pagination-pages">
+            {{t 'common.page'}} {{pagination.currentPage}} {{t 'common.of'}} {{pagination.totalPages}}
+          </span>
+          
+          {{#if pagination.hasNext}}
+            <a href="/invoices?page={{add pagination.currentPage 1}}" class="btn btn-secondary">
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </button>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/if}}
 
 {{> footer }}

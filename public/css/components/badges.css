@@ -1,0 +1,129 @@
+/* ===================================
+   Badges & Chips
+   =================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 var(--space-xs);
+  border-radius: var(--radius-full);
+  background: var(--bg-hover);
+  border: 2px solid var(--border-medium);
+  margin-right: var(--space-xs);
+  vertical-align: middle;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+}
+
+.badge.arrival {
+  background: rgba(76, 175, 80, 0.15);
+  border-color: var(--color-success);
+  color: var(--color-success);
+}
+
+.badge.departure {
+  background: rgba(244, 67, 54, 0.15);
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+
+/* Status Chips - Modern style */
+.chip {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  margin-left: var(--space-xs);
+  border: none;
+  text-transform: capitalize;
+}
+
+.chip.new {
+  background: rgba(255, 193, 7, 0.2);
+  color: #f57c00;
+}
+
+.chip.regular {
+  background: rgba(96, 165, 250, 0.2);
+  color: #2563eb;
+}
+
+.chip.active,
+.chip.confirmed,
+.chip.completed {
+  background: rgba(52, 211, 153, 0.2);
+  color: #059669;
+}
+
+.chip.pending,
+.chip.draft,
+.chip.delayed {
+  background: rgba(251, 191, 36, 0.2);
+  color: #d97706;
+}
+
+.chip.cancelled,
+.chip.inactive,
+.chip.at-risk {
+  background: rgba(248, 113, 113, 0.2);
+  color: #dc2626;
+}
+
+.chip.on-going,
+.chip.in-review,
+.chip.approved {
+  background: rgba(167, 139, 250, 0.2);
+  color: #7c3aed;
+}
+
+/* Booking Status Badges */
+.booking-status {
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+}
+
+.booking-status.status-confirmed {
+  background: rgba(52, 211, 153, 0.2);
+  color: #059669;
+}
+
+.booking-status.status-pending {
+  background: rgba(251, 191, 36, 0.2);
+  color: #d97706;
+}
+
+.booking-status.status-cancelled {
+  background: rgba(248, 113, 113, 0.2);
+  color: #dc2626;
+}
+
+.booking-status.status-completed {
+  background: rgba(96, 165, 250, 0.2);
+  color: #2563eb;
+}
+
+.booking-status.status-blocked {
+  background: rgba(156, 163, 175, 0.2);
+  color: #6b7280;
+}
+
+/* Badge Color Variations */
+.badge.badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+  border: 1px solid #60a5fa;
+}
+
+.badge.badge-secondary {
+  background: rgba(107, 114, 128, 0.15);
+  color: #4b5563;
+  border: 1px solid #9ca3af;
+}

@@ -38,7 +38,7 @@ describe('InvoicesController', () => {
 
   beforeEach(() => {
     service = {
-      findAll: jest.fn<Promise<unknown[]>, []>(),
+      findAll: jest.fn<Promise<{ invoices: unknown[]; total: number }>, []>(),
       findEligibleBookings: jest.fn<Promise<unknown[]>, []>(),
       create: jest.fn<
         Promise<{ id: string }>,
@@ -60,9 +60,10 @@ describe('InvoicesController', () => {
   });
 
   it('index returns invoices and maps unknown error to 500', async () => {
-    service.findAll.mockResolvedValueOnce([{ id: 'i1' }]);
+    service.findAll.mockResolvedValueOnce({ invoices: [{ id: 'i1' }], total: 1 });
     const res = await controller.index();
-    expect(res).toEqual({ invoices: [{ id: 'i1' }] });
+    expect(res.invoices).toEqual([{ id: 'i1' }]);
+    expect(res.activeNav).toEqual('invoices');
 
     service.findAll.mockRejectedValueOnce(new Error('x'));
     await expect(controller.index()).rejects.toBeInstanceOf(InternalServerErrorException);
