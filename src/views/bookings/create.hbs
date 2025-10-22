@@ -1,7 +1,15 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'bookings.createTitle'}}</h1>
+<div class="page-header">
+  <div>
+    <a href='/bookings' class="breadcrumb">
+      <i data-feather="arrow-left"></i>
+      {{t 'bookings.title'}}
+    </a>
+    <h1>{{t 'bookings.createTitle'}}</h1>
+  </div>
+</div>
 
 {{#if errors}}
   <div class='alert alert-error'>
@@ -13,39 +21,86 @@
   </div>
 {{/if}}
 
-<form method='post' action='/bookings/create'>
-  <div>
-    <label>Property</label>
-    <select name='propertyId' required>
-      <option value='' disabled {{#unless payload.propertyId}}selected{{/unless}}>-- Select a property --</option>
-      {{#each properties}}
-        <option value='{{this.id}}' {{#if (eq this.id ../payload.propertyId)}}selected{{/if}}>{{this.name}}</option>
-      {{/each}}
-    </select>
-  </div>
-  <div>
-    <label>Client</label>
-    <select name='clientId' required>
-      <option value='' disabled {{#unless payload.clientId}}selected{{/unless}}>-- Select a client --</option>
-      {{#each clients}}
-        <option value='{{this.id}}' {{#if (eq this.id ../payload.clientId)}}selected{{/if}}>{{this.lastName}} {{this.firstName}} - {{this.email}}</option>
-      {{/each}}
-    </select>
-  </div>
-  <div>
-    <label>Start Date</label>
-    <input type='date' name='startDate' value='{{payload.startDate}}' required />
-  </div>
-  <div>
-    <label>End Date</label>
-    <input type='date' name='endDate' value='{{payload.endDate}}' required />
-  </div>
-  <div>
-    <label>Total Price</label>
-    <input type='number' step='0.01' name='totalPrice' value='{{payload.totalPrice}}' required />
-  </div>
-  <button type='submit'>{{t 'common.create'}}</button>
-</form>
-<p><a href='/bookings'>{{t 'common.back'}}</a></p>
+<div class="form-card">
+  <form method='post' action='/bookings/create' class="form-layout">
+    
+    <div class="form-section">
+      <h3 class="form-section-title">
+        <i data-feather="map-pin"></i>
+        {{t 'bookings.propertyAndClient'}}
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="propertyId">{{t 'bookings.property'}}</label>
+          <select name='propertyId' id='propertyId' required>
+            <option value='' disabled {{#unless payload.propertyId}}selected{{/unless}}>{{t 'bookings.selectProperty'}}</option>
+            {{#each properties}}
+              <option value='{{this.id}}' {{#if (eq this.id ../payload.propertyId)}}selected{{/if}}>{{this.name}}</option>
+            {{/each}}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="clientId">{{t 'bookings.client'}}</label>
+          <select name='clientId' id='clientId' required>
+            <option value='' disabled {{#unless payload.clientId}}selected{{/unless}}>{{t 'bookings.selectClient'}}</option>
+            {{#each clients}}
+              <option value='{{this.id}}' {{#if (eq this.id ../payload.clientId)}}selected{{/if}}>{{this.lastName}} {{this.firstName}}</option>
+            {{/each}}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <h3 class="form-section-title">
+        <i data-feather="calendar"></i>
+        {{t 'bookings.datesAndPrice'}}
+      </h3>
+      
+      <div class="form-row">
+        <div class="form-group">
+          <label for="startDate">{{t 'bookings.startDate'}}</label>
+          <input type='date' name='startDate' id='startDate' value='{{payload.startDate}}' required />
+        </div>
+
+        <div class="form-group">
+          <label for="endDate">{{t 'bookings.endDate'}}</label>
+          <input type='date' name='endDate' id='endDate' value='{{payload.endDate}}' required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="totalPrice">{{t 'bookings.totalPrice'}}</label>
+          <div class="input-with-icon">
+            <i data-feather="dollar-sign"></i>
+            <input type='number' step='0.01' name='totalPrice' id='totalPrice' value='{{payload.totalPrice}}' placeholder="0.00" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="status">{{t 'bookings.status'}}</label>
+          <select name='status' id='status'>
+            <option value='pending' selected>{{t 'bookings.statusPending'}}</option>
+            <option value='confirmed'>{{t 'bookings.statusConfirmed'}}</option>
+            <option value='blocked'>{{t 'bookings.statusBlocked'}}</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href='/bookings' class="btn btn-ghost">
+        {{t 'common.cancel'}}
+      </a>
+      <button type='submit' class="btn btn-primary">
+        <i data-feather="plus"></i>
+        {{t 'common.create'}}
+      </button>
+    </div>
+  </form>
+</div>
 
 {{> footer }}

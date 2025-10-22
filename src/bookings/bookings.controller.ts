@@ -32,7 +32,7 @@ export class BookingsController {
 
   @Get()
   @Render('bookings/index')
-  async index(@Query('from') from?: string, @Query('to') to?: string) {
+  async index(@Query('from') from?: string, @Query('to') to?: string, @Query('q') q?: string) {
     try {
       const fromDate = from ? new Date(from) : undefined;
       const toDate = to ? new Date(to) : undefined;
@@ -42,7 +42,20 @@ export class BookingsController {
       if (to && (!toDate || Number.isNaN(toDate.getTime()))) {
         throw new BadRequestException('Invalid to date');
       }
-      const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+      let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+
+      // Apply search filter if query provided
+      if (q && q.trim()) {
+        const search = q.trim().toLowerCase();
+        bookings = bookings.filter(
+          (b) =>
+            b.property.name.toLowerCase().includes(search) ||
+            b.client.firstName.toLowerCase().includes(search) ||
+            b.client.lastName.toLowerCase().includes(search) ||
+            `${b.client.firstName} ${b.client.lastName}`.toLowerCase().includes(search),
+        );
+      }
+
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
@@ -80,7 +93,7 @@ export class BookingsController {
         };
       });
 
-      return { bookings: enrichedBookings, from, to, activeNav: 'bookings' };
+      return { bookings: enrichedBookings, from, to, q, activeNav: 'bookings' };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Unable to load bookings');
@@ -197,7 +210,11 @@ export class BookingsController {
   @Get(':id')
   @Render('bookings/show')
   async show(@Param('id') id: string) {
-    const booking = await this.bookingsService.findOne(id);
+    const [booking, properties, clients] = await Promise.all([
+      this.bookingsService.findOne(id),
+      this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
+      this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
+    ]);
     if (!booking) {
       throw new InternalServerErrorException('Booking not found');
     }
@@ -235,6 +252,8 @@ export class BookingsController {
 
     return {
       booking,
+      properties,
+      clients,
       canEdit,
       canEditReason,
       canCancel,
@@ -244,26 +263,12 @@ export class BookingsController {
     };
   }
 
-  @Get(':id/edit')
-  @Render('bookings/edit')
-  async editForm(@Param('id') id: string) {
-    const [booking, properties, clients] = await Promise.all([
-      this.bookingsService.findOne(id),
-      this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
-      this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
-    ]);
-    if (!booking) {
-      throw new InternalServerErrorException('Booking not found');
-    }
-    return { booking, properties, clients };
-  }
-
   @Post(':id/edit')
-  @Redirect('/bookings')
   async update(@Param('id') id: string, @Body() body: UpdateBookingDto) {
     try {
       await this.bookingsService.update(id, body);
-      return;
+      // Check if it's an AJAX request (JSON)
+      return { success: true };
     } catch (err: unknown) {
       if (err instanceof HttpException) {
         throw err;
