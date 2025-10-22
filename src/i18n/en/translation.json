@@ -24,6 +24,7 @@
     "clients": "Clients",
     "properties": "Properties",
     "invoices": "Invoices",
+    "settings": "Settings",
     "account": "Account",
     "logout": "Logout"
   },
@@ -180,6 +181,18 @@
     "updatePassword": "Update Password",
     "profileUpdated": "Profile updated successfully",
     "passwordUpdated": "Password updated successfully"
+  },
+  "settings": {
+    "title": "Application Settings",
+    "companyInfo": "Company Information",
+    "companyName": "Company Name",
+    "companyNamePlaceholder": "Your Company Name",
+    "companyAddress": "Company Address",
+    "companyAddressPlaceholder": "Full address including street, city, postal code, country",
+    "financialSettings": "Financial Settings",
+    "currency": "Currency",
+    "defaultTaxRate": "Default Tax Rate (%)",
+    "taxRateHelp": "Percentage (0-100). For example: 20 for 20%"
   },
   "errors": {
     "notFound": "Page not found",

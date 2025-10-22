@@ -197,6 +197,19 @@ async function main() {
     });
   }
 
+  console.log('Seeding default settings...');
+  const existingSettings = await prisma.settings.findFirst();
+  if (!existingSettings) {
+    await prisma.settings.create({
+      data: {
+        companyName: 'Stayli',
+        companyAddress: '',
+        currency: 'EUR',
+        defaultTaxRate: 20.0,
+      },
+    });
+  }
+
   console.log('Seeding sample invoices...');
   const booking1 = await prisma.booking.findUnique({
     where: { id: '11111111-1111-4111-8111-111111111111' },

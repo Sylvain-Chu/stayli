@@ -24,6 +24,7 @@
     "clients": "Clients",
     "properties": "Propriétés",
     "invoices": "Factures",
+    "settings": "Paramètres",
     "account": "Compte",
     "logout": "Déconnexion"
   },
@@ -180,6 +181,18 @@
     "updatePassword": "Mettre à jour le mot de passe",
     "profileUpdated": "Profil mis à jour avec succès",
     "passwordUpdated": "Mot de passe mis à jour avec succès"
+  },
+  "settings": {
+    "title": "Paramètres de l'application",
+    "companyInfo": "Informations de l'entreprise",
+    "companyName": "Nom de l'entreprise",
+    "companyNamePlaceholder": "Nom de votre entreprise",
+    "companyAddress": "Adresse de l'entreprise",
+    "companyAddressPlaceholder": "Adresse complète incluant rue, ville, code postal, pays",
+    "financialSettings": "Paramètres financiers",
+    "currency": "Devise",
+    "defaultTaxRate": "Taux de TVA par défaut (%)",
+    "taxRateHelp": "Pourcentage (0-100). Par exemple : 20 pour 20%"
   },
   "errors": {
     "notFound": "Page non trouvée",
