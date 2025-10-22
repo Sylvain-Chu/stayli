@@ -15,7 +15,12 @@
     "to": "Au",
     "loading": "Chargement...",
     "noResults": "Aucun résultat trouvé",
-    "confirm": "Êtes-vous sûr?"
+    "confirm": "Êtes-vous sûr?",
+    "showing": "Affichage de",
+    "of": "sur",
+    "page": "Page",
+    "previous": "Précédent",
+    "next": "Suivant"
   },
   "header": {
     "searchPlaceholder": "Rechercher..."
@@ -111,6 +116,7 @@
     "status": "Statut",
     "confirmDelete": "Supprimer ce client?",
     "noClients": "Aucun client pour le moment.",
+    "clients": "clients",
     "bookings": "Réservations",
     "noBookings": "Aucune réservation pour ce client.",
     "statusActive": "Actif",
