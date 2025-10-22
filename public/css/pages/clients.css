@@ -2,7 +2,6 @@
    Clients Page Styles
    =================================== */
 
-/* Page Header (reuse) */
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -25,7 +24,6 @@
   align-items: center;
 }
 
-/* Filters Section (reuse) */
 .filters-section {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
@@ -78,7 +76,6 @@
   min-width: 250px;
 }
 
-/* Clients List - Card Layout (optimized for space) */
 .clients-list {
   display: flex;
   flex-direction: column;
@@ -124,7 +121,6 @@
   color: var(--text-dark);
 }
 
-/* Style amélioré pour les badges de statut */
 .badge.badge-info {
   background: var(--bg-subtle);
   color: var(--text-muted);
@@ -144,7 +140,6 @@
   color: #2563eb;
 }
 
-/* Contact info - compact style */
 .client-email,
 .client-phone {
   display: flex;
@@ -166,7 +161,6 @@
   opacity: 0.7;
 }
 
-/* Compact action buttons - always visible */
 .client-actions {
   display: flex;
   gap: 4px;
@@ -188,14 +182,12 @@
   height: 16px;
 }
 
-/* Prevent action buttons from triggering card click */
 .client-actions a,
 .client-actions button {
   position: relative;
   z-index: 2;
 }
 
-/* Pagination Styles */
 .pagination {
   display: flex;
   justify-content: space-between;
@@ -237,7 +229,6 @@
   cursor: not-allowed;
 }
 
-/* Empty State */
 .empty-state {
   text-align: center;
   padding: var(--space-3xl) var(--space-xl);
@@ -257,7 +248,6 @@
   margin: 0;
 }
 
-/* Responsive - Clients List */
 @media (max-width: 1200px) {
   .client-card {
     grid-template-columns: 2fr 2fr 1fr;
