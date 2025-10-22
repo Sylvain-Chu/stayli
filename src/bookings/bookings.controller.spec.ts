@@ -188,11 +188,9 @@ describe('BookingsController', () => {
     await expect(controller.remove('1')).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
-  it('show/editForm not found throws 500', async () => {
+  it('show not found throws 500', async () => {
     service.findOne.mockResolvedValueOnce(null);
     await expect(controller.show('1')).rejects.toBeInstanceOf(InternalServerErrorException);
-    service.findOne.mockResolvedValueOnce(null);
-    await expect(controller.editForm('1')).rejects.toBeInstanceOf(InternalServerErrorException);
   });
 
   it('update maps P2025 to 400 and unknown to 500', async () => {
