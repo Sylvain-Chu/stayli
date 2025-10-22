@@ -13,6 +13,8 @@
     "filter": "Filter",
     "from": "From",
     "to": "To",
+    "status": "Status",
+    "all": "All",
     "loading": "Loading...",
     "noResults": "No results found",
     "confirm": "Are you sure?",

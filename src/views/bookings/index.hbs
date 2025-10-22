@@ -27,6 +27,17 @@
       />
     </div>
     <div class="filter-group">
+      <label>{{t 'common.status'}}</label>
+      <select name='status' class="filter-select">
+        <option value=''>{{t 'common.all'}}</option>
+        <option value='pending' {{#if (eq status 'pending')}}selected{{/if}}>{{t 'bookings.statusPending'}}</option>
+        <option value='confirmed' {{#if (eq status 'confirmed')}}selected{{/if}}>{{t 'bookings.statusConfirmed'}}</option>
+        <option value='completed' {{#if (eq status 'completed')}}selected{{/if}}>{{t 'bookings.statusCompleted'}}</option>
+        <option value='cancelled' {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'bookings.statusCancelled'}}</option>
+        <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'bookings.statusBlocked'}}</option>
+      </select>
+    </div>
+    <div class="filter-group">
       <label>{{t 'common.from'}}</label>
       <input type='date' name='from' value='{{from}}' />
     </div>
@@ -40,9 +51,9 @@
         {{t 'common.filter'}}
       </button>
     </div>
-    {{#if from}}{{#if to}}
+    {{#if (or from to status q)}}
       <a href='/bookings' class="btn btn-ghost">{{t 'common.clear'}}</a>
-    {{/if}}{{/if}}
+    {{/if}}
   </form>
 </div>
 

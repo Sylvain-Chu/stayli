@@ -32,7 +32,12 @@ export class BookingsController {
 
   @Get()
   @Render('bookings/index')
-  async index(@Query('from') from?: string, @Query('to') to?: string, @Query('q') q?: string) {
+  async index(
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+    @Query('q') q?: string,
+    @Query('status') status?: string,
+  ) {
     try {
       const fromDate = from ? new Date(from) : undefined;
       const toDate = to ? new Date(to) : undefined;
@@ -43,6 +48,14 @@ export class BookingsController {
         throw new BadRequestException('Invalid to date');
       }
       let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+
+      // Apply status filter if provided
+      if (status && status.trim()) {
+        const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'blocked'];
+        if (validStatuses.includes(status)) {
+          bookings = bookings.filter((b) => b.status === status);
+        }
+      }
 
       // Apply search filter if query provided
       if (q && q.trim()) {
@@ -93,7 +106,7 @@ export class BookingsController {
         };
       });
 
-      return { bookings: enrichedBookings, from, to, q, activeNav: 'bookings' };
+      return { bookings: enrichedBookings, from, to, q, status, activeNav: 'bookings' };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Unable to load bookings');
