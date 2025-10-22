@@ -98,7 +98,8 @@
     "noProperties": "No properties yet.",
     "properties": "properties",
     "bookings": "Bookings",
-    "noBookings": "No bookings for this property."
+    "noBookings": "No bookings for this property.",
+    "propertyInfo": "Property Information"
   },
   "index": {
     "welcome": "Welcome to Stayli. Choose a section below:"
@@ -122,7 +123,11 @@
     "noBookings": "No bookings for this client.",
     "statusActive": "Active",
     "statusInactive": "Inactive",
-    "statusBlacklisted": "Blacklisted"
+    "statusBlacklisted": "Blacklisted",
+    "clientInfo": "Client Information",
+    "fullName": "Full Name",
+    "memberSince": "Member Since",
+    "noClient": "No client"
   },
   "bookings": {
     "title": "Bookings",
@@ -148,6 +153,7 @@
     "statusConfirmed": "Confirmed",
     "statusCancelled": "Cancelled",
     "statusCompleted": "Completed",
+    "noProperty": "No property",
     "propertyLabel": "Property",
     "clientLabel": "Client",
     "periodLabel": "Period",
@@ -214,7 +220,16 @@
     "statusCancelled": "Cancelled",
     "invoices": "invoices",
     "searchPlaceholder": "Search by invoice number or client...",
-    "allStatuses": "All statuses"
+    "allStatuses": "All statuses",
+    "clientAndBooking": "Client & Booking",
+    "invoiceDetails": "Invoice Details",
+    "costBreakdown": "Cost Breakdown",
+    "stayPeriod": "Stay Period",
+    "baseRate": "Base Rate",
+    "options": "Options",
+    "totalAmount": "Total Amount",
+    "downloadPdf": "Download PDF",
+    "markAsPaid": "Mark as Paid"
   },
   "account": {
     "title": "My Account",

@@ -1,10 +1,218 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'invoices.title'}} {{invoice.invoiceNumber}}</h1>
-<p><strong>{{t 'invoices.bookingLabel'}}:</strong> {{invoice.bookingId}}</p>
-<p><strong>{{t 'invoices.amountLabel'}}:</strong> {{currency invoice.amount}}</p>
-<p><strong>{{t 'invoices.dueDateLabel'}}:</strong> {{date invoice.dueDate}}</p>
-<p><a href='/invoices/{{invoice.id}}/edit'>{{t 'common.edit'}}</a> | <a href='/invoices'>{{t 'common.back'}}</a></p>
+<div class="page-header">
+  <div class="page-header-left">
+    <a href="/invoices" class="btn btn-ghost btn-back">
+      <span data-feather="arrow-left"></span>
+      <span>{{t 'common.back'}}</span>
+    </a>
+    <div class="page-title-group">
+      <h1>{{invoice.invoiceNumber}}</h1>
+      {{#if (eq invoice.status 'paid')}}
+        <span class="badge badge-success">{{t 'invoices.statusPaid'}}</span>
+      {{else if (eq invoice.status 'sent')}}
+        <span class="badge badge-warning">{{t 'invoices.statusSent'}}</span>
+      {{else if (eq invoice.status 'overdue')}}
+        <span class="badge badge-danger">{{t 'invoices.statusOverdue'}}</span>
+      {{else if (eq invoice.status 'draft')}}
+        <span class="badge badge-secondary">{{t 'invoices.statusDraft'}}</span>
+      {{else if (eq invoice.status 'cancelled')}}
+        <span class="badge">{{t 'invoices.statusCancelled'}}</span>
+      {{else}}
+        <span class="badge">{{capitalize invoice.status}}</span>
+      {{/if}}
+    </div>
+  </div>
+  <div class="page-actions">
+    <button class="btn btn-secondary">
+      <span data-feather="download"></span>
+      <span>{{t 'invoices.downloadPdf'}}</span>
+    </button>
+    {{#if (eq invoice.status 'draft')}}
+      <a href="/invoices/{{invoice.id}}/edit" class="btn btn-primary">
+        <span data-feather="edit-2"></span>
+        <span>{{t 'common.edit'}}</span>
+      </a>
+    {{/if}}
+    {{#if (eq invoice.status 'sent')}}
+      <button class="btn btn-success" data-mark-paid data-id="{{invoice.id}}">
+        <span data-feather="check-circle"></span>
+        <span>{{t 'invoices.markAsPaid'}}</span>
+      </button>
+    {{/if}}
+    {{#if (eq invoice.status 'draft')}}
+      <button 
+        data-delete 
+        data-id="{{invoice.id}}" 
+        data-base="/invoices" 
+        data-confirm="{{t 'invoices.confirmDelete'}}"
+        class="btn btn-danger">
+        <span data-feather="trash-2"></span>
+        <span>{{t 'common.delete'}}</span>
+      </button>
+    {{/if}}
+  </div>
+</div>
+
+<div class="detail-container">
+  <!-- Client & Booking Information Card -->
+  <div class="detail-card">
+    <div class="card-header">
+      <h2>{{t 'invoices.clientAndBooking'}}</h2>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        {{#if invoice.booking.client}}
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="user"></span>
+            {{t 'invoices.client'}}
+          </div>
+          <div class="info-value">
+            <a href="/clients/{{invoice.booking.client.id}}" class="link-primary">
+              {{invoice.booking.client.firstName}} {{invoice.booking.client.lastName}}
+            </a>
+          </div>
+        </div>
+        {{/if}}
+
+        {{#if invoice.booking.property}}
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="home"></span>
+            {{t 'bookings.property'}}
+          </div>
+          <div class="info-value">
+            <a href="/properties/{{invoice.booking.property.id}}" class="link-primary">
+              {{invoice.booking.property.name}}
+            </a>
+          </div>
+        </div>
+        {{/if}}
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="calendar"></span>
+            {{t 'invoices.stayPeriod'}}
+          </div>
+          <div class="info-value">
+            {{formatDate invoice.booking.startDate}} → {{formatDate invoice.booking.endDate}}
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="link"></span>
+            {{t 'invoices.booking'}}
+          </div>
+          <div class="info-value">
+            <a href="/bookings/{{invoice.booking.id}}" class="link-primary">
+              {{t 'common.view'}} {{t 'bookings.title'}}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice Details Card -->
+  <div class="detail-card">
+    <div class="card-header">
+      <h2>{{t 'invoices.invoiceDetails'}}</h2>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="hash"></span>
+            {{t 'invoices.invoiceNumber'}}
+          </div>
+          <div class="info-value">{{invoice.invoiceNumber}}</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="calendar"></span>
+            {{t 'invoices.issueDate'}}
+          </div>
+          <div class="info-value">{{formatDate invoice.createdAt}}</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="clock"></span>
+            {{t 'invoices.dueDate'}}
+          </div>
+          <div class="info-value {{#if (eq invoice.status 'overdue')}}text-danger{{/if}}">
+            {{formatDate invoice.dueDate}}
+            {{#if (eq invoice.status 'overdue')}}
+              <span class="badge badge-danger">{{t 'invoices.statusOverdue'}}</span>
+            {{/if}}
+          </div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="info"></span>
+            {{t 'invoices.status'}}
+          </div>
+          <div class="info-value">
+            {{#if (eq invoice.status 'paid')}}
+              <span class="badge badge-success">{{t 'invoices.statusPaid'}}</span>
+            {{else if (eq invoice.status 'sent')}}
+              <span class="badge badge-warning">{{t 'invoices.statusSent'}}</span>
+            {{else if (eq invoice.status 'overdue')}}
+              <span class="badge badge-danger">{{t 'invoices.statusOverdue'}}</span>
+            {{else if (eq invoice.status 'draft')}}
+              <span class="badge badge-secondary">{{t 'invoices.statusDraft'}}</span>
+            {{else if (eq invoice.status 'cancelled')}}
+              <span class="badge">{{t 'invoices.statusCancelled'}}</span>
+            {{else}}
+              <span class="badge">{{capitalize invoice.status}}</span>
+            {{/if}}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cost Breakdown Card -->
+  <div class="detail-card">
+    <div class="card-header">
+      <h2>{{t 'invoices.costBreakdown'}}</h2>
+    </div>
+    <div class="card-body">
+      <div class="cost-breakdown">
+        <div class="cost-line">
+          <span class="cost-label">
+            <span data-feather="home"></span>
+            {{t 'invoices.baseRate'}}
+          </span>
+          <span class="cost-value">{{currency invoice.booking.totalPrice}}</span>
+        </div>
+
+        {{!-- Future: Add options breakdown when available --}}
+        {{!-- <div class="cost-line">
+          <span class="cost-label">
+            <span data-feather="package"></span>
+            {{t 'invoices.options'}} (Linge)
+          </span>
+          <span class="cost-value">20,00 €</span>
+        </div> --}}
+
+        <div class="cost-line cost-total">
+          <span class="cost-label">
+            <span data-feather="dollar-sign"></span>
+            <strong>{{t 'invoices.totalAmount'}}</strong>
+          </span>
+          <span class="cost-value">
+            <strong>{{currency invoice.amount}}</strong>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 {{> footer }}

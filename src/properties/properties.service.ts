@@ -42,8 +42,20 @@ export class PropertiesService {
     return this.prisma.property.delete({ where: { id } });
   }
 
-  async findOne(id: string): Promise<Property | null> {
-    return this.prisma.property.findUnique({ where: { id } });
+  async findOne(id: string) {
+    return this.prisma.property.findUnique({
+      where: { id },
+      include: {
+        bookings: {
+          include: {
+            client: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
   }
 
   async update(

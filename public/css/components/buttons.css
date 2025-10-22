@@ -18,6 +18,13 @@ button,
   cursor: pointer;
   transition: all var(--transition-fast);
   white-space: nowrap;
+  line-height: 1.5;
+}
+
+button svg,
+.btn svg {
+  flex-shrink: 0;
+  vertical-align: middle;
 }
 
 /* Primary Button */

@@ -74,8 +74,18 @@ export class InvoicesService {
     return this.prisma.invoice.delete({ where: { id } });
   }
 
-  async findOne(id: string): Promise<Invoice | null> {
-    return this.prisma.invoice.findUnique({ where: { id }, include: { booking: true } });
+  async findOne(id: string) {
+    return this.prisma.invoice.findUnique({
+      where: { id },
+      include: {
+        booking: {
+          include: {
+            client: true,
+            property: true,
+          },
+        },
+      },
+    });
   }
 
   async update(

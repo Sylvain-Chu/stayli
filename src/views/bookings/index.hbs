@@ -34,10 +34,12 @@
       <label>{{t 'common.to'}}</label>
       <input type='date' name='to' value='{{to}}' />
     </div>
-    <button type='submit' class="btn btn-secondary">
-      <i data-feather="search"></i>
-      {{t 'common.filter'}}
-    </button>
+    <div>
+      <button type='submit' class="btn btn-secondary">
+        <i data-feather="search"></i>
+        {{t 'common.filter'}}
+      </button>
+    </div>
     {{#if from}}{{#if to}}
       <a href='/bookings' class="btn btn-ghost">{{t 'common.clear'}}</a>
     {{/if}}{{/if}}

@@ -16,6 +16,7 @@
 @import url('components/alerts.css');
 @import url('components/tooltips.css');
 @import url('components/dashboard.css');
+@import url('components/form-modern.css');
 
 /* Other Modules */
 @import url('cards.css');
@@ -31,3 +32,4 @@
 @import url('pages/clients.css');
 @import url('pages/properties.css');
 @import url('pages/invoices.css');
+@import url('pages/detail.css');
