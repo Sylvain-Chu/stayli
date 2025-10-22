@@ -217,4 +217,26 @@ export function registerHandlebarsHelpers(): void {
     if (s.length === 0) return '';
     return s.charAt(0).toUpperCase() + s.slice(1);
   });
+
+  // Math helpers for pagination
+  hbs.registerHelper('add', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return 0;
+    return numA + numB;
+  });
+
+  hbs.registerHelper('sub', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return 0;
+    return numA - numB;
+  });
+
+  hbs.registerHelper('gt', function (a: unknown, b: unknown) {
+    const numA = typeof a === 'number' ? a : Number(a);
+    const numB = typeof b === 'number' ? b : Number(b);
+    if (!Number.isFinite(numA) || !Number.isFinite(numB)) return false;
+    return numA > numB;
+  });
 }

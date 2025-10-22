@@ -1,31 +1,91 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{t 'clients.title'}}</h1>
-<form method='GET' action='/clients' style='margin: 0 0 1rem;'>
-  <input type='text' name='q' placeholder='{{t "clients.searchPlaceholder"}}' value='{{q}}' />
-  <button type='submit'>{{t 'common.search'}}</button>
-  {{#if q}}<a href='/clients' style='margin-left: .5rem;'>{{t 'common.clear'}}</a>{{/if}}
-  <span style='margin-left:1rem;'><a href='/clients/create'>{{t 'clients.addNew'}}</a></span>
-  </form>
-<hr />
-<ul>
+<div class="page-header">
+  <h1>{{t 'clients.title'}}</h1>
+  <div class="page-actions">
+    <form method="GET" action="/clients" style="display: flex; gap: var(--space-sm); align-items: center;">
+      <input 
+        type="search" 
+        name="q" 
+        placeholder="{{t 'clients.searchPlaceholder'}}" 
+        value="{{q}}" 
+        class="search-input"
+        style="width: 250px; padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-size-sm);" 
+      />
+      <button type="submit" class="btn btn-secondary">
+        <span data-feather="search"></span>
+      </button>
+      {{#if q}}<a href="/clients" class="btn btn-ghost">{{t 'common.clear'}}</a>{{/if}}
+    </form>
+    <a href="/clients/create" class="btn btn-primary">
+      <span data-feather="user-plus"></span> {{t 'clients.addNew'}}
+    </a>
+  </div>
+</div>
+
+<div class="clients-list">
   {{#each clients}}
-    <li>
-      <strong>{{this.firstName}} {{this.lastName}}</strong><br />
-      <small>{{this.email}} {{#if this.phone}}- {{this.phone}}{{/if}}</small>
-      <button
-        data-delete
-        data-id='{{this.id}}'
-        data-base='/clients'
-        data-confirm='{{t "clients.confirmDelete"}}'
-      >{{t 'common.delete'}}</button>
-      <a href='/clients/{{this.id}}'>{{t 'common.view'}}</a>
-      <a href='/clients/{{this.id}}/edit'>{{t 'common.edit'}}</a>
-    </li>
+    <div class="client-card" onclick="window.location='/clients/{{this.id}}'" style="cursor:pointer;">
+      <div class="client-info">
+        <h3 class="client-name">
+          {{this.firstName}} {{this.lastName}}
+          {{#if this.status}}
+            <span class="badge badge-info">{{this.status}}</span>
+          {{/if}}
+        </h3>
+        <span class="client-email"><span data-feather="mail"></span> {{this.email}}</span>
+        {{#if this.phone}}<span class="client-phone"><span data-feather="phone"></span> {{this.phone}}</span>{{/if}}
+      </div>
+      <div class="client-actions" onclick="event.stopPropagation();">
+        <a href="/clients/{{this.id}}" class="btn btn-icon btn-ghost" title="{{t 'common.view'}}"><span data-feather="eye"></span></a>
+        <a href="/clients/{{this.id}}/edit" class="btn btn-icon btn-secondary" title="{{t 'common.edit'}}"><span data-feather="edit-2"></span></a>
+        <button data-delete data-id="{{this.id}}" data-base="/clients" data-confirm="{{t 'clients.confirmDelete'}}" class="btn btn-icon btn-danger" title="{{t 'common.delete'}}"><span data-feather="trash-2"></span></button>
+      </div>
+    </div>
   {{else}}
-    <li>{{t 'clients.noClients'}}</li>
+    <div class="empty-state">
+      <span class="empty-icon" data-feather="users"></span>
+      <p>{{t 'clients.noClients'}}</p>
+    </div>
   {{/each}}
-</ul>
+</div>
+
+{{#if pagination}}
+  {{#if pagination.totalPages}}
+    {{#if (gt pagination.totalPages 1)}}
+      <div class="pagination">
+        <div class="pagination-info">
+          {{t 'common.showing'}} {{clients.length}} {{t 'common.of'}} {{pagination.total}} {{t 'clients.clients'}}
+        </div>
+        <div class="pagination-controls">
+          {{#if pagination.hasPrev}}
+            <a href="/clients?page={{sub pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
+            </button>
+          {{/if}}
+          
+          <span class="pagination-pages">
+            {{t 'common.page'}} {{pagination.currentPage}} {{t 'common.of'}} {{pagination.totalPages}}
+          </span>
+          
+          {{#if pagination.hasNext}}
+            <a href="/clients?page={{add pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </a>
+          {{else}}
+            <button class="btn btn-secondary" disabled>
+              {{t 'common.next'}} <span data-feather="chevron-right"></span>
+            </button>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+  {{/if}}
+{{/if}}
 
 {{> footer }}

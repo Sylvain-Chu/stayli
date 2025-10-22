@@ -6,7 +6,11 @@ import { Client, Prisma } from '@prisma/client';
 export class ClientsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(q?: string): Promise<Client[]> {
+  async findAll(
+    q?: string,
+    page: number = 1,
+    pageSize: number = 15,
+  ): Promise<{ clients: Client[]; total: number }> {
     const where: Prisma.ClientWhereInput | undefined = q
       ? {
           OR: [
@@ -17,10 +21,18 @@ export class ClientsService {
           ],
         }
       : undefined;
-    return this.prisma.client.findMany({
-      where,
-      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
-    });
+
+    const [clients, total] = await Promise.all([
+      this.prisma.client.findMany({
+        where,
+        orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.client.count({ where }),
+    ]);
+
+    return { clients, total };
   }
 
   async create(data: {

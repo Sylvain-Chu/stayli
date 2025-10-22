@@ -23,10 +23,26 @@ export class ClientsController {
 
   @Get()
   @Render('clients/index')
-  async index(@Query('q') q?: string) {
+  async index(@Query('q') q?: string, @Query('page') page?: string) {
     try {
-      const clients = await this.clientsService.findAll(q);
-      return { clients, q, activeNav: 'clients' };
+      const currentPage = Math.max(1, parseInt(page || '1', 10));
+      const pageSize = 15;
+
+      const { clients, total } = await this.clientsService.findAll(q, currentPage, pageSize);
+      const totalPages = Math.ceil(total / pageSize);
+
+      return {
+        clients,
+        q,
+        activeNav: 'clients',
+        pagination: {
+          currentPage,
+          totalPages,
+          total,
+          hasNext: currentPage < totalPages,
+          hasPrev: currentPage > 1,
+        },
+      };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve clients.');
     }

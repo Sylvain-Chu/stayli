@@ -28,3 +28,4 @@
 /* Page-Specific Styles */
 @import url('pages/login.css');
 @import url('pages/bookings.css');
+@import url('pages/clients.css');

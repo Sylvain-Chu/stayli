@@ -15,7 +15,12 @@
     "to": "To",
     "loading": "Loading...",
     "noResults": "No results found",
-    "confirm": "Are you sure?"
+    "confirm": "Are you sure?",
+    "showing": "Showing",
+    "of": "of",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next"
   },
   "header": {
     "searchPlaceholder": "Search for anything..."
@@ -111,6 +116,7 @@
     "status": "Status",
     "confirmDelete": "Delete this client?",
     "noClients": "No clients yet.",
+    "clients": "clients",
     "bookings": "Bookings",
     "noBookings": "No bookings for this client.",
     "statusActive": "Active",
