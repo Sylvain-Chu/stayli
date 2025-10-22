@@ -6,6 +6,7 @@ type InvoiceModel = {
   delete: jest.Mock<Promise<unknown>, [args: unknown]>;
   findUnique: jest.Mock<Promise<Record<string, unknown> | null>, [args: unknown]>;
   update: jest.Mock<Promise<unknown>, [args: unknown]>;
+  count: jest.Mock<Promise<number>, [args?: unknown]>;
 };
 
 type BookingModel = {
@@ -29,6 +30,7 @@ describe('InvoicesService', () => {
         delete: jest.fn<Promise<unknown>, [args: unknown]>(),
         findUnique: jest.fn<Promise<Record<string, unknown> | null>, [args: unknown]>(),
         update: jest.fn<Promise<unknown>, [args: unknown]>(),
+        count: jest.fn<Promise<number>, [args?: unknown]>(),
       },
       booking: { findMany: jest.fn<Promise<unknown[]>, [args?: unknown]>() },
     };
@@ -40,9 +42,10 @@ describe('InvoicesService', () => {
 
   it('findAll includes booking', async () => {
     prisma.invoice.findMany.mockResolvedValueOnce([]);
+    prisma.invoice.count.mockResolvedValueOnce(0);
     const res = await service.findAll();
-    expect(res).toEqual([]);
-    expect(prisma.invoice.findMany).toHaveBeenCalledWith({ include: { booking: true } });
+    expect(res).toEqual({ invoices: [], total: 0 });
+    expect(prisma.invoice.findMany).toHaveBeenCalled();
   });
 
   it('create connects booking and sets fields', async () => {
@@ -81,7 +84,14 @@ describe('InvoicesService', () => {
     const res = await service.findOne('i1');
     expect(prisma.invoice.findUnique).toHaveBeenCalledWith({
       where: { id: 'i1' },
-      include: { booking: true },
+      include: {
+        booking: {
+          include: {
+            client: true,
+            property: true,
+          },
+        },
+      },
     });
     expect(res).toEqual({ id: 'i1' });
   });

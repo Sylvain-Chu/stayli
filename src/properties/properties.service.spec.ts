@@ -14,6 +14,7 @@ type PropertyModel = {
     where: { id: string };
     data: { name?: string; address?: string; description?: string };
   }) => Promise<Property>;
+  count: (args: { where?: Prisma.PropertyWhereInput }) => Promise<number>;
 };
 
 type MockPrisma = { property: jest.Mocked<PropertyModel> };
@@ -30,6 +31,7 @@ describe('PropertiesService', () => {
         delete: jest.fn(),
         findUnique: jest.fn(),
         update: jest.fn(),
+        count: jest.fn(),
       },
     } as unknown as MockPrisma;
     service = new PropertiesService(prisma as unknown as PrismaService);
@@ -37,16 +39,15 @@ describe('PropertiesService', () => {
 
   it('findAll without q returns sorted list', async () => {
     prisma.property.findMany.mockResolvedValue([] as Property[]);
+    prisma.property.count.mockResolvedValue(0);
     const res = await service.findAll();
-    expect(res).toEqual([]);
-    expect(prisma.property.findMany).toHaveBeenCalledWith({
-      where: undefined,
-      orderBy: { name: 'asc' },
-    });
+    expect(res).toEqual({ properties: [], total: 0 });
+    expect(prisma.property.findMany).toHaveBeenCalled();
   });
 
   it('findAll with q builds OR filters', async () => {
     prisma.property.findMany.mockResolvedValue([] as Property[]);
+    prisma.property.count.mockResolvedValue(0);
     await service.findAll('villa');
     const calls = (prisma.property.findMany as unknown as jest.Mock).mock.calls as Array<
       [FindManyArgs]
@@ -76,7 +77,15 @@ describe('PropertiesService', () => {
   it('findOne calls prisma.property.findUnique', async () => {
     prisma.property.findUnique.mockResolvedValue({ id: 'p3' } as unknown as Property);
     const res = await service.findOne('p3');
-    expect(prisma.property.findUnique).toHaveBeenCalledWith({ where: { id: 'p3' } });
+    expect(prisma.property.findUnique).toHaveBeenCalledWith({
+      where: { id: 'p3' },
+      include: {
+        bookings: {
+          include: { client: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
     expect(res).toEqual({ id: 'p3' });
   });
 

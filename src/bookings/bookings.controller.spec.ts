@@ -100,6 +100,9 @@ describe('BookingsController', () => {
       bookings: [expect.objectContaining({ id: 'b1' })],
       from: '2025-01-01',
       to: '2025-01-10',
+      q: undefined,
+      status: undefined,
+      activeNav: 'bookings',
     });
   });
 
