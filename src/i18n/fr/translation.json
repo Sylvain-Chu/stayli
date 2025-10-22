@@ -98,7 +98,8 @@
     "noProperties": "Aucune propriété pour le moment.",
     "properties": "propriétés",
     "bookings": "Réservations",
-    "noBookings": "Aucune réservation pour cette propriété."
+    "noBookings": "Aucune réservation pour cette propriété.",
+    "propertyInfo": "Informations de la propriété"
   },
   "index": {
     "welcome": "Bienvenue sur Stayli. Choisissez une section ci-dessous :"
@@ -122,7 +123,11 @@
     "noBookings": "Aucune réservation pour ce client.",
     "statusActive": "Actif",
     "statusInactive": "Inactif",
-    "statusBlacklisted": "Liste noire"
+    "statusBlacklisted": "Liste noire",
+    "clientInfo": "Informations du client",
+    "fullName": "Nom complet",
+    "memberSince": "Membre depuis",
+    "noClient": "Aucun client"
   },
   "bookings": {
     "title": "Réservations",
@@ -148,6 +153,7 @@
     "statusConfirmed": "Confirmé",
     "statusCancelled": "Annulé",
     "statusCompleted": "Terminé",
+    "noProperty": "Aucune propriété",
     "propertyLabel": "Propriété",
     "clientLabel": "Client",
     "periodLabel": "Période",
@@ -214,7 +220,16 @@
     "statusCancelled": "Annulé",
     "invoices": "factures",
     "searchPlaceholder": "Rechercher par numéro ou client...",
-    "allStatuses": "Tous les statuts"
+    "allStatuses": "Tous les statuts",
+    "clientAndBooking": "Client & Réservation",
+    "invoiceDetails": "Détails de la facture",
+    "costBreakdown": "Détail des coûts",
+    "stayPeriod": "Période du séjour",
+    "baseRate": "Tarif de base",
+    "options": "Options",
+    "totalAmount": "Montant total",
+    "downloadPdf": "Télécharger PDF",
+    "markAsPaid": "Marquer comme payé"
   },
   "account": {
     "title": "Mon Compte",

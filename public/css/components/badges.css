@@ -114,3 +114,16 @@
   background: rgba(156, 163, 175, 0.2);
   color: #6b7280;
 }
+
+/* Badge Color Variations */
+.badge.badge-info {
+  background: rgba(59, 130, 246, 0.15);
+  color: #2563eb;
+  border: 1px solid #60a5fa;
+}
+
+.badge.badge-secondary {
+  background: rgba(107, 114, 128, 0.15);
+  color: #4b5563;
+  border: 1px solid #9ca3af;
+}

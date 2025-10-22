@@ -48,8 +48,20 @@ export class ClientsService {
     return this.prisma.client.delete({ where: { id } });
   }
 
-  async findOne(id: string): Promise<Client | null> {
-    return this.prisma.client.findUnique({ where: { id } });
+  async findOne(id: string) {
+    return this.prisma.client.findUnique({
+      where: { id },
+      include: {
+        bookings: {
+          include: {
+            property: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
   }
 
   async update(

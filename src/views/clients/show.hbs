@@ -1,13 +1,137 @@
 {{> header }}
 {{> sidebar }}
 
-<h1>{{client.firstName}} {{client.lastName}}</h1>
-<p><strong>Email:</strong> {{client.email}}</p>
-{{#if client.phone}}
-  <p><strong>Phone:</strong> {{client.phone}}</p>{{/if}}
-<p>
-  <a href='/clients/{{client.id}}/edit'>{{t 'common.edit'}}</a>
-  <a href='/clients'>{{t 'common.back'}}</a>
-</p>
+<div class="page-header">
+  <div class="page-header-left">
+    <a href="/clients" class="btn btn-ghost btn-back">
+      <span data-feather="arrow-left"></span>
+      <span>{{t 'common.back'}}</span>
+    </a>
+    <div class="page-title-group">
+      <h1>{{client.firstName}} {{client.lastName}}</h1>
+      <span class="badge badge-secondary">{{t 'clientStatus.regular'}}</span>
+    </div>
+  </div>
+  <div class="page-actions">
+    <a href="/clients/{{client.id}}/edit" class="btn btn-primary">
+      <span data-feather="edit-2"></span>
+      <span>{{t 'common.edit'}}</span>
+    </a>
+    <button 
+      data-delete 
+      data-id="{{client.id}}" 
+      data-base="/clients" 
+      data-confirm="{{t 'clients.confirmDelete'}}"
+      class="btn btn-danger">
+      <span data-feather="trash-2"></span>
+      <span>{{t 'common.delete'}}</span>
+    </button>
+  </div>
+</div>
+
+<div class="detail-container">
+  <!-- Client Information Card -->
+  <div class="detail-card">
+    <div class="card-header">
+      <h2>{{t 'clients.clientInfo'}}</h2>
+    </div>
+    <div class="card-body">
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="user"></span>
+            {{t 'clients.fullName'}}
+          </div>
+          <div class="info-value">{{client.firstName}} {{client.lastName}}</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="mail"></span>
+            {{t 'clients.email'}}
+          </div>
+          <div class="info-value">
+            <a href="mailto:{{client.email}}" class="link-primary">{{client.email}}</a>
+          </div>
+        </div>
+
+        {{#if client.phone}}
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="phone"></span>
+            {{t 'clients.phone'}}
+          </div>
+          <div class="info-value">
+            <a href="tel:{{client.phone}}" class="link-primary">{{client.phone}}</a>
+          </div>
+        </div>
+        {{/if}}
+
+        <div class="info-item">
+          <div class="info-label">
+            <span data-feather="calendar"></span>
+            {{t 'clients.memberSince'}}
+          </div>
+          <div class="info-value">{{formatDate client.createdAt}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bookings Card -->
+  <div class="detail-card">
+    <div class="card-header">
+      <h2>{{t 'clients.bookings'}}</h2>
+      <span class="badge badge-info">{{client.bookings.length}}</span>
+    </div>
+    <div class="card-body">
+      {{#if client.bookings}}
+        <div class="bookings-list">
+          {{#each client.bookings}}
+            <a href="/bookings/{{this.id}}" class="booking-item">
+              <div class="booking-info">
+                <div class="booking-property">
+                  <span data-feather="home"></span>
+                  {{#if this.property}}
+                    {{this.property.name}}
+                  {{else}}
+                    {{t 'bookings.noProperty'}}
+                  {{/if}}
+                </div>
+                <div class="booking-dates">
+                  <span data-feather="calendar"></span>
+                  {{formatDate this.startDate}} → {{formatDate this.endDate}}
+                </div>
+                <div class="booking-price">
+                  <span data-feather="dollar-sign"></span>
+                  {{currency this.totalPrice}}
+                </div>
+              </div>
+              <div class="booking-status">
+                {{#if (eq this.status 'confirmed')}}
+                  <span class="badge badge-success">{{t 'bookings.statusConfirmed'}}</span>
+                {{else if (eq this.status 'pending')}}
+                  <span class="badge badge-warning">{{t 'bookings.statusPending'}}</span>
+                {{else if (eq this.status 'cancelled')}}
+                  <span class="badge badge-danger">{{t 'bookings.statusCancelled'}}</span>
+                {{else if (eq this.status 'completed')}}
+                  <span class="badge badge-info">{{t 'bookings.statusCompleted'}}</span>
+                {{else}}
+                  <span class="badge">{{capitalize this.status}}</span>
+                {{/if}}
+              </div>
+              <span data-feather="chevron-right" class="booking-arrow"></span>
+            </a>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="empty-state-small">
+          <span data-feather="calendar"></span>
+          <p>{{t 'clients.noBookings'}}</p>
+        </div>
+      {{/if}}
+    </div>
+  </div>
+</div>
 
 {{> footer }}
