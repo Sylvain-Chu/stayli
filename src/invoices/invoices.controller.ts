@@ -10,6 +10,7 @@ import {
   Delete,
   BadRequestException,
   HttpCode,
+  Query,
 } from '@nestjs/common';
 import { InvoicesService } from './invoices.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
@@ -26,10 +27,53 @@ export class InvoicesController {
 
   @Get()
   @Render('invoices/index')
-  async index() {
+  async index(
+    @Query('page') page?: string,
+    @Query('q') q?: string,
+    @Query('status') status?: string,
+  ) {
     try {
-      const invoices = await this.invoicesService.findAll();
-      return { invoices, activeNav: 'invoices' };
+      const currentPage = Math.max(1, parseInt(page || '1', 10));
+      const pageSize = 15;
+
+      const { invoices, total } = await this.invoicesService.findAll(
+        currentPage,
+        pageSize,
+        q,
+        status,
+      );
+      const totalPages = Math.ceil(total / pageSize);
+
+      // Add isOverdue flag to each invoice
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const invoicesWithOverdueFlag = invoices.map((invoice) => {
+        const isOverdue =
+          invoice.status !== 'paid' &&
+          invoice.status !== 'cancelled' &&
+          invoice.dueDate &&
+          new Date(invoice.dueDate) < today;
+
+        return {
+          ...invoice,
+          isOverdue,
+        };
+      });
+
+      return {
+        invoices: invoicesWithOverdueFlag,
+        q,
+        status,
+        activeNav: 'invoices',
+        pagination: {
+          currentPage,
+          totalPages,
+          total,
+          hasNext: currentPage < totalPages,
+          hasPrev: currentPage > 1,
+        },
+      };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve invoices.');
     }

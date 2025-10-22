@@ -9,7 +9,9 @@
   padding: var(--space-2xl) var(--space-lg);
   box-shadow: none;
   overflow-y: auto;
-  min-height: 100vh;
+  height: 100vh;
+  position: sticky;
+  top: 0;
 }
 
 /* Sidebar Logo/Brand */
