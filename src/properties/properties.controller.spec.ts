@@ -37,10 +37,12 @@ describe('PropertiesController', () => {
   });
 
   it('root returns properties and q', async () => {
-    service.findAll.mockResolvedValueOnce([{ id: '1' }]);
+    service.findAll.mockResolvedValueOnce({ properties: [{ id: '1' }], total: 1 });
     const res = await controller.root('villa');
     expect(service.findAll.mock.calls[0][0]).toBe('villa');
-    expect(res).toEqual({ properties: [{ id: '1' }], q: 'villa' });
+    expect(res.properties).toEqual([{ id: '1' }]);
+    expect(res.q).toEqual('villa');
+    expect(res.activeNav).toEqual('properties');
   });
 
   it('root maps unknown error to 500', async () => {

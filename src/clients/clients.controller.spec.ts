@@ -38,10 +38,12 @@ describe('ClientsController', () => {
   });
 
   it('index returns clients and q', async () => {
-    service.findAll.mockResolvedValueOnce([{ id: '1' }]);
+    service.findAll.mockResolvedValueOnce({ clients: [{ id: '1' }], total: 1 });
     const res = await controller.index('john');
     expect(service.findAll.mock.calls[0][0]).toBe('john');
-    expect(res).toEqual({ clients: [{ id: '1' }], q: 'john' });
+    expect(res.clients).toEqual([{ id: '1' }]);
+    expect(res.q).toEqual('john');
+    expect(res.activeNav).toEqual('clients');
   });
 
   it('index maps unknown error to 500', async () => {
