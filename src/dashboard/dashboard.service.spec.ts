@@ -117,12 +117,10 @@ describe('DashboardService', () => {
     // Stats computed
     expect(res.stats).toMatchObject({
       propertiesCount: 10,
-      clientsCount: 5,
       revenueThisMonth: 300,
       pendingInvoices: 2,
       currentlyOccupiedProperties: 1,
       occupancyPercent: 10,
-      revenueGoal: 3000,
     });
   });
 });

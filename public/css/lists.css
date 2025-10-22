@@ -1,0 +1,131 @@
+/* ===================================
+   Lists
+   =================================== */
+
+.list,
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item,
+li {
+  padding: var(--space-md) 0;
+  transition: background-color var(--transition-fast);
+}
+
+.list-item:last-child,
+li:last-child {
+  border-bottom: none;
+}
+
+.item-title {
+  font-weight: var(--font-weight-semibold);
+  color: var(--text-dark);
+  margin-bottom: var(--space-xs);
+}
+
+.item-sub {
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.item-meta {
+  color: var(--text-light);
+  font-size: var(--font-size-xs);
+  margin-top: var(--space-xs);
+}
+
+.list a {
+  color: var(--text-dark);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+/* Special Event Styling */
+.today-event {
+  background: rgba(37, 129, 247, 0.1);
+  border-left: 3px solid var(--color-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  margin: var(--space-xs) 0;
+}
+
+/* Task List - Style maquette */
+.task-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-light);
+  transition: background var(--transition-fast);
+  cursor: pointer;
+}
+
+.task-item:last-child {
+  border-bottom: none;
+}
+
+.task-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border-medium);
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+}
+
+.task-checkbox.checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.task-checkbox.checked::after {
+  content: '✓';
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.task-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.task-dot.orange {
+  background: var(--icon-orange);
+}
+
+.task-dot.blue {
+  background: var(--icon-blue);
+}
+
+.task-dot.purple {
+  background: var(--icon-purple);
+}
+
+.task-dot.green {
+  background: var(--icon-green);
+}
+
+.task-content {
+  flex: 1;
+}
+
+.task-title {
+  font-size: var(--font-size-sm);
+  color: var(--text-dark);
+  margin-bottom: 2px;
+}

@@ -32,28 +32,91 @@ export class BookingsController {
 
   @Get()
   @Render('bookings/index')
-  async index(@Query('from') from?: string, @Query('to') to?: string) {
+  async index(
+    @Query('from') from?: string,
+    @Query('to') to?: string,
+    @Query('q') q?: string,
+    @Query('status') status?: string,
+  ) {
     try {
       const fromDate = from ? new Date(from) : undefined;
       const toDate = to ? new Date(to) : undefined;
       if (from && (!fromDate || Number.isNaN(fromDate.getTime()))) {
-        throw new BadRequestException('Invalid "from" date. Expected YYYY-MM-DD');
+        throw new BadRequestException('Invalid from date');
       }
       if (to && (!toDate || Number.isNaN(toDate.getTime()))) {
-        throw new BadRequestException('Invalid "to" date. Expected YYYY-MM-DD');
+        throw new BadRequestException('Invalid to date');
       }
-      const bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
-      return { bookings, from, to };
+      let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+
+      // Apply status filter if provided
+      if (status && status.trim()) {
+        const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'blocked'];
+        if (validStatuses.includes(status)) {
+          bookings = bookings.filter((b) => b.status === status);
+        }
+      }
+
+      // Apply search filter if query provided
+      if (q && q.trim()) {
+        const search = q.trim().toLowerCase();
+        bookings = bookings.filter(
+          (b) =>
+            b.property.name.toLowerCase().includes(search) ||
+            b.client.firstName.toLowerCase().includes(search) ||
+            b.client.lastName.toLowerCase().includes(search) ||
+            `${b.client.firstName} ${b.client.lastName}`.toLowerCase().includes(search),
+        );
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Compute action flags for each booking
+      const enrichedBookings = bookings.map((b) => {
+        const startDate = new Date(b.startDate);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(b.endDate);
+        endDate.setHours(0, 0, 0, 0);
+        const isCancelled = b.status === 'cancelled';
+        const hasStarted = startDate <= today;
+        const hasEnded = endDate < today;
+        const hasInvoice = !!b.invoice;
+
+        return {
+          ...b,
+          canEdit: !isCancelled && !hasStarted,
+          canEditReason: isCancelled
+            ? 'bookings.cannotEditCancelled'
+            : hasStarted
+              ? 'bookings.cannotEditStarted'
+              : '',
+          canCancel: !isCancelled && !hasEnded,
+          canCancelReason: isCancelled
+            ? 'bookings.alreadyCancelled'
+            : hasEnded
+              ? 'bookings.cannotCancelEnded'
+              : '',
+          canDelete: !hasInvoice && isCancelled,
+          canDeleteReason: hasInvoice
+            ? 'bookings.cannotDeleteHasInvoice'
+            : !isCancelled
+              ? 'bookings.cannotDeleteActive'
+              : '',
+        };
+      });
+
+      return { bookings: enrichedBookings, from, to, q, status, activeNav: 'bookings' };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
-      throw new InternalServerErrorException('Failed to retrieve bookings.');
+      throw new InternalServerErrorException('Unable to load bookings');
     }
   }
 
   @Get('calendar')
   @Render('bookings/calendar')
   calendar() {
-    return {};
+    return { activeNav: 'calendar' };
   }
 
   @Get('events')
@@ -65,10 +128,10 @@ export class BookingsController {
     const startDate = start ? new Date(start) : undefined;
     const endDate = end ? new Date(end) : undefined;
     if (start && (!startDate || Number.isNaN(startDate.getTime()))) {
-      throw new BadRequestException('Invalid "start" date. Expected YYYY-MM-DD');
+      throw new BadRequestException('Invalid start date');
     }
     if (end && (!endDate || Number.isNaN(endDate.getTime()))) {
-      throw new BadRequestException('Invalid "end" date. Expected YYYY-MM-DD');
+      throw new BadRequestException('Invalid end date');
     }
 
     // Normalize and validate statuses
@@ -160,16 +223,6 @@ export class BookingsController {
   @Get(':id')
   @Render('bookings/show')
   async show(@Param('id') id: string) {
-    const booking = await this.bookingsService.findOne(id);
-    if (!booking) {
-      throw new InternalServerErrorException('Booking not found');
-    }
-    return { booking };
-  }
-
-  @Get(':id/edit')
-  @Render('bookings/edit')
-  async editForm(@Param('id') id: string) {
     const [booking, properties, clients] = await Promise.all([
       this.bookingsService.findOne(id),
       this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
@@ -178,15 +231,57 @@ export class BookingsController {
     if (!booking) {
       throw new InternalServerErrorException('Booking not found');
     }
-    return { booking, properties, clients };
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const startDate = new Date(booking.startDate);
+    startDate.setHours(0, 0, 0, 0);
+    const endDate = new Date(booking.endDate);
+    endDate.setHours(0, 0, 0, 0);
+    const isCancelled = booking.status === 'cancelled';
+    const hasStarted = startDate <= today;
+    const hasEnded = endDate < today;
+    const hasInvoice = !!booking.invoice;
+    const hasValidPrice = booking.totalPrice != null && booking.totalPrice > 0;
+
+    const canEdit = !isCancelled && !hasStarted;
+    const canEditReason = isCancelled
+      ? 'bookings.cannotEditCancelled'
+      : hasStarted
+        ? 'bookings.cannotEditStarted'
+        : '';
+    const canCancel = !isCancelled && !hasEnded;
+    const canCancelReason = isCancelled
+      ? 'bookings.alreadyCancelled'
+      : hasEnded
+        ? 'bookings.cannotCancelEnded'
+        : '';
+    const canGenerateInvoice = !hasInvoice && hasValidPrice;
+    const canGenerateInvoiceReason = hasInvoice
+      ? 'bookings.invoiceAlreadyExists'
+      : !hasValidPrice
+        ? 'bookings.invalidPrice'
+        : '';
+
+    return {
+      booking,
+      properties,
+      clients,
+      canEdit,
+      canEditReason,
+      canCancel,
+      canCancelReason,
+      canGenerateInvoice,
+      canGenerateInvoiceReason,
+    };
   }
 
   @Post(':id/edit')
-  @Redirect('/bookings')
   async update(@Param('id') id: string, @Body() body: UpdateBookingDto) {
     try {
       await this.bookingsService.update(id, body);
-      return;
+      // Check if it's an AJAX request (JSON)
+      return { success: true };
     } catch (err: unknown) {
       if (err instanceof HttpException) {
         throw err;

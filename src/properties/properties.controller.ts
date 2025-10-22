@@ -23,10 +23,26 @@ export class PropertiesController {
 
   @Get()
   @Render('properties/index')
-  async root(@Query('q') q?: string) {
+  async root(@Query('q') q?: string, @Query('page') page?: string) {
     try {
-      const properties = await this.propertiesService.findAll(q);
-      return { properties, q };
+      const currentPage = Math.max(1, parseInt(page || '1', 10));
+      const pageSize = 15;
+
+      const { properties, total } = await this.propertiesService.findAll(q, currentPage, pageSize);
+      const totalPages = Math.ceil(total / pageSize);
+
+      return {
+        properties,
+        q,
+        activeNav: 'properties',
+        pagination: {
+          currentPage,
+          totalPages,
+          total,
+          hasNext: currentPage < totalPages,
+          hasPrev: currentPage > 1,
+        },
+      };
     } catch {
       throw new InternalServerErrorException('Failed to retrieve properties.');
     }

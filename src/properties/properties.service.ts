@@ -6,7 +6,11 @@ import { Prisma, Property } from '@prisma/client';
 export class PropertiesService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(q?: string): Promise<Property[]> {
+  async findAll(
+    q?: string,
+    page: number = 1,
+    pageSize: number = 15,
+  ): Promise<{ properties: Property[]; total: number }> {
     const where: Prisma.PropertyWhereInput | undefined = q
       ? {
           OR: [
@@ -16,7 +20,18 @@ export class PropertiesService {
           ],
         }
       : undefined;
-    return this.prisma.property.findMany({ where, orderBy: { name: 'asc' } });
+
+    const [properties, total] = await Promise.all([
+      this.prisma.property.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.prisma.property.count({ where }),
+    ]);
+
+    return { properties, total };
   }
 
   async create(data: { name: string; address?: string; description?: string }): Promise<Property> {
@@ -27,8 +42,20 @@ export class PropertiesService {
     return this.prisma.property.delete({ where: { id } });
   }
 
-  async findOne(id: string): Promise<Property | null> {
-    return this.prisma.property.findUnique({ where: { id } });
+  async findOne(id: string) {
+    return this.prisma.property.findUnique({
+      where: { id },
+      include: {
+        bookings: {
+          include: {
+            client: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
+    });
   }
 
   async update(

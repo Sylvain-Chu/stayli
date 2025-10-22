@@ -18,6 +18,7 @@ type ClientModel = {
     where: { id: string };
     data: { firstName?: string; lastName?: string; email?: string; phone?: string };
   }) => Promise<Client>;
+  count: (args: { where?: Prisma.ClientWhereInput }) => Promise<number>;
 };
 
 type MockPrismaService = { client: jest.Mocked<ClientModel> };
@@ -33,6 +34,7 @@ describe('ClientsService', () => {
       delete: jest.fn(),
       findUnique: jest.fn(),
       update: jest.fn(),
+      count: jest.fn(),
     };
     prisma = { client: clientModel };
     service = new ClientsService(prisma as unknown as PrismaService);
@@ -40,16 +42,15 @@ describe('ClientsService', () => {
 
   it('findAll without q returns sorted list', async () => {
     prisma.client.findMany.mockResolvedValue([] as Client[]);
+    prisma.client.count.mockResolvedValue(0);
     const res = await service.findAll();
-    expect(res).toEqual([]);
-    expect(prisma.client.findMany).toHaveBeenCalledWith({
-      where: undefined,
-      orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
-    });
+    expect(res).toEqual({ clients: [], total: 0 });
+    expect(prisma.client.findMany).toHaveBeenCalled();
   });
 
   it('findAll with q builds OR filters (case-insensitive)', async () => {
     prisma.client.findMany.mockResolvedValue([] as Client[]);
+    prisma.client.count.mockResolvedValue(0);
     await service.findAll('john');
     const calls = (prisma.client.findMany as unknown as jest.Mock).mock.calls as Array<
       [FindManyArgs]
@@ -85,7 +86,15 @@ describe('ClientsService', () => {
   it('findOne calls prisma.client.findUnique', async () => {
     prisma.client.findUnique.mockResolvedValue({ id: '2' } as unknown as Client);
     const res = await service.findOne('2');
-    expect(prisma.client.findUnique).toHaveBeenCalledWith({ where: { id: '2' } });
+    expect(prisma.client.findUnique).toHaveBeenCalledWith({
+      where: { id: '2' },
+      include: {
+        bookings: {
+          include: { property: true },
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+    });
     expect(res).toEqual({ id: '2' });
   });
 

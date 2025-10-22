@@ -1,115 +1,206 @@
 {{> header }}
 {{> sidebar }}
-<h1>{{t 'dashboard.title'}}</h1>
 
-<div class="tabs">
-  <a class="tab {{#if (eq scope 'week')}}active{{/if}}" href="/dashboard?scope=week">{{t 'dashboard.thisWeek'}}</a>
-  <a class="tab {{#if (eq scope 'month')}}active{{/if}}" href="/dashboard?scope=month">{{t 'dashboard.thisMonth'}}</a>
-  <span class="muted" style="margin-left:8px; font-size:12px;">{{t 'dashboard.filterScope'}}</span>
+<div class="section-header">
+  <h1>{{t 'dashboard.title'}}</h1>
 </div>
 
 <section class="cards">
   <div class="card">
-    <div class="card-title"><i data-feather="home"></i> {{t 'dashboard.totalProperties'}}</div>
-    <div class="card-value countup" data-count="{{stats.propertiesCount}}">0</div>
-    <div class="muted" style="margin-top:6px; font-size:12px;">{{t 'dashboard.currentlyOccupied'}}: {{stats.currentlyOccupiedProperties}} ({{stats.occupancyPercent}}%)</div>
-  </div>
-  <div class="card">
-    <div class="card-title"><i data-feather="users"></i> {{t 'dashboard.totalClients'}}</div>
-    <div class="card-value countup" data-count="{{stats.clientsCount}}">0</div>
-  </div>
-  <div class="card">
-    <div class="card-title"><i data-feather="trending-up"></i> {{t 'dashboard.monthRevenue'}}</div>
-    <div class="card-value countup" data-count="{{stats.revenueThisMonth}}">{{currency 0}}</div>
-    <div class="muted" style="margin-top:4px; font-size:12px;">{{t 'dashboard.revenueGoal'}}: {{currency stats.revenueGoal}} — {{stats.revenueProgressPercent}}%</div>
-    <div class="progress" aria-label="Revenue goal progress">
-      <div class="bar" style="width: {{stats.revenueProgressPercent}}%"></div>
+    <div class="card-icon purple">
+      <i data-feather="percent"></i>
+    </div>
+    <div class="card-title">{{t 'dashboard.occupancyRate'}}</div>
+    <div class="card-value countup" data-count="{{stats.occupancyPercent}}">0</div>
+    <div class="card-subtitle">
+      <span style="color: var(--text-muted);">{{stats.currentlyOccupiedProperties}} / {{stats.propertiesCount}} {{t 'dashboard.occupied'}}</span>
     </div>
   </div>
+  
   <div class="card">
-    <div class="card-title"><i data-feather="clock"></i> {{t 'dashboard.pendingInvoices'}}</div>
-    <div class="card-value countup" data-count="{{stats.pendingInvoices}}">0</div>
+    <div class="card-icon blue">
+      <i data-feather="dollar-sign"></i>
+    </div>
+    <div class="card-title">{{t 'dashboard.monthlyRevenue'}}</div>
+    <div class="card-value">{{stats.revenueThisMonth}}€</div>
+    <div class="card-subtitle">
+      <span style="color: var(--text-muted);">{{t 'dashboard.thisMonth'}}</span>
+    </div>
   </div>
-
-  <div class="card full">
-      <div class="mini-cal-header">{{calendar.monthLabel}}</div>
-      <div class="mini-cal-grid">
-        {{#each calendar.days}}
-          {{#if this.isBlank}}
-            <div class="mini-cal-cell blank"></div>
-          {{else}}
-            <div class="mini-cal-cell {{#if this.occupied}}occ{{/if}} {{#if this.isToday}}today{{/if}}" data-info="{{this.info}}" title="{{this.info}}">
-              {{this.day}}
-            </div>
-          {{/if}}
-        {{/each}}
-      </div>
+  
+  <div class="card">
+    <div class="card-icon orange">
+      <i data-feather="calendar"></i>
+    </div>
+    <div class="card-title">{{t 'dashboard.bookingsThisMonth'}}</div>
+    <div class="card-value countup" data-count="{{currentStays.length}}">0</div>
+    <div class="card-subtitle">
+      <span style="color: var(--text-muted);">{{t 'dashboard.activeBookings'}}</span>
+    </div>
+  </div>
+  
+  <div class="card">
+    <div class="card-icon yellow">
+      <i data-feather="file-text"></i>
+    </div>
+    <div class="card-title">{{t 'dashboard.pendingInvoices'}}</div>
+    <div class="card-value countup" data-count="{{stats.pendingInvoices}}">0</div>
+    <div class="card-subtitle">
+      <span style="color: var(--text-muted);">{{t 'dashboard.awaitingPayment'}}</span>
     </div>
   </div>
 </section>
 
+
+<div class="section-header section-spaced">
+  <h2 class="section-title">
+    <i data-feather="calendar" style="width: 24px; height: 24px; vertical-align: middle; margin-right: var(--space-sm);"></i>
+  {{capitalize calendar.monthLabel}}
+  </h2>
+</div>
+
+<div class="card card-pad">
+  <div class="mini-cal-week">
+    <div class="mini-cal-day">{{t 'calendar.monday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.tuesday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.wednesday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.thursday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.friday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.saturday'}}</div>
+    <div class="mini-cal-day">{{t 'calendar.sunday'}}</div>
+  </div>
+  
+  <div class="mini-cal-grid">
+    {{#each calendar.days}}
+      {{#if this.isBlank}}
+        <div class="mini-cal-cell blank"></div>
+      {{else}}
+        <div class="mini-cal-cell {{#if this.occupied}}occ{{/if}} {{#if this.isToday}}today{{/if}}">
+          {{this.day}}
+            {{#if this.occupied}}
+            <div class="mini-cal-dot"></div>
+          {{/if}}
+        </div>
+      {{/if}}
+    {{/each}}
+  </div>
+</div>
+
+<div class="section-header section-spaced">
+  <h2 class="section-title">
+    <i data-feather="activity" style="width: 24px; height: 24px; vertical-align: middle; margin-right: var(--space-sm);"></i>
+    {{t 'dashboard.activity'}}
+  </h2>
+</div>
+
 <section class="dashboard-grid">
-  <div class="column">
-    <h2>{{t 'dashboard.currentStays'}}</h2>
+  <div class="card card-compact">
+    <h3 class="card-heading">
+      <div class="card-heading-icon orange">
+        <i data-feather="home"></i>
+      </div>
+      {{t 'dashboard.currentStays'}}
+      <span class="chip active count-chip">{{currentStays.length}}</span>
+    </h3>
     {{#if currentStays.length}}
-      <ul class="list">
+      <ul class="list list-scrollable">
         {{#each currentStays}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge" title="{{t 'dashboard.stay'}}"><i data-feather="moon"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
-              <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
+              <span class="chip {{this.clientStatus}}">{{t (concat 'clientStatus.' this.clientStatus)}}</span>
             </div>
-            <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">{{t 'dashboard.departureLabel'}} ({{fromNow this.endDate}})</div>
+            <div class="item-sub">
+              <i data-feather="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              <a href="/properties/{{this.property.id}}">{{this.property.name}}</a>
+            </div>
+            <div class="item-meta">
+              <i data-feather="arrow-right" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              {{t 'dashboard.departureLabel'}} {{formatDate this.endDate}}
+            </div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">{{t 'dashboard.noCurrentStays'}}</p>
+      <p class="muted" style="text-align: center; padding: var(--space-xl) 0;">
+        <i data-feather="inbox" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: var(--space-md);"></i>
+        <br>
+        {{t 'dashboard.noCurrentStays'}}
+      </p>
     {{/if}}
   </div>
 
-  <div class="column">
-    <h2>{{t 'dashboard.upcomingArrivals'}}</h2>
+  <div class="card card-compact">
+    <h3 class="card-heading">
+      <div class="card-heading-icon green">
+        <i data-feather="log-in"></i>
+      </div>
+      {{t 'dashboard.upcomingArrivals'}}
+      <span class="chip pending count-chip">{{arrivals.length}}</span>
+    </h3>
     {{#if arrivals.length}}
-      <ul class="list">
+      <ul class="list list-scrollable">
         {{#each arrivals}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge arrival" title="{{t 'dashboard.arrival'}}"><i data-feather="corner-down-right"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
-              <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
+              <span class="chip {{this.clientStatus}}">{{t (concat 'clientStatus.' this.clientStatus)}}</span>
             </div>
-            <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">{{t 'dashboard.arrivalLabel'}} ({{fromNow this.startDate}})</div>
+            <div class="item-sub">
+              <i data-feather="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              <a href="/properties/{{this.property.id}}">{{this.property.name}}</a>
+            </div>
+            <div class="item-meta">
+              <i data-feather="arrow-right" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              {{t 'dashboard.arrivalLabel'}} {{formatDate this.startDate}}
+            </div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">{{t 'dashboard.noUpcomingArrivals'}}</p>
+      <p class="muted" style="text-align: center; padding: var(--space-xl) 0;">
+        <i data-feather="inbox" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: var(--space-md);"></i>
+        <br>
+        {{t 'dashboard.noUpcomingArrivals'}}
+      </p>
     {{/if}}
   </div>
 
-  <div class="column">
-    <h2>{{t 'dashboard.recentDepartures'}}</h2>
+  <div class="card card-compact">
+    <h3 class="card-heading">
+      <div class="card-heading-icon blue">
+        <i data-feather="log-out"></i>
+      </div>
+      {{t 'dashboard.recentDepartures'}}
+      <span class="chip regular count-chip">{{departures.length}}</span>
+    </h3>
     {{#if departures.length}}
-      <ul class="list">
+      <ul class="list list-scrollable">
         {{#each departures}}
           <li class="list-item {{#if this.isToday}}today-event{{/if}}">
             <div class="item-title">
-              <span class="badge departure" title="{{t 'dashboard.departure'}}"><i data-feather="corner-up-left"></i></span>
               <a href="/clients/{{this.client.id}}">{{this.client.firstName}} {{this.client.lastName}}</a>
-              <span class="chip {{this.clientStatus}}">{{this.clientStatus}}</span>
+              <span class="chip {{this.clientStatus}}">{{t (concat 'clientStatus.' this.clientStatus)}}</span>
             </div>
-            <div class="item-sub"><a href="/properties/{{this.property.id}}">{{this.property.name}}</a></div>
-            <div class="item-meta">{{t 'dashboard.departureLabel'}} ({{fromNow this.endDate}})</div>
+            <div class="item-sub">
+              <i data-feather="map-pin" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              <a href="/properties/{{this.property.id}}">{{this.property.name}}</a>
+            </div>
+            <div class="item-meta">
+              <i data-feather="arrow-right" style="width: 14px; height: 14px; vertical-align: middle;"></i>
+              {{t 'dashboard.departureLabel'}} {{formatDate this.endDate}}
+            </div>
           </li>
         {{/each}}
       </ul>
     {{else}}
-      <p class="muted">{{t 'dashboard.noDepartures'}}</p>
+      <p class="muted" style="text-align: center; padding: var(--space-xl) 0;">
+        <i data-feather="inbox" style="width: 48px; height: 48px; color: var(--text-light); margin-bottom: var(--space-md);"></i>
+        <br>
+        {{t 'dashboard.noDepartures'}}
+      </p>
     {{/if}}
   </div>
 </section>
+
 {{> footer }}

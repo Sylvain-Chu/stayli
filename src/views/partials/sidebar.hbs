@@ -1,14 +1,44 @@
     <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-name">Stayli</div>
+      </div>
+      
       <nav>
         <ul>
-          <li><a href="/dashboard">{{t 'nav.dashboard'}}</a></li>
-          <li><a href="/bookings">{{t 'nav.bookings'}}</a></li>
-          <li><a href="/bookings/calendar">{{t 'nav.calendar'}}</a></li>
-          <li><a href="/clients">{{t 'nav.clients'}}</a></li>
-          <li><a href="/properties">{{t 'nav.properties'}}</a></li>
-          <li><a href="/invoices">{{t 'nav.invoices'}}</a></li>
+          <li><a href="/dashboard" class="{{#if (eq activeNav 'dashboard')}}active{{/if}}"><i data-feather="layout"></i> {{t 'nav.dashboard'}}</a></li>
+          <li><a href="/bookings" class="{{#if (eq activeNav 'bookings')}}active{{/if}}"><i data-feather="calendar"></i> {{t 'nav.bookings'}}</a></li>
+          <li><a href="/bookings/calendar" class="{{#if (eq activeNav 'calendar')}}active{{/if}}"><i data-feather="clock"></i> {{t 'nav.calendar'}}</a></li>
+          <li><a href="/clients" class="{{#if (eq activeNav 'clients')}}active{{/if}}"><i data-feather="users"></i> {{t 'nav.clients'}}</a></li>
+          <li><a href="/properties" class="{{#if (eq activeNav 'properties')}}active{{/if}}"><i data-feather="briefcase"></i> {{t 'nav.properties'}}</a></li>
+          <li><a href="/invoices" class="{{#if (eq activeNav 'invoices')}}active{{/if}}"><i data-feather="database"></i> {{t 'nav.invoices'}}</a></li>
         </ul>
       </nav>
     </aside>
+
+    <header class="site-header">
+      <h1 class="content-title" style="margin: 0;">Dashboard</h1>
+      <div class="search-bar">
+        <input type="search" placeholder="{{t 'header.searchPlaceholder'}}" />
+      </div>
+      <nav class="top-nav">
+        <div class="language-switcher">
+          <a href="/i18n/set-language?lang=en" class="lang-link {{#if (eq currentLang 'en')}}active{{/if}}" title="English">EN</a>
+          <a href="/i18n/set-language?lang=fr" class="lang-link {{#if (eq currentLang 'fr')}}active{{/if}}" title="Français">FR</a>
+        </div>
+        {{#if user}}
+          <a href="/account" class="user-profile-link">
+            <div class="user-profile">
+              <div class="avatar">{{initials user.name user.email}}</div>
+              <div class="user-info">
+                <div class="user-name">{{#if user.name}}{{capitalize user.name}}{{else}}{{capitalize (substr user.email 0 (indexOf user.email '@'))}}{{/if}}</div>
+              </div>
+            </div>
+          </a>
+        {{else}}
+          <a href="/auth/login">{{t 'auth.login'}}</a>
+        {{/if}}
+      </nav>
+    </header>
+
     <main class="content">
       <!-- page-specific content begins -->

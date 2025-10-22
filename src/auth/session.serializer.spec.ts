@@ -27,7 +27,12 @@ describe('SessionSerializer', () => {
 
     const done1 = jest.fn();
     await s.deserializeUser('u1', done1);
-    expect(done1).toHaveBeenCalledWith(null, { id: 'u1', email: 'a@b.c', role: 'ADMIN' });
+    expect(done1).toHaveBeenCalledWith(null, {
+      id: 'u1',
+      email: 'a@b.c',
+      role: 'ADMIN',
+      name: null,
+    });
 
     const done2 = jest.fn();
     await s.deserializeUser('u1', done2);

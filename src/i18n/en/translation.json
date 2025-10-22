@@ -13,9 +13,32 @@
     "filter": "Filter",
     "from": "From",
     "to": "To",
+    "status": "Status",
+    "all": "All",
     "loading": "Loading...",
     "noResults": "No results found",
-    "confirm": "Are you sure?"
+    "confirm": "Are you sure?",
+    "showing": "Showing",
+    "of": "of",
+    "page": "Page",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "header": {
+    "searchPlaceholder": "Search for anything..."
+  },
+  "calendar": {
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun"
+  },
+  "clientStatus": {
+    "new": "New",
+    "regular": "Regular"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -40,18 +63,20 @@
     "thisWeek": "This week",
     "thisMonth": "This month",
     "filterScope": "Filters arrivals and departures scope",
-    "totalProperties": "Total Properties",
-    "currentlyOccupied": "Currently occupied",
-    "totalClients": "Total Clients",
-    "monthRevenue": "Monthly Revenue",
-    "revenueGoal": "Goal",
+    "occupancyRate": "Occupancy Rate",
+    "monthlyRevenue": "Monthly Revenue",
+    "bookingsThisMonth": "Bookings This Month",
     "pendingInvoices": "Pending Invoices",
+    "occupied": "occupied",
+    "activeBookings": "active bookings",
+    "awaitingPayment": "awaiting payment",
+    "activity": "Recent Activity",
     "currentStays": "Current Stays",
     "upcomingArrivals": "Upcoming Arrivals",
     "recentDepartures": "Recent Departures",
     "noCurrentStays": "No properties currently occupied.",
-    "noUpcomingArrivals": "No arrivals scheduled for the selected period.",
-    "noDepartures": "No departures for the selected period.",
+    "noUpcomingArrivals": "No arrivals scheduled for the next 7 days.",
+    "noDepartures": "No departures in the last 7 days.",
     "arrival": "Arrival",
     "departure": "Departure",
     "stay": "Stay",
@@ -73,8 +98,10 @@
     "pricePerNight": "Price per night",
     "confirmDelete": "Delete this property?",
     "noProperties": "No properties yet.",
+    "properties": "properties",
     "bookings": "Bookings",
-    "noBookings": "No bookings for this property."
+    "noBookings": "No bookings for this property.",
+    "propertyInfo": "Property Information"
   },
   "index": {
     "welcome": "Welcome to Stayli. Choose a section below:"
@@ -93,11 +120,16 @@
     "status": "Status",
     "confirmDelete": "Delete this client?",
     "noClients": "No clients yet.",
+    "clients": "clients",
     "bookings": "Bookings",
     "noBookings": "No bookings for this client.",
     "statusActive": "Active",
     "statusInactive": "Inactive",
-    "statusBlacklisted": "Blacklisted"
+    "statusBlacklisted": "Blacklisted",
+    "clientInfo": "Client Information",
+    "fullName": "Full Name",
+    "memberSince": "Member Since",
+    "noClient": "No client"
   },
   "bookings": {
     "title": "Bookings",
@@ -107,6 +139,7 @@
 
     "addNew": "Create a new booking",
     "openCalendar": "Open calendar",
+    "searchPlaceholder": "Search by client or property...",
     "property": "Property",
     "client": "Client",
     "startDate": "Start Date",
@@ -122,6 +155,7 @@
     "statusConfirmed": "Confirmed",
     "statusCancelled": "Cancelled",
     "statusCompleted": "Completed",
+    "noProperty": "No property",
     "propertyLabel": "Property",
     "clientLabel": "Client",
     "periodLabel": "Period",
@@ -134,7 +168,26 @@
     "statusBlocked": "Blocked",
     "filterNote": "Uncheck to hide specific statuses. With none selected, the calendar shows no events.",
     "calendarTitle": "Bookings Calendar",
-    "backToList": "Back to bookings list"
+    "backToList": "Back to bookings list",
+    "cancelBooking": "Cancel Booking",
+    "clientSection": "Client",
+    "staySection": "Stay",
+    "pricingSection": "Pricing",
+    "insuranceSection": "Cancellation Insurance",
+    "invoiceLabel": "Invoice",
+    "backToDetails": "Back to details",
+    "propertyAndClient": "Property and Client",
+    "datesAndPrice": "Dates and Price",
+    "updateSuccess": "Booking updated successfully!",
+    "updateError": "Error updating booking",
+    "cannotEditCancelled": "Cannot edit — booking cancelled",
+    "cannotEditStarted": "Cannot edit — stay already started",
+    "alreadyCancelled": "Booking already cancelled",
+    "cannotCancelEnded": "Cannot cancel — stay already ended",
+    "cannotDeleteHasInvoice": "Cannot delete — linked invoice exists",
+    "cannotDeleteActive": "Cannot delete — booking active or confirmed",
+    "invoiceAlreadyExists": "Invoice already exists for this booking",
+    "invalidPrice": "Missing or invalid price"
   },
   "invoices": {
     "title": "Invoices",
@@ -164,8 +217,21 @@
     "statusDraft": "Draft",
     "statusSent": "Sent",
     "statusPaid": "Paid",
+    "statusPending": "Pending",
     "statusOverdue": "Overdue",
-    "statusCancelled": "Cancelled"
+    "statusCancelled": "Cancelled",
+    "invoices": "invoices",
+    "searchPlaceholder": "Search by invoice number or client...",
+    "allStatuses": "All statuses",
+    "clientAndBooking": "Client & Booking",
+    "invoiceDetails": "Invoice Details",
+    "costBreakdown": "Cost Breakdown",
+    "stayPeriod": "Stay Period",
+    "baseRate": "Base Rate",
+    "options": "Options",
+    "totalAmount": "Total Amount",
+    "downloadPdf": "Download PDF",
+    "markAsPaid": "Mark as Paid"
   },
   "account": {
     "title": "My Account",
