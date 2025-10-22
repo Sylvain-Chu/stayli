@@ -8,10 +8,22 @@
 @import url('layout.css');
 @import url('header.css');
 @import url('sidebar.css');
-@import url('components.css');
+
+/* Component Modules */
+@import url('components/buttons.css');
+@import url('components/badges.css');
+@import url('components/tabs.css');
+@import url('components/alerts.css');
+@import url('components/tooltips.css');
+@import url('components/dashboard.css');
+
+/* Other Modules */
 @import url('cards.css');
 @import url('forms.css');
 @import url('tables.css');
 @import url('lists.css');
 @import url('widgets.css');
 @import url('utilities.css');
+
+/* Page-Specific Styles */
+@import url('pages/bookings.css');
