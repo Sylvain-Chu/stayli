@@ -58,10 +58,17 @@ describe('SettingsController', () => {
     it('should render settings page with settings data', async () => {
       const getSpy = jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
 
-      const result = await controller.index();
+      const renderSpy = jest.fn();
+      const mockResponse = { render: renderSpy } as unknown as Response;
 
-      expect(result).toEqual({ settings: mockSettings, activeNav: 'settings' });
+      await controller.index(mockResponse);
+
       expect(getSpy).toHaveBeenCalled();
+      expect(renderSpy).toHaveBeenCalledWith('settings/index', {
+        settings: mockSettings,
+        activeNav: 'settings',
+        layout: false,
+      });
     });
   });
 
@@ -104,6 +111,7 @@ describe('SettingsController', () => {
         settings: mockSettings,
         activeNav: 'settings',
         error: 'Unable to update settings',
+        layout: false,
       });
     });
   });

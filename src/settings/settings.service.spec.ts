@@ -59,28 +59,32 @@ describe('SettingsService', () => {
 
   describe('getSettings', () => {
     it('should return existing settings', async () => {
-      const countSpy = jest.spyOn(prismaService.settings, 'count').mockResolvedValue(1);
+      const countSpy = jest.spyOn(prismaService.settings as any, 'count').mockResolvedValue(1);
       const findSpy = jest
-        .spyOn(prismaService.settings, 'findFirst')
+        .spyOn(prismaService.settings as any, 'findFirst')
         .mockResolvedValue(mockSettings);
 
       const result = await service.getSettings();
 
       expect(result).toEqual(mockSettings);
+
       expect(countSpy).toHaveBeenCalled();
+
       expect(findSpy).toHaveBeenCalled();
     });
 
     it('should create default settings when none exist', async () => {
-      const countSpy = jest.spyOn(prismaService.settings, 'count').mockResolvedValue(0);
+      const countSpy = jest.spyOn(prismaService.settings as any, 'count').mockResolvedValue(0);
       const createSpy = jest
-        .spyOn(prismaService.settings, 'create')
+        .spyOn(prismaService.settings as any, 'create')
         .mockResolvedValue(mockSettings);
 
       const result = await service.getSettings();
 
       expect(result).toEqual(mockSettings);
+
       expect(countSpy).toHaveBeenCalled();
+
       expect(createSpy).toHaveBeenCalledWith({ data: {} });
     });
   });
@@ -95,10 +99,10 @@ describe('SettingsService', () => {
     it('should update existing settings', async () => {
       const updatedSettings = { ...mockSettings, ...updateDto };
 
-      jest.spyOn(prismaService.settings, 'count').mockResolvedValue(1);
-      jest.spyOn(prismaService.settings, 'findFirst').mockResolvedValue(mockSettings);
+      jest.spyOn(prismaService.settings as any, 'count').mockResolvedValue(1);
+      jest.spyOn(prismaService.settings as any, 'findFirst').mockResolvedValue(mockSettings);
       const updateSpy = jest
-        .spyOn(prismaService.settings, 'update')
+        .spyOn(prismaService.settings as any, 'update')
         .mockResolvedValue(updatedSettings);
 
       const result = await service.updateSettings(updateDto);
@@ -112,7 +116,7 @@ describe('SettingsService', () => {
 
     it('should get settings before updating', async () => {
       const getSettingsSpy = jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
-      jest.spyOn(prismaService.settings, 'update').mockResolvedValue(mockSettings);
+      jest.spyOn(prismaService.settings as any, 'update').mockResolvedValue(mockSettings);
 
       await service.updateSettings(updateDto);
 
