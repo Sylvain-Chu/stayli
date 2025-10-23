@@ -120,6 +120,28 @@
   box-shadow: var(--shadow-card);
 }
 
+.card {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(20, 20, 20, 0.04);
+  overflow: hidden;
+}
+.card__header {
+  background: #e8f1ff;
+  color: #14243b;
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border-bottom: 1px solid rgba(20, 36, 59, 0.06);
+}
+
+.card-header {
+  background: #e8f1ff;
+  color: #14243b;
+  padding: 16px 20px;
+  border-bottom: 1px solid rgba(20, 36, 59, 0.06);
+}
+
 .filters-form {
   display: flex;
   gap: var(--space-md);
