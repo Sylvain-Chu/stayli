@@ -70,14 +70,14 @@
   justify-content: space-between;
   padding: var(--space-lg) var(--space-xl);
   border-bottom: 1px solid var(--border-light);
-  background: var(--bg-subtle);
+  background: #e8f1ff;
 }
 
 .card-header h2 {
   margin: 0;
   font-size: var(--font-size-xl);
   font-weight: var(--font-weight-semibold);
-  color: var(--text-dark);
+  color: #14243b;
 }
 
 .card-body {
