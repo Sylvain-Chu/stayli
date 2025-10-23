@@ -116,13 +116,7 @@ textarea.error {
    Form Layout
    =================================== */
 
-.form-card {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-2xl);
-  box-shadow: var(--shadow-card);
-  margin-bottom: var(--space-xl);
-}
+/* Note: .form-card is defined in components/form-modern.css */
 
 .form-layout {
   display: flex;
@@ -154,24 +148,9 @@ textarea.error {
   color: var(--color-primary);
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
-}
+/* Note: .form-row is defined in components/form-modern.css */
 
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.form-group label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-dark);
-  margin: 0;
-}
+/* Note: .form-group is defined in components/form-modern.css */
 
 .input-with-icon {
   position: relative;
@@ -261,15 +240,64 @@ textarea.error {
   font-weight: var(--font-weight-medium);
 }
 
+/* Month Button Grid */
+.month-button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: var(--space-sm);
+  margin-top: var(--space-xs);
+}
+
+.month-button {
+  position: relative;
+  padding: var(--space-sm) var(--space-md);
+  border: 2px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--bg-light);
+  color: var(--text-dark);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  user-select: none;
+}
+
+.month-button:hover {
+  border-color: var(--border-dark);
+  transform: translateY(-1px);
+}
+
+.month-button input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.month-button input[type='checkbox']:checked + .month-label,
+.month-button:has(input[type='checkbox']:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: white;
+}
+
+.month-label {
+  cursor: pointer;
+}
+
+/* Help Text */
+.help-text {
+  display: block;
+  margin-top: var(--space-xs);
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.4;
+}
+
 /* Responsive Forms */
 @media (max-width: 768px) {
-  .form-card {
-    padding: var(--space-lg);
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+  /* Note: .form-card and .form-row responsive styles are in components/form-modern.css */
 
   .form-actions {
     flex-direction: column-reverse;

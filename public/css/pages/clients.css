@@ -2,79 +2,8 @@
    Clients Page Styles
    =================================== */
 
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
-}
-
-.page-actions {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-.filters-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  box-shadow: var(--shadow-card);
-}
-
-.filters-form {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 150px;
-}
-
-.filter-group label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
-}
-
-.filter-group input[type='search'],
-.filter-group input[type='text'],
-.search-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-  font-family: var(--font-family);
-}
-
-.filter-group input:focus,
-.search-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(246, 92, 39, 0.1);
-}
-
-.search-input {
-  flex: 2;
-  min-width: 250px;
-}
+/* Note: .page-header, .page-actions, .pagination, .empty-state, .filters-section
+   are defined in components/page-common.css */
 
 .clients-list {
   display: flex;
@@ -188,66 +117,9 @@
   z-index: 2;
 }
 
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--space-xl);
-  padding: var(--space-lg);
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-}
+/* Note: .pagination, .empty-state are defined in components/page-common.css */
 
-.pagination-info {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-  font-weight: var(--font-weight-medium);
-}
-
-.pagination-controls {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-}
-
-.pagination-pages {
-  font-size: var(--font-size-sm);
-  color: var(--text-dark);
-  font-weight: var(--font-weight-medium);
-  padding: 0 var(--space-md);
-}
-
-.pagination-controls .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.pagination-controls .btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.empty-state {
-  text-align: center;
-  padding: var(--space-3xl) var(--space-xl);
-  color: var(--text-muted);
-}
-
-.empty-state .empty-icon {
-  display: block;
-  margin: 0 auto var(--space-lg);
-  width: 64px;
-  height: 64px;
-  opacity: 0.3;
-}
-
-.empty-state p {
-  font-size: var(--font-size-lg);
-  margin: 0;
-}
-
+/* Client-specific responsive styles */
 @media (max-width: 1200px) {
   .client-card {
     grid-template-columns: 2fr 2fr 1fr;
@@ -257,24 +129,8 @@
 }
 
 @media (max-width: 900px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--space-md);
-  }
-
-  .page-actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .page-actions form {
-    width: 100%;
-  }
-
-  .page-actions .search-input {
-    width: 100% !important;
-  }
+  /* Note: .page-header, .page-actions, .pagination responsive styles
+     are defined in components/page-common.css */
 
   .client-card {
     grid-template-columns: 1fr;
@@ -286,21 +142,5 @@
     justify-content: flex-start;
     padding-top: var(--space-sm);
     border-top: 1px solid var(--border-light);
-  }
-
-  .pagination {
-    flex-direction: column;
-    gap: var(--space-md);
-    text-align: center;
-  }
-
-  .pagination-controls {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .pagination-controls .btn {
-    width: 100%;
-    justify-content: center;
   }
 }

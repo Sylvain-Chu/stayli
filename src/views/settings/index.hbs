@@ -5,6 +5,12 @@
   <div class="page-header-left">
     <h1>{{t 'settings.title'}}</h1>
   </div>
+  <div class="page-header-right">
+    <button type="submit" form="settings-form" class="btn btn-primary" id="save-button-top" disabled>
+      <span data-feather="save"></span>
+      <span>{{t 'settings.saveSettings'}}</span>
+    </button>
+  </div>
 </div>
 
 <div class="form-container">
@@ -15,7 +21,7 @@
     </div>
   {{/if}}
 
-  <form method="post" action="/settings" class="form-modern">
+  <form id="settings-form" method="post" action="/settings" class="form-modern">
     
     <!-- Company Information Section -->
     <div class="form-card">
@@ -25,7 +31,10 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="companyName">{{t 'settings.companyName'}}</label>
+          <label for="companyName">
+            <span data-feather="briefcase"></span>
+            {{t 'settings.companyName'}}
+          </label>
           <input 
             type="text" 
             id="companyName" 
@@ -37,7 +46,10 @@
         </div>
 
         <div class="form-group">
-          <label for="companyAddress">{{t 'settings.companyAddress'}}</label>
+          <label for="companyAddress">
+            <span data-feather="map-pin"></span>
+            {{t 'settings.companyAddress'}}
+          </label>
           <input 
             type="text" 
             id="companyAddress" 
@@ -81,7 +93,10 @@
         </div>
 
         <div class="form-group">
-          <label for="companyLogoUrl">{{t 'settings.companyLogoUrl'}}</label>
+          <label for="companyLogoUrl">
+            <span data-feather="link"></span>
+            {{t 'settings.companyLogoUrl'}}
+          </label>
           <input 
             type="url" 
             id="companyLogoUrl" 
@@ -103,7 +118,10 @@
       <div class="card-body">
         <div class="form-row">
           <div class="form-group">
-            <label for="defaultLanguage">{{t 'settings.defaultLanguage'}}</label>
+            <label for="defaultLanguage">
+              <span data-feather="flag"></span>
+              {{t 'settings.defaultLanguage'}}
+            </label>
             <select 
               id="defaultLanguage" 
               name="defaultLanguage" 
@@ -115,7 +133,10 @@
           </div>
 
           <div class="form-group">
-            <label for="currencyCode">{{t 'settings.currencyCode'}}</label>
+            <label for="currencyCode">
+              <span data-feather="dollar-sign"></span>
+              {{t 'settings.currencyCode'}}
+            </label>
             <input 
               type="text" 
               id="currencyCode" 
@@ -129,7 +150,10 @@
         </div>
 
         <div class="form-group">
-          <label for="currencySymbol">{{t 'settings.currencySymbol'}}</label>
+          <label for="currencySymbol">
+            <span data-feather="dollar-sign"></span>
+            {{t 'settings.currencySymbol'}}
+          </label>
           <input 
             type="text" 
             id="currencySymbol" 
@@ -151,62 +175,69 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label>{{t 'settings.lowSeasonMonths'}}</label>
-          <div class="checkbox-grid">
-            <label class="checkbox-label">
+          <label>
+            <span data-feather="calendar"></span>
+            {{t 'settings.lowSeasonMonths'}}
+          </label>
+          <div class="month-button-grid">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="1" {{#if (includes settings.lowSeasonMonths 1)}}checked{{/if}} />
-              {{t 'months.january'}}
+              <span class="month-label">{{t 'months.january'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="2" {{#if (includes settings.lowSeasonMonths 2)}}checked{{/if}} />
-              {{t 'months.february'}}
+              <span class="month-label">{{t 'months.february'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="3" {{#if (includes settings.lowSeasonMonths 3)}}checked{{/if}} />
-              {{t 'months.march'}}
+              <span class="month-label">{{t 'months.march'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="4" {{#if (includes settings.lowSeasonMonths 4)}}checked{{/if}} />
-              {{t 'months.april'}}
+              <span class="month-label">{{t 'months.april'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="5" {{#if (includes settings.lowSeasonMonths 5)}}checked{{/if}} />
-              {{t 'months.may'}}
+              <span class="month-label">{{t 'months.may'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="6" {{#if (includes settings.lowSeasonMonths 6)}}checked{{/if}} />
-              {{t 'months.june'}}
+              <span class="month-label">{{t 'months.june'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="7" {{#if (includes settings.lowSeasonMonths 7)}}checked{{/if}} />
-              {{t 'months.july'}}
+              <span class="month-label">{{t 'months.july'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="8" {{#if (includes settings.lowSeasonMonths 8)}}checked{{/if}} />
-              {{t 'months.august'}}
+              <span class="month-label">{{t 'months.august'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="9" {{#if (includes settings.lowSeasonMonths 9)}}checked{{/if}} />
-              {{t 'months.september'}}
+              <span class="month-label">{{t 'months.september'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="10" {{#if (includes settings.lowSeasonMonths 10)}}checked{{/if}} />
-              {{t 'months.october'}}
+              <span class="month-label">{{t 'months.october'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="11" {{#if (includes settings.lowSeasonMonths 11)}}checked{{/if}} />
-              {{t 'months.november'}}
+              <span class="month-label">{{t 'months.november'}}</span>
             </label>
-            <label class="checkbox-label">
+            <label class="month-button">
               <input type="checkbox" name="lowSeasonMonths" value="12" {{#if (includes settings.lowSeasonMonths 12)}}checked{{/if}} />
-              {{t 'months.december'}}
+              <span class="month-label">{{t 'months.december'}}</span>
             </label>
           </div>
+          <small class="help-text">{{t 'settings.lowSeasonMonthsHelp'}}</small>
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="lowSeasonRate">{{t 'settings.lowSeasonRate'}}</label>
+            <label for="lowSeasonRate">
+              <span data-feather="trending-down"></span>
+              {{t 'settings.lowSeasonRate'}}
+            </label>
             <input 
               type="number" 
               id="lowSeasonRate" 
@@ -220,7 +251,10 @@
           </div>
 
           <div class="form-group">
-            <label for="highSeasonRate">{{t 'settings.highSeasonRate'}}</label>
+            <label for="highSeasonRate">
+              <span data-feather="trending-up"></span>
+              {{t 'settings.highSeasonRate'}}
+            </label>
             <input 
               type="number" 
               id="highSeasonRate" 
@@ -236,7 +270,10 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label for="linensOptionPrice">{{t 'settings.linensOptionPrice'}}</label>
+            <label for="linensOptionPrice">
+              <span data-feather="package"></span>
+              {{t 'settings.linensOptionPrice'}}
+            </label>
             <input 
               type="number" 
               id="linensOptionPrice" 
@@ -250,7 +287,10 @@
           </div>
 
           <div class="form-group">
-            <label for="cleaningOptionPrice">{{t 'settings.cleaningOptionPrice'}}</label>
+            <label for="cleaningOptionPrice">
+              <span data-feather="trash-2"></span>
+              {{t 'settings.cleaningOptionPrice'}}
+            </label>
             <input 
               type="number" 
               id="cleaningOptionPrice" 
@@ -265,7 +305,10 @@
         </div>
 
         <div class="form-group">
-          <label for="touristTaxRatePerPersonPerDay">{{t 'settings.touristTaxRatePerPersonPerDay'}}</label>
+          <label for="touristTaxRatePerPersonPerDay">
+            <span data-feather="percent"></span>
+            {{t 'settings.touristTaxRatePerPersonPerDay'}}
+          </label>
           <input 
             type="number" 
             id="touristTaxRatePerPersonPerDay" 
@@ -276,6 +319,7 @@
             step="0.01"
             placeholder="2.50"
           />
+          <small class="help-text">{{t 'settings.touristTaxRatePerPersonPerDayHelp'}}</small>
         </div>
       </div>
     </div>
@@ -289,7 +333,10 @@
       <div class="card-body">
         <div class="form-row">
           <div class="form-group">
-            <label for="invoicePrefix">{{t 'settings.invoicePrefix'}}</label>
+            <label for="invoicePrefix">
+              <span data-feather="hash"></span>
+              {{t 'settings.invoicePrefix'}}
+            </label>
             <input 
               type="text" 
               id="invoicePrefix" 
@@ -301,7 +348,10 @@
           </div>
 
           <div class="form-group">
-            <label for="invoiceDueDays">{{t 'settings.invoiceDueDays'}}</label>
+            <label for="invoiceDueDays">
+              <span data-feather="clock"></span>
+              {{t 'settings.invoiceDueDays'}}
+            </label>
             <input 
               type="number" 
               id="invoiceDueDays" 
@@ -311,11 +361,15 @@
               min="0"
               placeholder="30"
             />
+            <small class="help-text">{{t 'settings.invoiceDueDaysHelp'}}</small>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="invoicePaymentInstructions">{{t 'settings.invoicePaymentInstructions'}}</label>
+          <label for="invoicePaymentInstructions">
+            <span data-feather="info"></span>
+            {{t 'settings.invoicePaymentInstructions'}}
+          </label>
           <textarea 
             id="invoicePaymentInstructions" 
             name="invoicePaymentInstructions" 
@@ -323,6 +377,7 @@
             rows="4"
             placeholder="{{t 'settings.invoicePaymentInstructionsPlaceholder'}}"
           >{{settings.invoicePaymentInstructions}}</textarea>
+          <small class="help-text">{{t 'settings.invoicePaymentInstructionsHelp'}}</small>
         </div>
       </div>
     </div>
@@ -336,7 +391,10 @@
       <div class="card-body">
         <div class="form-row">
           <div class="form-group">
-            <label for="cancellationInsurancePercentage">{{t 'settings.cancellationInsurancePercentage'}}</label>
+            <label for="cancellationInsurancePercentage">
+              <span data-feather="percent"></span>
+              {{t 'settings.cancellationInsurancePercentage'}}
+            </label>
             <input 
               type="number" 
               id="cancellationInsurancePercentage" 
@@ -351,7 +409,10 @@
           </div>
 
           <div class="form-group">
-            <label for="cancellationInsuranceProviderName">{{t 'settings.cancellationInsuranceProviderName'}}</label>
+            <label for="cancellationInsuranceProviderName">
+              <span data-feather="briefcase"></span>
+              {{t 'settings.cancellationInsuranceProviderName'}}
+            </label>
             <input 
               type="text" 
               id="cancellationInsuranceProviderName" 
@@ -364,15 +425,9 @@
         </div>
       </div>
     </div>
-
-    <!-- Form Actions -->
-    <div class="form-actions">
-      <button type="submit" class="btn btn-primary">
-        <span data-feather="save"></span>
-        <span>{{t 'settings.saveSettings'}}</span>
-      </button>
-    </div>
   </form>
 </div>
+
+<script src="/js/settings.js"></script>
 
 {{> footer }}
