@@ -39,8 +39,8 @@
 
 .form-card .card-header {
   padding: var(--space-xl) var(--space-2xl);
-  border-bottom: 1px solid var(--border-light);
-  background: var(--bg-subtle);
+  border-bottom: 1px solid rgba(20, 36, 59, 0.06);
+  background: #e8f1ff;
   display: flex;
   align-items: center;
   gap: var(--space-sm);
