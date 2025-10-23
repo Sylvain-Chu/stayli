@@ -4,7 +4,23 @@
 
 /* Form Container */
 .form-container {
-  max-width: 900px;
+  max-width: 1000px;
+  width: 80%;
+  margin: 0 auto;
+  padding: 0 var(--space-md);
+}
+
+@media (max-width: 1200px) {
+  .form-container {
+    width: 85%;
+  }
+}
+
+@media (max-width: 768px) {
+  .form-container {
+    width: 100%;
+    padding: 0 var(--space-sm);
+  }
 }
 
 /* Form Card */
@@ -14,12 +30,26 @@
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-light);
   overflow: hidden;
+  margin-bottom: var(--space-2xl);
+}
+
+.form-card:last-of-type {
+  margin-bottom: var(--space-xl);
 }
 
 .form-card .card-header {
-  padding: var(--space-lg) var(--space-xl);
+  padding: var(--space-xl) var(--space-2xl);
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-subtle);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.form-card .card-header svg {
+  width: 24px;
+  height: 24px;
+  color: var(--color-primary);
 }
 
 .form-card .card-header h2 {
@@ -30,21 +60,33 @@
 }
 
 .form-card .card-body {
-  padding: var(--space-xl);
+  padding: var(--space-2xl);
 }
 
 /* Form Modern */
 .form-modern {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xl);
+  gap: 0;
 }
 
 /* Form Row (2 columns) */
 .form-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-lg);
+  gap: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: var(--space-lg);
+  }
 }
 
 /* Form Group */
@@ -52,6 +94,11 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
 }
 
 .form-group label {
@@ -59,15 +106,17 @@
   align-items: center;
   gap: var(--space-xs);
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--text-dark);
+  margin-bottom: var(--space-xs);
 }
 
-.form-group label svg {
-  width: 16px;
-  height: 16px;
+.form-group label svg,
+.form-group label [data-feather] {
+  width: 18px;
+  height: 18px;
   color: var(--color-primary);
-  opacity: 0.8;
+  flex-shrink: 0;
 }
 
 .form-group .required {
@@ -115,13 +164,39 @@
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-md);
-  padding-top: var(--space-lg);
-  border-top: 1px solid var(--border-light);
+  padding: var(--space-xl) var(--space-2xl);
+  background: var(--bg-card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
+  margin-bottom: var(--space-2xl);
+  position: sticky;
+  bottom: var(--space-lg);
+  z-index: 10;
+}
+
+/* Sticky Save Button Animation */
+.form-actions.sticky-visible {
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Button Overrides for Forms */
 .form-actions .btn {
-  min-width: 120px;
+  min-width: 160px;
+  padding: var(--space-md) var(--space-xl);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
 }
 
 .form-actions .btn-cancel {

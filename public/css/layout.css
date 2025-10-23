@@ -12,7 +12,7 @@
 
 .content {
   grid-area: content;
-  padding: var(--space-md) var(--space-xl);
+  padding: 0 var(--space-xl);
   background: var(--bg-subtle);
   overflow-y: auto;
   height: 100%;

@@ -239,4 +239,9 @@ export function registerHandlebarsHelpers(): void {
     if (!Number.isFinite(numA) || !Number.isFinite(numB)) return false;
     return numA > numB;
   });
+
+  hbs.registerHelper('includes', function (array: unknown, value: unknown) {
+    if (!Array.isArray(array)) return false;
+    return array.includes(value);
+  });
 }

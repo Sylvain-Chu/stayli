@@ -140,6 +140,8 @@ button:disabled,
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
+  background: var(--bg-card);
+  color: var(--text-muted);
 }
 
 .btn-disabled {
@@ -148,4 +150,21 @@ button:disabled,
   background: var(--bg-card);
   color: var(--text-muted);
   pointer-events: none;
+}
+
+/* Active Button (when form has changes) */
+.btn-active {
+  animation: pulse-btn 0.3s ease-out;
+}
+
+@keyframes pulse-btn {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

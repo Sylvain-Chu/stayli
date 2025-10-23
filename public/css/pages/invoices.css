@@ -2,37 +2,7 @@
    Invoices Page Styles
    =================================== */
 
-/* Page Header (reuse) */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
-}
-
-.page-actions {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-/* Filters Section */
-.filters-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  box-shadow: var(--shadow-card);
-}
+/* Note: .page-header, .page-actions, .filters-section are defined in components/page-common.css */
 
 .filters-form {
   display: flex;

@@ -16,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { AccountModule } from './account/account.module';
 import { I18nConfigModule } from './i18n/i18n.module';
+import { SettingsModule } from './settings/settings.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { I18nConfigModule } from './i18n/i18n.module';
     UsersModule,
     AuthModule,
     AccountModule,
+    SettingsModule,
   ],
   controllers: [AppController],
   providers: [
