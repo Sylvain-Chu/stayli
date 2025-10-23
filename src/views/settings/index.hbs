@@ -1,0 +1,378 @@
+{{> header }}
+{{> sidebar }}
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h1>{{t 'settings.title'}}</h1>
+  </div>
+</div>
+
+<div class="form-container">
+  {{#if error}}
+    <div class="alert alert-error">
+      <span data-feather="alert-circle"></span>
+      <span>{{error}}</span>
+    </div>
+  {{/if}}
+
+  <form method="post" action="/settings" class="form-modern">
+    
+    <!-- Company Information Section -->
+    <div class="form-card">
+      <div class="card-header">
+        <span data-feather="briefcase"></span>
+        <h2>{{t 'settings.companyInfo'}}</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label for="companyName">{{t 'settings.companyName'}}</label>
+          <input 
+            type="text" 
+            id="companyName" 
+            name="companyName" 
+            value="{{settings.companyName}}" 
+            class="form-input"
+            placeholder="{{t 'settings.companyNamePlaceholder'}}"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="companyAddress">{{t 'settings.companyAddress'}}</label>
+          <input 
+            type="text" 
+            id="companyAddress" 
+            name="companyAddress" 
+            value="{{settings.companyAddress}}" 
+            class="form-input"
+            placeholder="{{t 'settings.companyAddressPlaceholder'}}"
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="companyPhoneNumber">
+              <span data-feather="phone"></span>
+              {{t 'settings.companyPhoneNumber'}}
+            </label>
+            <input 
+              type="tel" 
+              id="companyPhoneNumber" 
+              name="companyPhoneNumber" 
+              value="{{settings.companyPhoneNumber}}" 
+              class="form-input"
+              placeholder="+33 1 23 45 67 89"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="companyEmail">
+              <span data-feather="mail"></span>
+              {{t 'settings.companyEmail'}}
+            </label>
+            <input 
+              type="email" 
+              id="companyEmail" 
+              name="companyEmail" 
+              value="{{settings.companyEmail}}" 
+              class="form-input"
+              placeholder="contact@company.com"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="companyLogoUrl">{{t 'settings.companyLogoUrl'}}</label>
+          <input 
+            type="url" 
+            id="companyLogoUrl" 
+            name="companyLogoUrl" 
+            value="{{settings.companyLogoUrl}}" 
+            class="form-input"
+            placeholder="https://example.com/logo.png"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Localization Section -->
+    <div class="form-card">
+      <div class="card-header">
+        <span data-feather="globe"></span>
+        <h2>{{t 'settings.localization'}}</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="defaultLanguage">{{t 'settings.defaultLanguage'}}</label>
+            <select 
+              id="defaultLanguage" 
+              name="defaultLanguage" 
+              class="form-input"
+            >
+              <option value="en" {{#if (eq settings.defaultLanguage 'en')}}selected{{/if}}>English</option>
+              <option value="fr" {{#if (eq settings.defaultLanguage 'fr')}}selected{{/if}}>Français</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="currencyCode">{{t 'settings.currencyCode'}}</label>
+            <input 
+              type="text" 
+              id="currencyCode" 
+              name="currencyCode" 
+              value="{{settings.currencyCode}}" 
+              class="form-input"
+              placeholder="EUR"
+              maxlength="3"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="currencySymbol">{{t 'settings.currencySymbol'}}</label>
+          <input 
+            type="text" 
+            id="currencySymbol" 
+            name="currencySymbol" 
+            value="{{settings.currencySymbol}}" 
+            class="form-input"
+            placeholder="€"
+            maxlength="3"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Pricing & Taxes Section -->
+    <div class="form-card">
+      <div class="card-header">
+        <span data-feather="dollar-sign"></span>
+        <h2>{{t 'settings.pricingAndTaxes'}}</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>{{t 'settings.lowSeasonMonths'}}</label>
+          <div class="checkbox-grid">
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="1" {{#if (includes settings.lowSeasonMonths 1)}}checked{{/if}} />
+              {{t 'months.january'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="2" {{#if (includes settings.lowSeasonMonths 2)}}checked{{/if}} />
+              {{t 'months.february'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="3" {{#if (includes settings.lowSeasonMonths 3)}}checked{{/if}} />
+              {{t 'months.march'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="4" {{#if (includes settings.lowSeasonMonths 4)}}checked{{/if}} />
+              {{t 'months.april'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="5" {{#if (includes settings.lowSeasonMonths 5)}}checked{{/if}} />
+              {{t 'months.may'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="6" {{#if (includes settings.lowSeasonMonths 6)}}checked{{/if}} />
+              {{t 'months.june'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="7" {{#if (includes settings.lowSeasonMonths 7)}}checked{{/if}} />
+              {{t 'months.july'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="8" {{#if (includes settings.lowSeasonMonths 8)}}checked{{/if}} />
+              {{t 'months.august'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="9" {{#if (includes settings.lowSeasonMonths 9)}}checked{{/if}} />
+              {{t 'months.september'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="10" {{#if (includes settings.lowSeasonMonths 10)}}checked{{/if}} />
+              {{t 'months.october'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="11" {{#if (includes settings.lowSeasonMonths 11)}}checked{{/if}} />
+              {{t 'months.november'}}
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="lowSeasonMonths" value="12" {{#if (includes settings.lowSeasonMonths 12)}}checked{{/if}} />
+              {{t 'months.december'}}
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="lowSeasonRate">{{t 'settings.lowSeasonRate'}}</label>
+            <input 
+              type="number" 
+              id="lowSeasonRate" 
+              name="lowSeasonRate" 
+              value="{{settings.lowSeasonRate}}" 
+              class="form-input"
+              min="0"
+              step="0.01"
+              placeholder="100.00"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="highSeasonRate">{{t 'settings.highSeasonRate'}}</label>
+            <input 
+              type="number" 
+              id="highSeasonRate" 
+              name="highSeasonRate" 
+              value="{{settings.highSeasonRate}}" 
+              class="form-input"
+              min="0"
+              step="0.01"
+              placeholder="150.00"
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="linensOptionPrice">{{t 'settings.linensOptionPrice'}}</label>
+            <input 
+              type="number" 
+              id="linensOptionPrice" 
+              name="linensOptionPrice" 
+              value="{{settings.linensOptionPrice}}" 
+              class="form-input"
+              min="0"
+              step="0.01"
+              placeholder="20.00"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cleaningOptionPrice">{{t 'settings.cleaningOptionPrice'}}</label>
+            <input 
+              type="number" 
+              id="cleaningOptionPrice" 
+              name="cleaningOptionPrice" 
+              value="{{settings.cleaningOptionPrice}}" 
+              class="form-input"
+              min="0"
+              step="0.01"
+              placeholder="50.00"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="touristTaxRatePerPersonPerDay">{{t 'settings.touristTaxRatePerPersonPerDay'}}</label>
+          <input 
+            type="number" 
+            id="touristTaxRatePerPersonPerDay" 
+            name="touristTaxRatePerPersonPerDay" 
+            value="{{settings.touristTaxRatePerPersonPerDay}}" 
+            class="form-input"
+            min="0"
+            step="0.01"
+            placeholder="2.50"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Invoicing Section -->
+    <div class="form-card">
+      <div class="card-header">
+        <span data-feather="file-text"></span>
+        <h2>{{t 'settings.invoicing'}}</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="invoicePrefix">{{t 'settings.invoicePrefix'}}</label>
+            <input 
+              type="text" 
+              id="invoicePrefix" 
+              name="invoicePrefix" 
+              value="{{settings.invoicePrefix}}" 
+              class="form-input"
+              placeholder="INV-"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="invoiceDueDays">{{t 'settings.invoiceDueDays'}}</label>
+            <input 
+              type="number" 
+              id="invoiceDueDays" 
+              name="invoiceDueDays" 
+              value="{{settings.invoiceDueDays}}" 
+              class="form-input"
+              min="0"
+              placeholder="30"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="invoicePaymentInstructions">{{t 'settings.invoicePaymentInstructions'}}</label>
+          <textarea 
+            id="invoicePaymentInstructions" 
+            name="invoicePaymentInstructions" 
+            class="form-input"
+            rows="4"
+            placeholder="{{t 'settings.invoicePaymentInstructionsPlaceholder'}}"
+          >{{settings.invoicePaymentInstructions}}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancellation Insurance Section -->
+    <div class="form-card">
+      <div class="card-header">
+        <span data-feather="shield"></span>
+        <h2>{{t 'settings.cancellationInsurance'}}</h2>
+      </div>
+      <div class="card-body">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cancellationInsurancePercentage">{{t 'settings.cancellationInsurancePercentage'}}</label>
+            <input 
+              type="number" 
+              id="cancellationInsurancePercentage" 
+              name="cancellationInsurancePercentage" 
+              value="{{settings.cancellationInsurancePercentage}}" 
+              class="form-input"
+              min="0"
+              max="100"
+              step="0.01"
+              placeholder="5.00"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="cancellationInsuranceProviderName">{{t 'settings.cancellationInsuranceProviderName'}}</label>
+            <input 
+              type="text" 
+              id="cancellationInsuranceProviderName" 
+              name="cancellationInsuranceProviderName" 
+              value="{{settings.cancellationInsuranceProviderName}}" 
+              class="form-input"
+              placeholder="{{t 'settings.cancellationInsuranceProviderNamePlaceholder'}}"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <span data-feather="save"></span>
+        <span>{{t 'settings.saveSettings'}}</span>
+      </button>
+    </div>
+  </form>
+</div>
+
+{{> footer }}
