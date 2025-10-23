@@ -59,25 +59,29 @@ describe('SettingsService', () => {
 
   describe('getSettings', () => {
     it('should return existing settings', async () => {
-      jest.spyOn(prismaService.settings, 'count').mockResolvedValue(1);
-      jest.spyOn(prismaService.settings, 'findFirst').mockResolvedValue(mockSettings);
+      const countSpy = jest.spyOn(prismaService.settings, 'count').mockResolvedValue(1);
+      const findSpy = jest
+        .spyOn(prismaService.settings, 'findFirst')
+        .mockResolvedValue(mockSettings);
 
       const result = await service.getSettings();
 
       expect(result).toEqual(mockSettings);
-      expect(prismaService.settings.count).toHaveBeenCalled();
-      expect(prismaService.settings.findFirst).toHaveBeenCalled();
+      expect(countSpy).toHaveBeenCalled();
+      expect(findSpy).toHaveBeenCalled();
     });
 
     it('should create default settings when none exist', async () => {
-      jest.spyOn(prismaService.settings, 'count').mockResolvedValue(0);
-      jest.spyOn(prismaService.settings, 'create').mockResolvedValue(mockSettings);
+      const countSpy = jest.spyOn(prismaService.settings, 'count').mockResolvedValue(0);
+      const createSpy = jest
+        .spyOn(prismaService.settings, 'create')
+        .mockResolvedValue(mockSettings);
 
       const result = await service.getSettings();
 
       expect(result).toEqual(mockSettings);
-      expect(prismaService.settings.count).toHaveBeenCalled();
-      expect(prismaService.settings.create).toHaveBeenCalledWith({ data: {} });
+      expect(countSpy).toHaveBeenCalled();
+      expect(createSpy).toHaveBeenCalledWith({ data: {} });
     });
   });
 
@@ -93,12 +97,14 @@ describe('SettingsService', () => {
 
       jest.spyOn(prismaService.settings, 'count').mockResolvedValue(1);
       jest.spyOn(prismaService.settings, 'findFirst').mockResolvedValue(mockSettings);
-      jest.spyOn(prismaService.settings, 'update').mockResolvedValue(updatedSettings);
+      const updateSpy = jest
+        .spyOn(prismaService.settings, 'update')
+        .mockResolvedValue(updatedSettings);
 
       const result = await service.updateSettings(updateDto);
 
       expect(result).toEqual(updatedSettings);
-      expect(prismaService.settings.update).toHaveBeenCalledWith({
+      expect(updateSpy).toHaveBeenCalledWith({
         where: { id: mockSettings.id },
         data: updateDto,
       });

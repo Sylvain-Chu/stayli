@@ -56,12 +56,12 @@ describe('SettingsController', () => {
 
   describe('index', () => {
     it('should render settings page with settings data', async () => {
-      jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
+      const getSpy = jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
 
       const result = await controller.index();
 
       expect(result).toEqual({ settings: mockSettings, activeNav: 'settings' });
-      expect(service.getSettings).toHaveBeenCalled();
+      expect(getSpy).toHaveBeenCalled();
     });
   });
 
@@ -73,32 +73,34 @@ describe('SettingsController', () => {
     };
 
     it('should update settings and redirect on success', async () => {
-      jest.spyOn(service, 'updateSettings').mockResolvedValue(mockSettings);
+      const updateSpy = jest.spyOn(service, 'updateSettings').mockResolvedValue(mockSettings);
 
+      const redirectSpy = jest.fn();
       const mockResponse = {
-        redirect: jest.fn(),
+        redirect: redirectSpy,
       } as unknown as Response;
 
       await controller.update(updateDto, mockResponse);
 
-      expect(service.updateSettings).toHaveBeenCalledWith(updateDto);
-      expect(mockResponse.redirect).toHaveBeenCalledWith('/settings');
+      expect(updateSpy).toHaveBeenCalledWith(updateDto);
+      expect(redirectSpy).toHaveBeenCalledWith('/settings');
     });
 
     it('should render form with error on failure', async () => {
       const error = new Error('Update failed');
-      jest.spyOn(service, 'updateSettings').mockRejectedValue(error);
-      jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
+      const updateSpy = jest.spyOn(service, 'updateSettings').mockRejectedValue(error);
+      const getSpy = jest.spyOn(service, 'getSettings').mockResolvedValue(mockSettings);
 
+      const renderSpy = jest.fn();
       const mockResponse = {
-        render: jest.fn(),
+        render: renderSpy,
       } as unknown as Response;
 
       await controller.update(updateDto, mockResponse);
 
-      expect(service.updateSettings).toHaveBeenCalledWith(updateDto);
-      expect(service.getSettings).toHaveBeenCalled();
-      expect(mockResponse.render).toHaveBeenCalledWith('settings/index', {
+      expect(updateSpy).toHaveBeenCalledWith(updateDto);
+      expect(getSpy).toHaveBeenCalled();
+      expect(renderSpy).toHaveBeenCalledWith('settings/index', {
         settings: mockSettings,
         activeNav: 'settings',
         error: 'Unable to update settings',
