@@ -10,6 +10,7 @@
 @import url('sidebar.css');
 
 /* Component Modules */
+@import url('components/page-common.css');
 @import url('components/buttons.css');
 @import url('components/badges.css');
 @import url('components/tabs.css');

@@ -2,12 +2,8 @@
    Detail Pages Styles (Show/View)
    =================================== */
 
-/* Page Header with Back Button */
-.page-header-left {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-}
+/* Note: .page-header, .page-header-left, .page-header-right 
+   are defined in components/page-common.css */
 
 .btn-back {
   display: inline-flex;
