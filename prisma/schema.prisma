@@ -87,3 +87,28 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
+
+model Settings {
+  id                                   String   @id @default(uuid())
+  companyName                          String   @default("Vacation Rentals")
+  companyAddress                       String?
+  companyPhoneNumber                   String?
+  companyEmail                         String?
+  companyLogoUrl                       String?
+  defaultLanguage                      String   @default("fr")
+  currencyCode                         String   @default("EUR")
+  currencySymbol                       String   @default("€")
+  lowSeasonMonths                      Int[]    @default([1, 2, 3, 11, 12])
+  lowSeasonRate                        Float    @default(750)
+  highSeasonRate                       Float    @default(830)
+  linensOptionPrice                    Float    @default(20)
+  cleaningOptionPrice                  Float    @default(35)
+  touristTaxRatePerPersonPerDay        Float    @default(1)
+  invoicePrefix                        String   @default("INV-")
+  invoiceDueDays                       Int      @default(30)
+  invoicePaymentInstructions           String?
+  cancellationInsurancePercentage      Float    @default(6)
+  cancellationInsuranceProviderName    String   @default("Holiday Peace of Mind Insurance")
+  createdAt                            DateTime @default(now())
+  updatedAt                            DateTime @updatedAt
+}

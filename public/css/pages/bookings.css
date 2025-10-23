@@ -2,58 +2,8 @@
    Bookings Page Styles
    =================================== */
 
-/* Page Header */
-.page-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--space-xl);
-  padding-bottom: var(--space-lg);
-  border-bottom: 1px solid var(--border-light);
-}
-
-.page-header h1 {
-  margin: 0;
-  font-size: var(--font-size-3xl);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
-}
-
-.page-actions {
-  display: flex;
-  gap: var(--space-sm);
-  align-items: center;
-}
-
-/* Filters Section */
-.filters-section {
-  background: var(--bg-card);
-  border-radius: var(--radius-xl);
-  padding: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  box-shadow: var(--shadow-card);
-}
-
-.filters-form {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 150px;
-}
-
-.filter-group label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
-}
+/* Note: .page-header, .page-actions, .filters-section, .filter-group 
+   are defined in components/page-common.css */
 
 .filter-group input[type='search'],
 .filter-group input[type='date'],

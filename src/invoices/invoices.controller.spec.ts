@@ -5,7 +5,7 @@ import type { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 
 type MockInvoicesService = {
-  findAll: jest.Mock<Promise<unknown[]>, []>;
+  findAll: jest.Mock<Promise<{ invoices: unknown[]; total: number }>, []>;
   findEligibleBookings: jest.Mock<Promise<unknown[]>, []>;
   create: jest.Mock<
     Promise<{ id: string }>,
