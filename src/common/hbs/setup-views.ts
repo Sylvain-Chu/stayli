@@ -28,13 +28,21 @@ export function setupViewsEngine(app: NestExpressApplication): string | undefine
   const viewsDir = candidates.find((p) => existsSync(p));
 
   if (!viewsDir) {
-    // Fallback to previous behavior; this will cause a clear error if none found
-    app.setBaseViewsDir(join(__dirname, '..', '..', 'views'));
-  } else {
-    app.setBaseViewsDir(viewsDir);
+    throw new Error('Views directory not found');
   }
 
-  app.setViewEngine('hbs');
+  // Use Express API directly instead of NestJS wrapper
+  const httpAdapter = app.getHttpAdapter();
+  const expressApp = httpAdapter.getInstance();
+
+  // Set view engine first
+  expressApp.set('view engine', 'hbs');
+
+  // Then set views directory as a single string (not array)
+  expressApp.set('views', viewsDir);
+
+  // Disable layout globally (we use partials instead)
+  expressApp.locals._layoutsDir = undefined;
 
   // Register partials for shared layout components (header/sidebar/footer)
   if (viewsDir && existsSync(join(viewsDir, 'partials'))) {
