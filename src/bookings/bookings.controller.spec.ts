@@ -102,6 +102,7 @@ describe('BookingsController', () => {
       to: '2025-01-10',
       q: undefined,
       status: undefined,
+      sort: 'newest', // Default sort order
       activeNav: 'bookings',
     });
   });

@@ -18,11 +18,16 @@ function isValidBookingStatus(s: unknown): s is 'confirmed' | 'pending' | 'cance
   );
 }
 
+export type SortOption = 'newest' | 'oldest' | 'price-high' | 'price-low' | 'name';
+
 @Injectable()
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(range?: { from?: Date; to?: Date }): Promise<BookingWithRelations[]> {
+  async findAll(
+    range?: { from?: Date; to?: Date },
+    sort: SortOption = 'newest',
+  ): Promise<BookingWithRelations[]> {
     const from = range?.from;
     const to = range?.to;
     const where: Prisma.BookingWhereInput | undefined =
@@ -34,10 +39,32 @@ export class BookingsService {
             ],
           }
         : undefined;
+
+    // Build orderBy clause based on sort option
+    let orderBy: Prisma.BookingOrderByWithRelationInput;
+    switch (sort) {
+      case 'oldest':
+        orderBy = { startDate: 'asc' };
+        break;
+      case 'price-high':
+        orderBy = { totalPrice: 'desc' };
+        break;
+      case 'price-low':
+        orderBy = { totalPrice: 'asc' };
+        break;
+      case 'name':
+        orderBy = { property: { name: 'asc' } };
+        break;
+      case 'newest':
+      default:
+        orderBy = { startDate: 'desc' };
+        break;
+    }
+
     return this.prisma.booking.findMany({
       where,
       include: { property: true, client: true, invoice: true },
-      orderBy: { startDate: 'asc' },
+      orderBy,
     });
   }
 
