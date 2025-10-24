@@ -115,9 +115,10 @@
 .filters-section {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: 24px;
   margin-bottom: var(--space-xl);
   box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
 }
 
 .card {
@@ -143,51 +144,139 @@
 }
 
 .filters-form {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  /* Colonnes: Rechercher (large), Statut, Trier par (un peu plus), Du, Au, Filtrer (bouton) */
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr min-content;
+  gap: 16px;
+  align-items: end;
+  padding: 0;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 150px;
+  gap: 6px;
 }
 
 .filter-group label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
+  color: var(--text-dark);
+  display: block;
+  line-height: 1.4;
 }
 
 .filter-group input[type='search'],
 .filter-group input[type='text'],
+.filter-group input[type='date'],
 .search-input {
-  padding: var(--space-sm) var(--space-md);
+  width: 100%;
+  padding: 10px 14px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   transition: all var(--transition-fast);
   font-family: var(--font-family);
+  background: var(--bg-light);
+}
+
+.filter-group select,
+.filter-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+  background: var(--bg-light);
+  cursor: pointer;
 }
 
 .filter-group input:focus,
+.filter-group select:focus,
 .search-input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(246, 92, 39, 0.1);
 }
 
-.search-input {
-  flex: 2;
-  min-width: 250px;
+/* Style pour le bouton de filtre dans la grille */
+.filters-form > div:last-child {
+  display: flex;
+  align-items: flex-end;
+}
+
+.filters-form .btn {
+  white-space: nowrap;
+  height: fit-content;
+  padding: 10px 20px;
+}
+
+/* Amélioration des champs de date pour intégration native du date picker */
+.filter-group input[type='date'] {
+  position: relative;
+  cursor: pointer;
+}
+
+.filter-group input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.filter-group input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 /* Responsive Styles */
+
+/* Écrans moyens (tablettes larges / petits laptops) */
+@media (max-width: 1200px) {
+  .filters-form {
+    /* Passer à 3 colonnes: Rechercher (large), Statut, Trier par */
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* Du, Au, et Bouton prennent chacun une colonne sur la deuxième ligne */
+  .filter-group:nth-child(4), /* Du */
+  .filter-group:nth-child(5), /* Au */
+  .filters-form > div:nth-child(6) {
+    /* Bouton */
+    grid-column: span 1;
+  }
+
+  /* Si vous voulez que le bouton prenne toute la largeur */
+  .filters-form > div:last-child {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+  }
+
+  .filters-form .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablettes et grands mobiles */
 @media (max-width: 900px) {
+  .filters-form {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Le champ recherche prend 2 colonnes */
+  .filter-group:first-child {
+    grid-column: span 2;
+  }
+
+  /* Le bouton prend toute la largeur */
+  .filters-form > div:last-child {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -219,6 +308,44 @@
   }
 
   .pagination-controls .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Mobiles (petits écrans) */
+@media (max-width: 768px) {
+  .filters-form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Tous les éléments prennent une colonne */
+  .filter-group:first-child,
+  .filters-form > div:last-child {
+    grid-column: span 1;
+  }
+
+  /* Ajout d'une marge au-dessus du bouton */
+  .filters-form > div:last-child {
+    margin-top: 8px;
+  }
+
+  .filters-form .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header-right {
+    width: 100%;
+  }
+
+  .page-header-right .btn {
     width: 100%;
     justify-content: center;
   }

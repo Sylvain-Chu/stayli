@@ -13,7 +13,7 @@ import {
   HttpException,
   Query,
 } from '@nestjs/common';
-import { BookingsService } from './bookings.service';
+import { BookingsService, SortOption } from './bookings.service';
 import { CreateBookingDto } from './dto/create-booking.dto';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
@@ -37,6 +37,7 @@ export class BookingsController {
     @Query('to') to?: string,
     @Query('q') q?: string,
     @Query('status') status?: string,
+    @Query('sort') sort?: string,
   ) {
     try {
       const fromDate = from ? new Date(from) : undefined;
@@ -47,7 +48,13 @@ export class BookingsController {
       if (to && (!toDate || Number.isNaN(toDate.getTime()))) {
         throw new BadRequestException('Invalid to date');
       }
-      let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate });
+
+      // Validate and normalize sort parameter
+      const validSorts: SortOption[] = ['newest', 'oldest', 'price-high', 'price-low', 'name'];
+      const sortOption: SortOption =
+        sort && validSorts.includes(sort as SortOption) ? (sort as SortOption) : 'newest';
+
+      let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate }, sortOption);
 
       // Apply status filter if provided
       if (status && status.trim()) {
@@ -106,7 +113,15 @@ export class BookingsController {
         };
       });
 
-      return { bookings: enrichedBookings, from, to, q, status, activeNav: 'bookings' };
+      return {
+        bookings: enrichedBookings,
+        from,
+        to,
+        q,
+        status,
+        sort: sortOption,
+        activeNav: 'bookings',
+      };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;
       throw new InternalServerErrorException('Unable to load bookings');
