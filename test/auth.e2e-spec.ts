@@ -12,6 +12,7 @@ import * as express from 'express';
 import session from 'express-session';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
+import { registerHandlebarsHelpers } from '../src/common/hbs/helpers';
 
 describe('Auth flow (e2e)', () => {
   let app: NestExpressApplication;
@@ -42,6 +43,8 @@ describe('Auth flow (e2e)', () => {
       const hbs = hbsDefault as unknown as { registerPartials: (p: string) => void };
       hbs.registerPartials(join(viewsDir, 'partials'));
     }
+    // Register Handlebars helpers for i18n and other utilities
+    registerHandlebarsHelpers();
 
     const server = app.getHttpAdapter().getInstance() as unknown as express.Express;
     server.use(express.urlencoded({ extended: true }));
@@ -86,6 +89,30 @@ describe('Auth flow (e2e)', () => {
       .get('/clients')
       .expect(302);
     expect(res.header.location).toMatch(/\/auth\/login\?next=/);
+  });
+
+  it('returns 401 with error message for invalid credentials (not 500)', async () => {
+    const res = await request(app.getHttpServer() as unknown as SupertestApp)
+      .post('/auth/login')
+      .type('form')
+      .send({ email: adminEmail, password: 'wrongpassword' })
+      .expect(401);
+
+    // Verify that response contains the error message
+    expect(res.text).toContain('Invalid email or password');
+    // Should NOT be a 500 error
+    expect(res.status).not.toBe(500);
+  });
+
+  it('returns 401 with error message for non-existent user', async () => {
+    const res = await request(app.getHttpServer() as unknown as SupertestApp)
+      .post('/auth/login')
+      .type('form')
+      .send({ email: 'nonexistent@example.com', password: 'anypassword' })
+      .expect(401);
+
+    expect(res.text).toContain('Invalid email or password');
+    expect(res.status).not.toBe(500);
   });
 
   it('logs in and can access protected pages; logout locks them again', async () => {

@@ -8,16 +8,19 @@ import { I18nController } from './i18n.controller';
   imports: [
     I18nModule.forRoot({
       fallbackLanguage: 'fr',
-      loaderOptions: {
-        path:
-          [
-            join(__dirname, 'i18n'),
-            join(__dirname, '..', 'i18n'),
-            join(process.cwd(), 'src', 'i18n'),
-            join(process.cwd(), 'dist', 'src', 'i18n'),
-          ].find((p) => existsSync(p)) || join(__dirname, 'i18n'),
-        watch: true,
-      },
+      loaderOptions: (() => {
+        // Prefer common locations, but only use ones that actually exist.
+        const candidates = [
+          join(__dirname, '..', 'i18n'),
+          join(process.cwd(), 'src', 'i18n'),
+          join(process.cwd(), 'dist', 'src', 'i18n'),
+          join(__dirname, 'i18n'),
+        ];
+        const found = candidates.find((p) => existsSync(p));
+        // Fallback to src/i18n which should exist in development.
+        const pathToUse = found ?? join(process.cwd(), 'src', 'i18n');
+        return { path: pathToUse, watch: true };
+      })(),
       resolvers: [
         new QueryResolver(['lang', 'locale']),
         new CookieResolver(['lang', 'locale']),

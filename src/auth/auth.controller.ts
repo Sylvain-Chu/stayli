@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards, UseFilters } from '@nestjs/common';
 import type { Response, Request } from 'express';
 import { Public } from './public.decorator';
 import { LocalAuthGuard } from './local-auth.guard';
+import { AuthExceptionFilter } from './auth-exception.filter';
 
 @Controller('auth')
 export class AuthController {
@@ -15,20 +16,36 @@ export class AuthController {
   @Public()
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @UseFilters(AuthExceptionFilter)
   login(@Req() req: Request, @Res() res: Response) {
-    // Explicitly call req.login to ensure the session is persisted
+    // Ensure req.login (passport) succeeds — if it fails, respond 500.
+    // Use a callback-style invocation so that synchronous test doubles work.
+    const r = req as Request & {
+      login?: (user?: unknown, cb?: (err?: Error | null) => void) => void;
+      user?: unknown;
+    };
+
     const body = req.body as Record<string, unknown>;
     const next = typeof body?.next === 'string' ? body.next : undefined;
-    const r = req as Request & {
-      login?: (user: unknown, cb: (err?: unknown) => void) => void;
-    } & { user?: unknown };
-    if (typeof r.login === 'function' && r.user) {
-      r.login(r.user, (err?: unknown) => {
-        if (err) return res.status(500).send('Login failed');
-        return res.redirect(next || '/');
-      });
-      return; // response handled in callback
+
+    if (typeof r.login === 'function') {
+      try {
+        const loginFn = r.login as unknown as (
+          user: unknown,
+          cb: (err: Error | null) => void,
+        ) => void;
+        // Call login and handle result in callback synchronously if the implementation is sync.
+        loginFn(r.user, (err: Error | null) => {
+          if (err) return res.status(500).send('Login failed');
+          return res.redirect(next || '/');
+        });
+      } catch {
+        return res.status(500).send('Login failed');
+      }
+      return;
     }
+
+    // If no req.login, just redirect synchronously
     return res.redirect(next || '/');
   }
 
