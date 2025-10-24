@@ -1,16 +1,28 @@
 {{> auth_header title=(t 'auth.loginTitle')}}
+  <div class="auth-logo"></div>
   <h1>{{t 'auth.loginTitle'}}</h1>
-  <form method="post" action="/auth/login">
+  <form method="post" action="/auth/login" class="{{#if error}}has-error{{/if}}">
     {{#if next}}
       <input type="hidden" name="next" value="{{next}}" />
     {{/if}}
     <div class="form-row">
       <label for="email">{{t 'auth.email'}}</label>
-      <input type="email" id="email" name="email" required />
+      <div class="input-wrapper">
+        <input type="email" id="email" name="email" required />
+      </div>
     </div>
     <div class="form-row">
       <label for="password">{{t 'auth.password'}}</label>
-      <input type="password" id="password" name="password" required />
+      <div class="input-wrapper">
+        <input type="password" id="password" name="password" required />
+      </div>
+    </div>
+    <div class="error-message-container">
+      {{#if error}}
+        <span class="error-text">{{error}}</span>
+      {{else}}
+        <span class="error-text">&nbsp;</span>
+      {{/if}}
     </div>
     <button type="submit">{{t 'auth.loginButton'}}</button>
   </form>
