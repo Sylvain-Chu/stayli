@@ -17,37 +17,35 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @UseFilters(AuthExceptionFilter)
-  async login(@Req() req: Request, @Res() res: Response) {
-    // Ensure req.login (passport) succeeds — if it fails, respond 500
+  login(@Req() req: Request, @Res() res: Response) {
+    // Ensure req.login (passport) succeeds — if it fails, respond 500.
+    // Use a callback-style invocation so that synchronous test doubles work.
     const r = req as Request & {
       login?: (user?: unknown, cb?: (err?: Error | null) => void) => void;
       user?: unknown;
     };
 
+    const body = req.body as Record<string, unknown>;
+    const next = typeof body?.next === 'string' ? body.next : undefined;
+
     if (typeof r.login === 'function') {
       try {
-        await new Promise<void>((resolve, reject) => {
-          try {
-            const loginFn = r.login as unknown as (
-              user: unknown,
-              cb: (err: Error | null) => void,
-            ) => void;
-            loginFn(r.user, (err: Error | null) => {
-              if (err) return reject(new Error(String(err)));
-              resolve();
-            });
-          } catch (err) {
-            return reject(new Error(String(err)));
-          }
+        const loginFn = r.login as unknown as (
+          user: unknown,
+          cb: (err: Error | null) => void,
+        ) => void;
+        // Call login and handle result in callback synchronously if the implementation is sync.
+        loginFn(r.user, (err: Error | null) => {
+          if (err) return res.status(500).send('Login failed');
+          return res.redirect(next || '/');
         });
       } catch {
         return res.status(500).send('Login failed');
       }
+      return;
     }
 
-    // If login succeeded (or no login function), redirect to next or home
-    const body = req.body as Record<string, unknown>;
-    const next = typeof body?.next === 'string' ? body.next : undefined;
+    // If no req.login, just redirect synchronously
     return res.redirect(next || '/');
   }
 
