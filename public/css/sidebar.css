@@ -1,4 +1,110 @@
 /* ===================================
+   User Profile & Language Switcher 
+   =================================== */
+
+.sidebar-bottom .user-profile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  padding: 10px 0;
+  border-radius: var(--radius-lg);
+  background: var(--panel-2, rgba(255, 255, 255, 0.06));
+  transition: background 0.2s;
+}
+
+.sidebar-bottom .user-profile-link:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.sidebar-bottom .user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-left: var(--space-md);
+}
+
+.sidebar-bottom .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--icon-purple), var(--icon-blue));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+}
+
+.sidebar-bottom .user-avatar-icon {
+  width: 28px;
+  height: 28px;
+  color: #f34d21;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 50%;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-bottom .user-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.sidebar-bottom .user-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e5e7eb;
+}
+
+.sidebar-bottom .user-role {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Language Switcher - Modern pill style */
+.sidebar-bottom .language-switcher {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+.sidebar-bottom .lang-link {
+  border-radius: 999px;
+  padding: 7px 22px;
+  font-size: 1rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  transition: all 0.2s;
+  box-shadow: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+}
+.sidebar-bottom .lang-link.active {
+  background: #f34d21;
+  color: #fff;
+  border-color: #f34d21;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.sidebar-bottom .lang-link:not(.active) {
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  border-color: transparent;
+}
+.sidebar-bottom .lang-link:focus {
+  outline: 2px solid #f34d21;
+}
+
+/* ===================================
    Sidebar Navigation
    =================================== */
 
@@ -19,7 +125,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  margin-bottom: var(--space-2xl);
+  margin-bottom: var(--space-md);
   padding: 0 var(--space-sm);
 }
 
@@ -135,4 +241,16 @@
 .sidebar a.active i {
   opacity: 1;
   color: var(--color-primary);
+}
+
+.sidebar-separator {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin: var(--space-lg) 0 var(--space-lg) 0;
+}
+
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
 }

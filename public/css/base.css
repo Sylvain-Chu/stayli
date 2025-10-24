@@ -31,7 +31,7 @@ body {
     'sidebar header'
     'sidebar content'
     'sidebar footer';
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* ===================================
