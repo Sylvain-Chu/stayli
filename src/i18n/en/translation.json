@@ -1,5 +1,12 @@
 {
   "common": {
+    "statuses": {
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "completed": "Completed",
+      "blocked": "Blocked"
+    },
     "search": "Search",
     "clear": "Clear",
     "delete": "Delete",
@@ -134,13 +141,17 @@
   },
   "bookings": {
     "title": "Bookings",
-    "createTitle": "Create Booking",
-    "editTitle": "Edit Booking",
-    "showTitle": "Booking Details",
-
-    "addNew": "Create a new booking",
+    "subtitle": "Manage all your bookings here.",
+    "addNew": "Add new booking",
+    "filterSearchLabel": "Search",
+    "filterDateLabel": "Date Range",
+    "filterStatusLabel": "Status",
+    "searchPlaceholder": "Search bookings...",
+    "guest": "Guest",
+    "dates": "Dates",
+    "noBookings": "No bookings found.",
+    "perPage": "Results per page",
     "openCalendar": "Open calendar",
-    "searchPlaceholder": "Search by client or property...",
     "property": "Property",
     "client": "Client",
     "startDate": "Start Date",
@@ -149,7 +160,6 @@
     "status": "Status",
     "confirmDelete": "Delete this booking?",
     "confirmCancel": "Cancel this booking?",
-    "noBookings": "No bookings yet.",
     "selectProperty": "Select a property",
     "selectClient": "Select a client",
     "statusPending": "Pending",

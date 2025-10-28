@@ -1,3 +1,21 @@
+/* Modern page header for bookings (title left, button right) */
+.page-header-modern {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0 var(--space-lg);
+  background: var(--bg-subtle);
+}
+.page-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 /* ===================================
    Common Page Styles
    Shared across all pages (properties, clients, invoices, bookings, etc.)
@@ -49,7 +67,7 @@
   align-items: center;
 }
 
-/* Pagination */
+/* Pagination (non-table) */
 .pagination {
   display: flex;
   justify-content: space-between;
@@ -115,7 +133,7 @@
 .filters-section {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
-  padding: 24px;
+  padding: 24px 24px 12px 24px;
   margin-bottom: var(--space-xl);
   box-shadow: var(--shadow-card);
   border: 1px solid var(--border-light);
@@ -178,6 +196,7 @@
   transition: all var(--transition-fast);
   font-family: var(--font-family);
   background: var(--bg-light);
+  max-height: fit-content;
 }
 
 .filter-group select,
@@ -201,7 +220,6 @@
   box-shadow: 0 0 0 3px rgba(246, 92, 39, 0.1);
 }
 
-/* Style pour le bouton de filtre dans la grille */
 .filters-form > div:last-child {
   display: flex;
   align-items: flex-end;
@@ -213,7 +231,6 @@
   padding: 10px 20px;
 }
 
-/* Amélioration des champs de date pour intégration native du date picker */
 .filter-group input[type='date'] {
   position: relative;
   cursor: pointer;

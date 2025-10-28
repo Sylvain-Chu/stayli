@@ -17,14 +17,14 @@
       <input type="search" id="search" name="q" placeholder="{{t 'invoices.searchPlaceholder'}}" value="{{q}}" class="search-input" />
     </div>
     <div class="filter-group">
-      <label for="status">{{t "invoices.status"}}</label>
+      <label for="status">{{t "common.status"}}</label>
       <select id="status" name="status">
-        <option value="">{{t 'invoices.allStatuses'}}</option>
-        <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>{{t 'invoices.statusDraft'}}</option>
-        <option value="sent" {{#if (eq status 'sent')}}selected{{/if}}>{{t 'invoices.statusSent'}}</option>
-        <option value="paid" {{#if (eq status 'paid')}}selected{{/if}}>{{t 'invoices.statusPaid'}}</option>
-        <option value="overdue" {{#if (eq status 'overdue')}}selected{{/if}}>{{t 'invoices.statusOverdue'}}</option>
-        <option value="cancelled" {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'invoices.statusCancelled'}}</option>
+        <option value="">{{t 'common.all'}}</option>
+        <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>{{t 'common.statusDraft'}}</option>
+        <option value="sent" {{#if (eq status 'sent')}}selected{{/if}}>{{t 'common.statusSent'}}</option>
+        <option value="paid" {{#if (eq status 'paid')}}selected{{/if}}>{{t 'common.statusPaid'}}</option>
+        <option value="overdue" {{#if (eq status 'overdue')}}selected{{/if}}>{{t 'common.statusOverdue'}}</option>
+        <option value="cancelled" {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'common.statusCancelled'}}</option>
       </select>
     </div>
     <div>

@@ -4,53 +4,6 @@
 
 /* Note: .page-header, .page-actions, .filters-section are defined in components/page-common.css */
 
-.filters-form {
-  display: flex;
-  gap: var(--space-md);
-  align-items: flex-end;
-  flex-wrap: wrap;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 150px;
-}
-
-.filter-group label {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
-}
-
-.filter-group input[type='search'],
-.filter-group input[type='text'],
-.filter-group select,
-.search-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-sm);
-  transition: all var(--transition-fast);
-  font-family: var(--font-family);
-  background: white;
-}
-
-.filter-group input:focus,
-.filter-group select:focus,
-.search-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(246, 92, 39, 0.1);
-}
-
-.search-input {
-  flex: 2;
-  min-width: 250px;
-}
-
 /* Invoices List - Card Layout */
 .invoices-list {
   display: flex;
@@ -159,41 +112,6 @@
   opacity: 1;
 }
 
-.invoice-amount {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-bold);
-  color: var(--text-dark);
-  min-width: 100px;
-  text-align: right;
-  align-self: center;
-}
-
-.invoice-status {
-  min-width: 100px;
-  text-align: center;
-  align-self: center;
-}
-
-/* Status badges - with vibrant colors */
-.invoice-status .badge {
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-bold);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border: 1.5px solid;
-}
-
-/* Draft & Sent - Yellow/Amber (pending payment) */
-.invoice-status .badge.badge-pending,
-.invoice-status .badge.badge-draft,
-.invoice-status .badge.badge-sent {
-  background: #fef3c7;
-  color: #d97706;
-  border-color: #fbbf24;
-}
-
 /* Paid - Green */
 .invoice-status .badge.badge-paid {
   background: #d1fae5;
@@ -245,41 +163,6 @@
 }
 
 /* Pagination Styles */
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: var(--space-xl);
-  padding: var(--space-lg);
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-light);
-}
-
-.pagination-info {
-  font-size: var(--font-size-sm);
-  color: var(--text-muted);
-  font-weight: var(--font-weight-medium);
-}
-
-.pagination-controls {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-}
-
-.pagination-pages {
-  font-size: var(--font-size-sm);
-  color: var(--text-dark);
-  font-weight: var(--font-weight-medium);
-  padding: 0 var(--space-md);
-}
-
-.pagination-controls .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
 
 .pagination-controls .btn:disabled {
   opacity: 0.5;
@@ -353,10 +236,6 @@
   .filters-form {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .filter-group {
-    min-width: auto;
   }
 
   .invoice-card {
