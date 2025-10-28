@@ -22,13 +22,29 @@ function dateHelper(value?: Date | string) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function formatDateHelper(this: { lang?: string }, value?: Date | string, pattern?: string) {
+function formatDateHelper(
+  this: { lang?: string },
+  value?: Date | string,
+  patternOrLang?: string,
+  maybeLang?: string,
+) {
   if (!value) return '';
   const d = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(d.getTime())) return '';
+  let pattern = 'EEEE d MMMM yyyy';
+  let lang = this.lang;
+  // Si patternOrLang est 'fr' ou 'en', c'est la langue, sinon c'est le pattern
+  if (patternOrLang === 'fr' || patternOrLang === 'en') {
+    lang = patternOrLang;
+  } else if (patternOrLang) {
+    pattern = patternOrLang;
+  }
+  if (maybeLang === 'fr' || maybeLang === 'en') {
+    lang = maybeLang;
+  }
   try {
-    const locale = this.lang === 'fr' ? fr : undefined;
-    return format(d, pattern || 'EEEE d MMMM yyyy', { locale });
+    const locale = lang === 'fr' ? fr : undefined;
+    return format(d, pattern, { locale });
   } catch {
     return '';
   }

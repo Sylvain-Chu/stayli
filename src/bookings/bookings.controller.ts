@@ -293,10 +293,15 @@ export class BookingsController {
         ? 'bookings.invalidPrice'
         : '';
 
+    const durationNights = Math.max(
+      1,
+      Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
+    );
+    console.log(booking);
+
     return {
       booking,
-      properties,
-      clients,
+      durationNights,
       canEdit,
       canEditReason,
       canCancel,
