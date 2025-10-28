@@ -1,7 +1,8 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Client, Property, Prisma, Invoice } from '@prisma/client';
+import { Booking, Client, Property, Prisma, Invoice, $Enums } from '@prisma/client';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { paginatePrisma } from '../common/prisma-pagination.util';
 
 export type BookingWithRelations = Booking & {
   property: Property;
@@ -25,22 +26,41 @@ export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
   async findAll(
-    range?: { from?: Date; to?: Date },
+    {
+      from,
+      to,
+      status,
+      q,
+    }: { from?: Date; to?: Date; status?: $Enums.BookingStatus | undefined; q?: string } = {},
     sort: SortOption = 'newest',
-  ): Promise<BookingWithRelations[]> {
-    const from = range?.from;
-    const to = range?.to;
-    const where: Prisma.BookingWhereInput | undefined =
-      from || to
+    limit = 10,
+    page = 1,
+  ): Promise<{ data: BookingWithRelations[]; totalCount: number }> {
+    // Build where clause
+    const where: Prisma.BookingWhereInput = {
+      ...(from ? { endDate: { gte: from } } : {}),
+      ...(to ? { startDate: { lte: to } } : {}),
+      ...(status ? { status } : {}),
+      ...(q
         ? {
-            AND: [
-              ...(from ? [{ endDate: { gte: from } }] : []),
-              ...(to ? [{ startDate: { lte: to } }] : []),
+            OR: [
+              { property: { name: { contains: q, mode: 'insensitive' } } },
+              { client: { firstName: { contains: q, mode: 'insensitive' } } },
+              { client: { lastName: { contains: q, mode: 'insensitive' } } },
+              {
+                client: {
+                  AND: [
+                    { firstName: { contains: q.split(' ')[0] || '', mode: 'insensitive' } },
+                    { lastName: { contains: q.split(' ')[1] || '', mode: 'insensitive' } },
+                  ],
+                },
+              },
             ],
           }
-        : undefined;
+        : {}),
+    };
 
-    // Build orderBy clause based on sort option
+    // Build orderBy clause
     let orderBy: Prisma.BookingOrderByWithRelationInput;
     switch (sort) {
       case 'oldest':
@@ -61,10 +81,13 @@ export class BookingsService {
         break;
     }
 
-    return this.prisma.booking.findMany({
+    return paginatePrisma({
+      model: this.prisma.booking,
       where,
       include: { property: true, client: true, invoice: true },
       orderBy,
+      page,
+      perPage: limit,
     });
   }
 

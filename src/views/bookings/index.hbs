@@ -1,166 +1,157 @@
 {{> header }}
 {{> sidebar }}
 
-<div class="page-header">
-  <h1>{{t 'bookings.title'}}</h1>
-  <div class="page-actions">
-    <a href='/bookings/create' class="btn btn-primary">
+
+<div class="page-header-modern">
+  <div class="page-header-titles">
+    <h1>{{t 'bookings.title'}}</h1>
+    <p class="page-subtitle">{{t 'bookings.subtitle'}}</p>
+  </div>
+  <div class="page-header-actions">
+    <a href="/bookings/create" class="btn btn-primary">
       <i data-feather="plus"></i>
       {{t 'bookings.addNew'}}
-    </a>
-    <a href='/bookings/calendar' class="btn btn-secondary">
-      <i data-feather="calendar"></i>
-      {{t 'bookings.openCalendar'}}
     </a>
   </div>
 </div>
 
-<div class="filters-section">
-  <form method='GET' action='/bookings' class="filters-form">
+
+<div class="filters-section table-filters-modern">
+  <form method="GET" action="/bookings" class="filters-form-table-modern">
     <div class="filter-group">
-      <label for="search-input">{{t 'bookings.searchLabel'}}</label>
+      <label for="search-input" class="filter-label">{{t 'bookings.filterSearchLabel' 'Search'}}</label>
       <input 
-        type='search' 
+        type="search" 
         id="search-input"
-        name='q' 
-        placeholder='{{t "bookings.searchPlaceholder"}}' 
-        value='{{q}}'
-        class="search-input"
+        name="q" 
+        placeholder="{{t 'bookings.searchPlaceholder'}}" 
+        value="{{q}}"
+        class="search-input-modern"
+        autocomplete="off"
       />
     </div>
     <div class="filter-group">
-      <label for="status-filter">{{t 'common.status'}}</label>
-      <select id="status-filter" name='status' class="filter-select">
-        <option value=''>{{t 'common.all'}}</option>
-        <option value='pending' {{#if (eq status 'pending')}}selected{{/if}}>{{t 'bookings.statusPending'}}</option>
-        <option value='confirmed' {{#if (eq status 'confirmed')}}selected{{/if}}>{{t 'bookings.statusConfirmed'}}</option>
-        <option value='completed' {{#if (eq status 'completed')}}selected{{/if}}>{{t 'bookings.statusCompleted'}}</option>
-        <option value='cancelled' {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'bookings.statusCancelled'}}</option>
-        <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'bookings.statusBlocked'}}</option>
+      <label for="date-from" class="filter-label">{{t 'bookings.filterDateLabel' 'Date Range'}}</label>
+      <div class="filter-date-range">
+        <input type="date" id="date-from" name="from" value="{{from}}" class="date-input-modern" />
+        <span class="date-range-sep">-</span>
+        <input type="date" id="date-to" name="to" value="{{to}}" class="date-input-modern" />
+      </div>
+    </div>
+    <div class="filter-group">
+      <label for="status-filter" class="filter-label">{{t 'bookings.filterStatusLabel' 'Status'}}</label>
+      <select id="status-filter" name="status" class="filter-select-modern">
+  <option value=''>{{t 'common.all'}}</option>
+  <option value='pending' {{#if (eq status 'pending')}}selected{{/if}}>{{t 'common.statuses.pending'}}</option>
+  <option value='confirmed' {{#if (eq status 'confirmed')}}selected{{/if}}>{{t 'common.statuses.confirmed'}}</option>
+  <option value='completed' {{#if (eq status 'completed')}}selected{{/if}}>{{t 'common.statuses.completed'}}</option>
+  <option value='cancelled' {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'common.statuses.cancelled'}}</option>
+  <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'common.statuses.blocked'}}</option>
       </select>
     </div>
-    <div class="filter-group">
-      <label for="sort-filter">{{t 'bookings.sortBy'}}</label>
-      <select id="sort-filter" name='sort' class="filter-select">
-        <option value='newest' {{#if (eq sort 'newest')}}selected{{/if}}>{{t 'bookings.sortNewest'}}</option>
-        <option value='oldest' {{#if (eq sort 'oldest')}}selected{{/if}}>{{t 'bookings.sortOldest'}}</option>
-        <option value='price-high' {{#if (eq sort 'price-high')}}selected{{/if}}>{{t 'bookings.sortPriceHigh'}}</option>
-        <option value='price-low' {{#if (eq sort 'price-low')}}selected{{/if}}>{{t 'bookings.sortPriceLow'}}</option>
-        <option value='name' {{#if (eq sort 'name')}}selected{{/if}}>{{t 'bookings.sortName'}}</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label for="date-from">{{t 'common.from'}}</label>
-      <input type='date' id="date-from" name='from' value='{{from}}' />
-    </div>
-    <div class="filter-group">
-      <label for="date-to">{{t 'common.to'}}</label>
-      <input type='date' id="date-to" name='to' value='{{to}}' />
-    </div>
-    <div>
-      <button type='submit' class="btn btn-secondary">
+    <div class="filter-group filter-group-btn">
+      <label class="filter-label">&nbsp;</label>
+      <button type="submit" class="btn btn-modern-filter" title="{{t 'common.filter'}}">
         <i data-feather="search"></i>
-        {{t 'common.filter'}}
       </button>
     </div>
-    {{#if (or from to status q)}}
-      <a href='/bookings' class="btn btn-ghost">{{t 'common.clear'}}</a>
-    {{/if}}
   </form>
 </div>
 
-<div class="bookings-list">
-  {{#each bookings}}
-    <div class="booking-card">
-      <div class="booking-info">
-        <h3 class="booking-property">{{this.property.name}}</h3>
-        <p class="booking-client">{{this.client.firstName}} {{this.client.lastName}}</p>
-      </div>
-      <div class="booking-dates">
-        <div class="date-range">
-          <span class="date-start">{{formatDate this.startDate}}</span>
-          <i data-feather="arrow-right" class="date-arrow"></i>
-          <span class="date-end">{{formatDate this.endDate}}</span>
-        </div>
-        <p class="booking-duration"><!-- Duration will be calculated via JS or helper if needed --></p>
-      </div>
-      <div class="booking-details">
-        <p class="booking-price">{{currency this.totalPrice}}</p>
-        <span class="booking-status status-{{this.status}}">
-          {{#if (eq this.status 'confirmed')}}{{t 'bookings.statusConfirmed'}}{{/if}}
-          {{#if (eq this.status 'pending')}}{{t 'bookings.statusPending'}}{{/if}}
-          {{#if (eq this.status 'cancelled')}}{{t 'bookings.statusCancelled'}}{{/if}}
-          {{#if (eq this.status 'completed')}}{{t 'bookings.statusCompleted'}}{{/if}}
-          {{#if (eq this.status 'blocked')}}{{t 'bookings.statusBlocked'}}{{/if}}
-        </span>
-      </div>
-      <div class="booking-actions">
-        <a href='/bookings/{{this.id}}' class="btn btn-primary btn-sm">
-          <i data-feather="eye"></i>
-          {{t 'common.view'}}
-        </a>
-
-        {{#if this.canEdit}}
-          <a href='/bookings/{{this.id}}' class="btn btn-secondary btn-sm">
-            <i data-feather="edit-2"></i>
-            {{t 'common.edit'}}
-          </a>
-        {{else}}
-          <span class="action-wrap">
-            <button class="btn btn-secondary btn-sm btn-disabled" aria-disabled="true" aria-describedby="reason-edit-{{this.id}}" tabindex="-1">
-              <i data-feather="edit-2"></i>
-              {{t 'common.edit'}}
-            </button>
-            <span id="reason-edit-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canEditReason}}</span>
+<table class="bookings-table">
+  <thead>
+    <tr>
+      <th>{{t 'bookings.guest'}}</th>
+      <th>{{t 'bookings.property'}}</th>
+      <th>{{t 'bookings.dates'}}</th>
+      <th>{{t 'bookings.status'}}</th>
+      <th>{{t 'bookings.totalPrice'}}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each bookings}}
+      <tr>
+        <td class="guest-cell">
+          <div class="guest-avatar">
+            <img src="https://api.dicebear.com/7.x/initials/svg?seed={{this.client.firstName}}%20{{this.client.lastName}}" alt="{{this.client.firstName}} {{this.client.lastName}}" />
+          </div>
+          <div class="guest-name">{{this.client.firstName}} {{this.client.lastName}}</div>
+        </td>
+        <td>{{this.property.name}}</td>
+        <td>{{formatDate this.startDate}} &rarr; {{formatDate this.endDate}}</td>
+        <td>
+          <span class="status-badge status-{{this.status}}">
+            {{#if (eq this.status 'confirmed')}}{{t 'common.statuses.confirmed'}}{{/if}}
+            {{#if (eq this.status 'pending')}}{{t 'common.statuses.pending'}}{{/if}}
+            {{#if (eq this.status 'cancelled')}}{{t 'common.statuses.cancelled'}}{{/if}}
+            {{#if (eq this.status 'completed')}}{{t 'common.statuses.completed'}}{{/if}}
+            {{#if (eq this.status 'blocked')}}{{t 'common.statuses.blocked'}}{{/if}}
           </span>
-        {{/if}}
+        </td>
+        <td>{{currency this.totalPrice}}</td>
+        <td>
+          <a href='/bookings/{{this.id}}' class="table-action"><i data-feather="eye"></i></a>
+        </td>
+      </tr>
+    {{else}}
+      <tr><td colspan="6" class="empty-table">{{t 'bookings.noBookings'}}</td></tr>
+    {{/each}}
+  </tbody>
+</table>
 
-        {{#if this.canCancel}}
-          <button
-            data-post
-            data-url='/bookings/{{this.id}}/cancel'
-            data-confirm='{{t "bookings.confirmCancel"}}'
-            class="btn btn-ghost btn-sm"
-          >
-            <i data-feather="x-circle"></i>
-            {{t 'common.cancel'}}
-          </button>
-        {{else}}
-          <span class="action-wrap">
-            <button class="btn btn-ghost btn-sm btn-disabled" aria-disabled="true" aria-describedby="reason-cancel-{{this.id}}" tabindex="-1">
-              <i data-feather="x-circle"></i>
-              {{t 'common.cancel'}}
-            </button>
-            <span id="reason-cancel-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canCancelReason}}</span>
-          </span>
-        {{/if}}
 
-        {{#if this.canDelete}}
-          <button
-            data-delete
-            data-id='{{this.id}}'
-            data-base='/bookings'
-            data-confirm='{{t "bookings.confirmDelete"}}'
-            class="btn btn-danger btn-sm btn-icon"
-          >
-            <i data-feather="trash-2"></i>
-          </button>
-        {{else}}
-          <span class="action-wrap">
-            <button class="btn btn-danger btn-sm btn-icon btn-disabled" aria-disabled="true" aria-describedby="reason-delete-{{this.id}}" tabindex="-1">
-              <i data-feather="trash-2"></i>
-            </button>
-            <span id="reason-delete-{{this.id}}" class="btn-reason" role="tooltip">{{t this.canDeleteReason}}</span>
-          </span>
-        {{/if}}
-      </div>
-    </div>
-  {{else}}
-    <div class="empty-state">
-      <i data-feather="calendar" class="empty-icon"></i>
-      <p>{{t 'bookings.noBookings'}}</p>
-    </div>
-  {{/each}}
+<div class="table-pagination">
+  <div class="pagination-info-row">
+    <span>
+      {{t 'common.showing'}}
+      {{#if totalCount}}
+        {{math (math (math page 1 '-') perPage '*') 1 '+'}}-{{math (math (math page perPage '*') totalCount 'min') 0 'max'}}
+      {{else}}
+        0
+      {{/if}}
+      {{t 'common.of'}} {{totalCount}}
+    </span>
+    <form method="GET" action="/bookings" class="pagination-perpage-form">
+      {{!-- Conserve tous les filtres courants en hidden --}}
+      <input type="hidden" name="q" value="{{q}}" />
+      <input type="hidden" name="from" value="{{from}}" />
+      <input type="hidden" name="to" value="{{to}}" />
+      <input type="hidden" name="status" value="{{status}}" />
+      <input type="hidden" name="sort" value="{{sort}}" />
+      <input type="hidden" name="page" value="{{page}}" />
+      <select id="perPage-select" name="perPage" class="filter-select-modern" title="{{t 'bookings.perPage'}}" onchange="this.form.submit()">
+        <option value="6" {{#if (eq perPage 6)}}selected{{/if}}>6 / page</option>
+        <option value="10" {{#if (eq perPage 10)}}selected{{/if}}>10 / page</option>
+        <option value="20" {{#if (eq perPage 20)}}selected{{/if}}>20 / page</option>
+        <option value="50" {{#if (eq perPage 50)}}selected{{/if}}>50 / page</option>
+      </select>
+    </form>
+  </div>
+  <div class="pagination-controls">
+    {{!-- Previous button --}}
+    {{#if (gt page 1)}}
+      <a href="?{{queryString q=q from=from to=to status=status sort=sort page=(math page 1 '-') perPage=perPage}}" class="pagination-btn">Previous</a>
+    {{else}}
+      <span class="pagination-btn disabled">Previous</span>
+    {{/if}}
+
+    {{!-- Page numbers (show up to 5 pages around current) --}}
+    {{#each (paginationPages page totalPages)}}
+      {{#if (eq this ../page)}}
+        <span class="pagination-btn active">{{this}}</span>
+      {{else}}
+        <a href="?{{queryString q=../q from=../from to=../to status=../status sort=../sort page=this perPage=../perPage}}" class="pagination-btn">{{this}}</a>
+      {{/if}}
+    {{/each}}
+
+    {{!-- Next button --}}
+    {{#if (lt page totalPages)}}
+      <a href="?{{queryString q=q from=from to=to status=status sort=sort page=(math page 1 '+') perPage=perPage}}" class="pagination-btn">Next</a>
+    {{else}}
+      <span class="pagination-btn disabled">Next</span>
+    {{/if}}
+  </div>
 </div>
 
 {{> footer }}

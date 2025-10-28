@@ -38,6 +38,8 @@ export class BookingsController {
     @Query('q') q?: string,
     @Query('status') status?: string,
     @Query('sort') sort?: string,
+    @Query('page') pageStr?: string,
+    @Query('perPage') perPageStr?: string,
   ) {
     try {
       const fromDate = from ? new Date(from) : undefined;
@@ -54,20 +56,29 @@ export class BookingsController {
       const sortOption: SortOption =
         sort && validSorts.includes(sort as SortOption) ? (sort as SortOption) : 'newest';
 
-      let bookings = await this.bookingsService.findAll({ from: fromDate, to: toDate }, sortOption);
+      // Pagination params
+      const page = pageStr && !isNaN(Number(pageStr)) && Number(pageStr) > 0 ? Number(pageStr) : 1;
+      const perPage =
+        perPageStr && !isNaN(Number(perPageStr)) && Number(perPageStr) > 0 ? Number(perPageStr) : 6;
 
-      // Apply status filter if provided
+      const { data: bookings, totalCount } = await this.bookingsService.findAll(
+        { from: fromDate, to: toDate },
+        sortOption,
+        perPage,
+        page,
+      );
+
+      // TODO: déporter la recherche et le filtrage status côté Prisma pour la performance (optionnel)
+      let filteredBookings = bookings;
       if (status && status.trim()) {
         const validStatuses = ['pending', 'confirmed', 'completed', 'cancelled', 'blocked'];
         if (validStatuses.includes(status)) {
-          bookings = bookings.filter((b) => b.status === status);
+          filteredBookings = filteredBookings.filter((b) => b.status === status);
         }
       }
-
-      // Apply search filter if query provided
       if (q && q.trim()) {
         const search = q.trim().toLowerCase();
-        bookings = bookings.filter(
+        filteredBookings = filteredBookings.filter(
           (b) =>
             b.property.name.toLowerCase().includes(search) ||
             b.client.firstName.toLowerCase().includes(search) ||
@@ -80,7 +91,7 @@ export class BookingsController {
       today.setHours(0, 0, 0, 0);
 
       // Compute action flags for each booking
-      const enrichedBookings = bookings.map((b) => {
+      const enrichedBookings = filteredBookings.map((b) => {
         const startDate = new Date(b.startDate);
         startDate.setHours(0, 0, 0, 0);
         const endDate = new Date(b.endDate);
@@ -121,6 +132,10 @@ export class BookingsController {
         status,
         sort: sortOption,
         activeNav: 'bookings',
+        page,
+        perPage,
+        totalCount,
+        totalPages: Math.ceil(totalCount / perPage),
       };
     } catch (err: unknown) {
       if (err instanceof BadRequestException) throw err;

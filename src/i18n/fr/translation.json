@@ -1,5 +1,12 @@
 {
   "common": {
+    "statuses": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée",
+      "completed": "Terminée",
+      "blocked": "Bloquée"
+    },
     "search": "Rechercher",
     "clear": "Effacer",
     "delete": "Supprimer",
@@ -23,6 +30,16 @@
     "page": "Page",
     "previous": "Précédent",
     "next": "Suivant"
+  },
+  "entities": {
+    "client": "Client",
+    "clients": "Clients",
+    "property": "Propriété",
+    "properties": "Propriétés",
+    "booking": "Réservation",
+    "bookings": "Réservations",
+    "invoice": "Facture",
+    "invoices": "Factures"
   },
   "header": {
     "searchPlaceholder": "Rechercher..."
@@ -134,13 +151,17 @@
   },
   "bookings": {
     "title": "Réservations",
-    "createTitle": "Créer une Réservation",
-    "editTitle": "Modifier la Réservation",
-    "showTitle": "Détails de la Réservation",
-
-    "addNew": "Créer une nouvelle réservation",
+    "subtitle": "Gérez toutes vos réservations ici.",
+    "addNew": "Ajouter une réservation",
+    "filterSearchLabel": "Rechercher",
+    "filterDateLabel": "Plage de dates",
+    "filterStatusLabel": "Statut",
+    "searchPlaceholder": "Rechercher des réservations...",
+    "guest": "Invité",
+    "dates": "Dates",
+    "noBookings": "Aucune réservation trouvée.",
+    "perPage": "Résultats par page",
     "openCalendar": "Ouvrir le calendrier",
-    "searchPlaceholder": "Rechercher par client ou propriété...",
     "property": "Propriété",
     "client": "Client",
     "startDate": "Date de début",
@@ -149,7 +170,6 @@
     "status": "Statut",
     "confirmDelete": "Supprimer cette réservation?",
     "confirmCancel": "Annuler cette réservation?",
-    "noBookings": "Aucune réservation pour le moment.",
     "selectProperty": "Sélectionner une propriété",
     "selectClient": "Sélectionner un client",
     "statusPending": "En attente",
@@ -166,7 +186,6 @@
     "generateInvoiceConfirm": "Générer une facture pour cette réservation?",
     "cancelNote": "Annuler libérera les dates pour de nouvelles réservations.",
     "filterByStatus": "Filtrer par statut:",
-    "statusBlocked": "Bloqué",
     "filterNote": "Décochez pour masquer des statuts spécifiques. Si aucun n'est sélectionné, le calendrier n'affiche aucun événement.",
     "calendarTitle": "Calendrier des réservations",
     "backToList": "Retour à la liste des réservations",
