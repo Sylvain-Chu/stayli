@@ -30,25 +30,25 @@
           <div>
             <a class="booking-summary-title" href="/properties/{{booking.property.id}}">{{booking.property.name}}</a>
             <div class="booking-summary-address">{{booking.property.address}}</div>
-            <button class="booking-summary-btn">View Property</button>
+            <button class="booking-summary-btn" onclick="window.location='/properties/{{booking.property.id}}'">View Property</button>
           </div>
         </div>
         <div class="booking-summary-details">
           <div>
             <span class="booking-summary-label">Check-in</span><br>
-            <span class="booking-summary-value">{{formatDate booking.startDate}}, 15:00</span>
+            <span class="booking-summary-value">{{formatDateShort booking.startDate}}</span>
           </div>
           <div>
             <span class="booking-summary-label">Check-out</span><br>
-            <span class="booking-summary-value">{{formatDate booking.endDate}}, 11:00</span>
+            <span class="booking-summary-value">{{formatDateShort booking.endDate}}</span>
           </div>
           <div>
             <span class="booking-summary-label">Duration</span><br>
-            <span class="booking-summary-value">7 Nights</span>
+            <span class="booking-summary-value">{{durationNights}} Nights</span>
           </div>
           <div>
             <span class="booking-summary-label">Guests</span><br>
-            <span class="booking-summary-value">2 Adults, 1 Child</span>
+            <span class="booking-summary-value">{{booking.guestsLabel}}</span>
           </div>
         </div>
       </div>
@@ -61,10 +61,14 @@
           <div>
             <div class="booking-section-title">Price Breakdown</div>
             <div class="booking-financials-breakdown">
-              <div class="flex justify-between"><span class="booking-summary-label">Base Rate (7 nights x $350)</span><span class="booking-summary-value">$2,450.00</span></div>
-              <div class="flex justify-between"><span class="booking-summary-label">Cleaning Fee</span><span class="booking-summary-value">$150.00</span></div>
-              <div class="flex justify-between"><span class="booking-summary-label">Taxes & Fees (10%)</span><span class="booking-summary-value">$260.00</span></div>
-              <div class="flex justify-between" style="border-top:1px solid #e5e7eb;margin-top:0.7rem;padding-top:0.7rem;"><span class="booking-summary-label" style="font-weight:700;color:#222;">Total Price</span><span class="booking-summary-value" style="font-weight:700;color:#222;">$2,860.00</span></div>
+              <div class="flex justify-between"><span class="booking-summary-label">Base Rate</span><span class="booking-summary-value">{{currency booking.totalPrice}}</span></div>
+              {{#if booking.cleaningFee}}
+              <div class="flex justify-between"><span class="booking-summary-label">Cleaning Fee</span><span class="booking-summary-value">{{currency booking.cleaningFee}}</span></div>
+              {{/if}}
+              {{#if booking.taxes}}
+              <div class="flex justify-between"><span class="booking-summary-label">Taxes & Fees</span><span class="booking-summary-value">{{currency booking.taxes}}</span></div>
+              {{/if}}
+              <div class="flex justify-between" style="border-top:1px solid #e5e7eb;margin-top:0.7rem;padding-top:0.7rem;"><span class="booking-summary-label" style="font-weight:700;color:#222;">Total Price</span><span class="booking-summary-value" style="font-weight:700;color:#222;">{{currency booking.totalPrice}}</span></div>
             </div>
           </div>
           <div>
@@ -73,8 +77,15 @@
               <table class="booking-card-table">
                 <thead><tr><th>INVOICE ID</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
                 <tbody>
-                  <tr><td><a href="#">INV-12345</a></td><td>$1,430.00</td><td><span class="booking-badge success">Paid</span></td></tr>
-                  <tr><td><a href="#">INV-12346</a></td><td>$1,430.00</td><td><span class="booking-badge success">Paid</span></td></tr>
+                  {{#if booking.invoice}}
+                  <tr>
+                    <td><a href="/invoices/{{booking.invoice.id}}">{{booking.invoice.id}}</a></td>
+                    <td>{{currency booking.invoice.amount}}</td>
+                    <td><span class="booking-badge {{booking.invoice.status}}">{{capitalize booking.invoice.status}}</span></td>
+                  </tr>
+                  {{else}}
+                  <tr><td colspan="3" style="text-align:center;color:#888;">No invoice</td></tr>
+                  {{/if}}
                 </tbody>
               </table>
             </div>
@@ -108,11 +119,15 @@
       <div class="booking-card-content">
         <div class="booking-status-block">
           <div class="booking-status-label">Booking Status</div>
-          <div class="booking-badge success"><i data-feather="check-circle" style="font-size:1em;"></i> Confirmed</div>
+          <div class="booking-badge {{booking.status}}"><i data-feather="check-circle" style="font-size:1em;"></i> {{capitalize booking.status}}</div>
         </div>
         <div class="booking-status-block">
           <div class="booking-status-label">Payment Status</div>
-          <div class="booking-badge success"><i data-feather="credit-card" style="font-size:1em;"></i> Paid in Full</div>
+          {{#if booking.invoice}}
+            <div class="booking-badge {{booking.invoice.status}}"><i data-feather="credit-card" style="font-size:1em;"></i> {{capitalize booking.invoice.status}}</div>
+          {{else}}
+            <div class="booking-badge">No invoice</div>
+          {{/if}}
         </div>
       </div>
     </div>
