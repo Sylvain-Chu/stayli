@@ -81,13 +81,13 @@ export class BookingsService {
         break;
     }
 
-    return paginatePrisma({
+    return paginatePrisma<BookingWithRelations>({
       model: this.prisma.booking,
       where,
-      include: { property: true, client: true, invoice: true },
       orderBy,
       page,
       perPage: limit,
+      include: { property: true, client: true, invoice: true },
     });
   }
 
