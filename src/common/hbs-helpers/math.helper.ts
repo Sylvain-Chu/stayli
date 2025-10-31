@@ -1,19 +1,19 @@
-export function math(a: any, b: any, operator: string) {
-  a = Number(a);
-  b = Number(b);
+export function math(a: number | string, b: number | string, operator: string): number {
+  const aNum = Number(a);
+  const bNum = Number(b);
   switch (operator) {
     case '+':
-      return a + b;
+      return aNum + bNum;
     case '-':
-      return a - b;
+      return aNum - bNum;
     case '*':
-      return a * b;
+      return aNum * bNum;
     case '/':
-      return b !== 0 ? a / b : 0;
+      return bNum !== 0 ? aNum / bNum : 0;
     case 'min':
-      return Math.min(a, b);
+      return Math.min(aNum, bNum);
     case 'max':
-      return Math.max(a, b);
+      return Math.max(aNum, bNum);
     default:
       return 0;
   }

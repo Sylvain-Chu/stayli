@@ -1,8 +1,19 @@
+export interface PrismaDelegate<T> {
+  count(args?: { where?: unknown }): Promise<number>;
+  findMany(args: {
+    where?: unknown;
+    include?: unknown;
+    orderBy?: unknown;
+    take?: number;
+    skip?: number;
+  }): Promise<T[]>;
+}
+
 export interface PaginatePrismaOptions<T extends object> {
-  model: any; // Accept any Prisma delegate (for compatibility)
-  where?: object;
-  include?: object;
-  orderBy?: object;
+  model: PrismaDelegate<T>;
+  where?: unknown;
+  include?: unknown;
+  orderBy?: unknown;
   page?: number;
   perPage?: number;
 }
@@ -18,7 +29,7 @@ export async function paginatePrisma<T extends object>({
   const skip = (page - 1) * perPage;
   const [totalCount, data] = await Promise.all([
     model.count({ where }),
-    model.findMany({ where, include, orderBy, take: perPage, skip }) as Promise<T[]>,
+    model.findMany({ where, include, orderBy, take: perPage, skip }),
   ]);
   return { data, totalCount };
 }
