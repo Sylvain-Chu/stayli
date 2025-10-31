@@ -1,0 +1,155 @@
+{{> header activeNav="bookings" }}
+{{> sidebar activeNav="bookings" }}
+<link rel="stylesheet" href="/css/pages/booking-show-modern.css">
+
+{{#if errors}}
+  <div class="booking-errors">
+    <ul>
+      {{#each errors}}
+        <li style="color:#b91c1c;font-weight:500;">{{this}}</li>
+      {{/each}}
+    </ul>
+  </div>
+{{/if}}
+<form method="POST" action="/bookings/{{booking.id}}/edit">
+<div class="booking-header-bar">
+  <div class="booking-breadcrumbs">
+    <a href="/bookings">Bookings</a> /
+    <span>#BK-{{booking.id}}</span>
+  </div>
+  <div class="booking-header-main">
+    <div>
+      <h1 class="booking-title">Edit Booking</h1>
+    </div>
+    <div class="booking-header-actions">
+      <button type="submit" class="booking-action-btn primary"><i data-feather="save"></i> Save Changes</button>
+      <a href="/bookings/{{booking.id}}" class="booking-action-btn secondary">Cancel</a>
+    </div>
+  </div>
+</div>
+
+<div class="booking-main-grid">
+  <div class="booking-main-left">
+    <!-- Reservation Details Card -->
+    <div class="booking-card summary-card">
+      <div class="booking-card-header">Reservation Details</div>
+      <div class="booking-card-content">
+        <div class="booking-summary-row">
+          <img class="booking-summary-img" src="{{booking.property.imageUrl}}" alt="{{booking.property.name}}" onerror="this.style.display='none'">
+          <div>
+            <select class="booking-summary-title" name="propertyId">
+              {{#each properties}}
+                <option value="{{this.id}}" {{#if (eq this.id ../booking.property.id)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+            <input class="booking-summary-address" name="propertyAddress" value="{{booking.property.address}}" />
+            <button class="booking-summary-btn" type="button" onclick="window.location='/properties/{{booking.property.id}}'">View Property</button>
+          </div>
+        </div>
+        <div class="booking-summary-details">
+          <div>
+            <span class="booking-summary-label">Check-in Date</span><br>
+            <input class="booking-summary-value" type="datetime-local" name="startDate" value="{{dateTimeLocal booking.startDate}}" />
+          </div>
+          <div>
+            <span class="booking-summary-label">Check-out Date</span><br>
+            <input class="booking-summary-value" type="datetime-local" name="endDate" value="{{dateTimeLocal booking.endDate}}" />
+          </div>
+          <div>
+            <span class="booking-summary-label">Adults</span><br>
+            <input class="booking-summary-value" type="number" min="1" name="adults" value="{{booking.adults}}" />
+          </div>
+          <div>
+            <span class="booking-summary-label">Children</span><br>
+            <input class="booking-summary-value" type="number" min="0" name="children" value="{{booking.children}}" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Financials Card -->
+    <div class="booking-card financials-card">
+      <div class="booking-card-header">Financials</div>
+      <div class="booking-card-content">
+        <div class="booking-financials-grid">
+          <div>
+            <div class="booking-section-title">Price Adjustment</div>
+            <div class="booking-financials-breakdown">
+              <div class="flex justify-between"><span class="booking-summary-label">Base Rate</span><input class="booking-summary-value" type="number" step="0.01" name="totalPrice" value="{{booking.totalPrice}}" /></div>
+              <div class="flex justify-between"><span class="booking-summary-label">Additional Fees</span><input class="booking-summary-value" type="number" step="0.01" name="cleaningFee" value="{{booking.cleaningFee}}" /></div>
+              <div class="flex justify-between"><span class="booking-summary-label">Taxes & Fees</span><input class="booking-summary-value" type="number" step="0.01" name="taxes" value="{{booking.taxes}}" /></div>
+              <div class="flex justify-between" style="border-top:1px solid #e5e7eb;margin-top:0.7rem;padding-top:0.7rem;"><span class="booking-summary-label" style="font-weight:700;color:#222;">Total Price</span><span class="booking-summary-value" style="font-weight:700;color:#222;">{{booking.totalPrice}}</span></div>
+            </div>
+          </div>
+          <div>
+            <div class="booking-section-title">Related Invoices</div>
+            <div class="overflow-x-auto">
+              <table class="booking-card-table">
+                <thead><tr><th>INVOICE ID</th><th>AMOUNT</th><th>STATUS</th></tr></thead>
+                <tbody>
+                  {{#each booking.invoices}}
+                  <tr>
+                    <td><a href="/invoices/{{this.id}}">{{this.id}}</a></td>
+                    <td>{{currency this.amount}}</td>
+                    <td><span class="booking-badge {{this.status}}">{{capitalize this.status}}</span></td>
+                  </tr>
+                  {{else}}
+                  <tr><td colspan="3" style="text-align:center;color:#888;">No invoice</td></tr>
+                  {{/each}}
+                </tbody>
+              </table>
+              <button type="button" class="booking-summary-btn">+ Add Invoice</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="booking-main-right">
+    <!-- Client Information Card -->
+    <div class="booking-card">
+      <div class="booking-card-header">Client Information</div>
+      <div class="booking-card-content">
+        <div class="booking-client-info">
+          <img class="booking-client-avatar" src="{{booking.client.avatarUrl}}" alt="{{booking.client.firstName}} {{booking.client.lastName}}" onerror="this.style.display='none'">
+          <div class="booking-client-details">
+            <input class="booking-client-name" name="clientName" value="{{booking.client.firstName}} {{booking.client.lastName}}" />
+            <input class="booking-client-email" name="clientEmail" value="{{booking.client.email}}" />
+            <input class="booking-client-phone" name="clientPhone" value="{{booking.client.phone}}" />
+          </div>
+        </div>
+        <div class="booking-client-special" style="margin-top:1.2rem;">
+          <span style="color:#617c89;font-weight:500;font-size:0.97rem;">Special Requests</span><br>
+          <textarea class="booking-client-special-text" name="specialRequests">{{booking.client.specialRequests}}</textarea>
+        </div>
+      </div>
+    </div>
+    <!-- Status Card -->
+    <div class="booking-card status-card">
+      <div class="booking-card-header">Status</div>
+      <div class="booking-card-content">
+        <div class="booking-status-block">
+          <div class="booking-status-label">Booking Status</div>
+          <select class="booking-badge" name="status">
+            <option value="confirmed" {{#if (eq booking.status 'confirmed')}}selected{{/if}}>Confirmed</option>
+            <option value="pending" {{#if (eq booking.status 'pending')}}selected{{/if}}>Pending</option>
+            <option value="cancelled" {{#if (eq booking.status 'cancelled')}}selected{{/if}}>Cancelled</option>
+            <option value="completed" {{#if (eq booking.status 'completed')}}selected{{/if}}>Completed</option>
+            <option value="blocked" {{#if (eq booking.status 'blocked')}}selected{{/if}}>Blocked</option>
+          </select>
+        </div>
+        <div class="booking-status-block">
+          <div class="booking-status-label">Payment Status</div>
+          <select class="booking-badge" name="paymentStatus">
+            <option value="paid" {{#if (eq booking.invoice.status 'paid')}}selected{{/if}}>Paid in Full</option>
+            <option value="sent" {{#if (eq booking.invoice.status 'sent')}}selected{{/if}}>Sent</option>
+            <option value="draft" {{#if (eq booking.invoice.status 'draft')}}selected{{/if}}>Draft</option>
+            <option value="overdue" {{#if (eq booking.invoice.status 'overdue')}}selected{{/if}}>Overdue</option>
+          </select>
+        </div>
+      </div>
+    </div>
+   
+  </div>
+</div>
+</form>
+{{> footer }}

@@ -10,7 +10,7 @@ export class ClientsService {
     q?: string,
     page: number = 1,
     pageSize: number = 15,
-  ): Promise<{ clients: Client[]; total: number }> {
+  ): Promise<{ clients: (Client & { _count?: { bookings: number } })[]; total: number }> {
     const where: Prisma.ClientWhereInput | undefined = q
       ? {
           OR: [
@@ -28,6 +28,9 @@ export class ClientsService {
         orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
+        include: {
+          _count: { select: { bookings: true } },
+        },
       }),
       this.prisma.client.count({ where }),
     ]);

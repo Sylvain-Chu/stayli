@@ -10,7 +10,7 @@ export class PropertiesService {
     q?: string,
     page: number = 1,
     pageSize: number = 15,
-  ): Promise<{ properties: Property[]; total: number }> {
+  ): Promise<{ properties: (Property & { _count?: { bookings: number } })[]; total: number }> {
     const where: Prisma.PropertyWhereInput | undefined = q
       ? {
           OR: [
@@ -27,6 +27,7 @@ export class PropertiesService {
         orderBy: { name: 'asc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
+        include: { _count: { select: { bookings: true } } },
       }),
       this.prisma.property.count({ where }),
     ]);

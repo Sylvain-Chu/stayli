@@ -19,6 +19,7 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InvoicesService } from 'src/invoices/invoices.service';
+import { validateOrReject } from 'class-validator';
 
 const INVOICE_DUE_DAYS = 14;
 
@@ -59,7 +60,7 @@ export class BookingsController {
       // Pagination params
       const page = pageStr && !isNaN(Number(pageStr)) && Number(pageStr) > 0 ? Number(pageStr) : 1;
       const perPage =
-        perPageStr && !isNaN(Number(perPageStr)) && Number(perPageStr) > 0 ? Number(perPageStr) : 6;
+        perPageStr && !isNaN(Number(perPageStr)) && Number(perPageStr) > 0 ? Number(perPageStr) : 5;
 
       const { data: bookings, totalCount } = await this.bookingsService.findAll(
         { from: fromDate, to: toDate },
@@ -253,7 +254,7 @@ export class BookingsController {
   @Get(':id')
   @Render('bookings/show')
   async show(@Param('id') id: string) {
-    const [booking, properties, clients] = await Promise.all([
+    const [booking] = await Promise.all([
       this.bookingsService.findOne(id),
       this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
       this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
@@ -297,7 +298,6 @@ export class BookingsController {
       1,
       Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
     );
-    console.log(booking);
 
     return {
       booking,
@@ -312,12 +312,13 @@ export class BookingsController {
   }
 
   @Post(':id/edit')
-  async update(@Param('id') id: string, @Body() body: UpdateBookingDto) {
+  @Redirect('/bookings/:id')
+  async update(@Param('id') id: string, @Body() updateDto: UpdateBookingDto) {
     try {
-      await this.bookingsService.update(id, body);
-      // Check if it's an AJAX request (JSON)
-      return { success: true };
-    } catch (err: unknown) {
+      await validateOrReject(updateDto);
+      await this.bookingsService.update(id, updateDto);
+      return { url: `/bookings/${id}` };
+    } catch (err: any) {
       if (err instanceof HttpException) {
         throw err;
       }
@@ -390,5 +391,19 @@ export class BookingsController {
       }
       throw new InternalServerErrorException('Error generating invoice.');
     }
+  }
+
+  @Get(':id/edit')
+  @Render('bookings/edit')
+  async editForm(@Param('id') id: string) {
+    const [booking, properties, clients] = await Promise.all([
+      this.bookingsService.findOne(id),
+      this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
+      this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
+    ]);
+    if (!booking) {
+      throw new InternalServerErrorException('Booking not found');
+    }
+    return { booking, properties, clients };
   }
 }

@@ -41,12 +41,12 @@
     <div class="filter-group">
       <label for="status-filter" class="filter-label">{{t 'bookings.filterStatusLabel' 'Status'}}</label>
       <select id="status-filter" name="status" class="filter-select-modern">
-  <option value=''>{{t 'common.all'}}</option>
-  <option value='pending' {{#if (eq status 'pending')}}selected{{/if}}>{{t 'common.statuses.pending'}}</option>
-  <option value='confirmed' {{#if (eq status 'confirmed')}}selected{{/if}}>{{t 'common.statuses.confirmed'}}</option>
-  <option value='completed' {{#if (eq status 'completed')}}selected{{/if}}>{{t 'common.statuses.completed'}}</option>
-  <option value='cancelled' {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'common.statuses.cancelled'}}</option>
-  <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'common.statuses.blocked'}}</option>
+        <option value=''>{{t 'common.all'}}</option>
+        <option value='pending' {{#if (eq status 'pending')}}selected{{/if}}>{{t 'common.statuses.pending'}}</option>
+        <option value='confirmed' {{#if (eq status 'confirmed')}}selected{{/if}}>{{t 'common.statuses.confirmed'}}</option>
+        <option value='completed' {{#if (eq status 'completed')}}selected{{/if}}>{{t 'common.statuses.completed'}}</option>
+        <option value='cancelled' {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'common.statuses.cancelled'}}</option>
+        <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'common.statuses.blocked'}}</option>
       </select>
     </div>
     <div class="filter-group filter-group-btn">
@@ -121,7 +121,7 @@
       <input type="hidden" name="sort" value="{{sort}}" />
       <input type="hidden" name="page" value="{{page}}" />
       <select id="perPage-select" name="perPage" class="filter-select-modern" title="{{t 'bookings.perPage'}}" onchange="this.form.submit()">
-        <option value="6" {{#if (eq perPage 6)}}selected{{/if}}>6 / page</option>
+        <option value="5" {{#if (eq perPage 5)}}selected{{/if}}>5 / page</option>
         <option value="10" {{#if (eq perPage 10)}}selected{{/if}}>10 / page</option>
         <option value="20" {{#if (eq perPage 20)}}selected{{/if}}>20 / page</option>
         <option value="50" {{#if (eq perPage 50)}}selected{{/if}}>50 / page</option>

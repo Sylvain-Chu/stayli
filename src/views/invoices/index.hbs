@@ -1,142 +1,134 @@
 {{> header }}
 {{> sidebar }}
 
-<div class="page-header">
-  <h1>{{t 'invoices.title'}}</h1>
-  <div class="page-actions">
+<div class="page-header-modern">
+  <div class="page-header-titles">
+    <h1>{{t 'invoices.title'}}</h1>
+    <p class="page-subtitle">{{t 'invoices.subtitle'}}</p>
+  </div>
+  <div class="page-header-actions">
     <a href="/invoices/create" class="btn btn-primary">
-      <span data-feather="file-plus"></span> {{t 'invoices.addNew'}}
+      <i data-feather="file-plus"></i>
+      {{t 'invoices.addNew'}}
     </a>
   </div>
 </div>
 
-<div class="filters-section">
-  <form class="filters-form" method="GET" action="/invoices">
+<div class="filters-section table-filters-modern invoices-filters">
+  <form method="GET" action="/invoices" class="filters-form-table-modern">
     <div class="filter-group">
-      <label for="search">{{t "invoices.searchPlaceholder"}}</label>
-      <input type="search" id="search" name="q" placeholder="{{t 'invoices.searchPlaceholder'}}" value="{{q}}" class="search-input" />
+      <label for="search-input" class="filter-label">{{t 'invoices.filterSearchLabel' 'Search'}}</label>
+      <input type="search" id="search-input" name="q" placeholder="{{t 'invoices.searchPlaceholder'}}" value="{{q}}" class="search-input-modern" autocomplete="off" />
     </div>
     <div class="filter-group">
-      <label for="status">{{t "common.status"}}</label>
-      <select id="status" name="status">
+      <label for="status-filter" class="filter-label">{{t "common.status"}}</label>
+        <select id="status-filter" name="status" class="filter-select-modern">
         <option value="">{{t 'common.all'}}</option>
-        <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>{{t 'common.statusDraft'}}</option>
-        <option value="sent" {{#if (eq status 'sent')}}selected{{/if}}>{{t 'common.statusSent'}}</option>
-        <option value="paid" {{#if (eq status 'paid')}}selected{{/if}}>{{t 'common.statusPaid'}}</option>
-        <option value="overdue" {{#if (eq status 'overdue')}}selected{{/if}}>{{t 'common.statusOverdue'}}</option>
-        <option value="cancelled" {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'common.statusCancelled'}}</option>
+        <option value="draft" {{#if (eq status 'draft')}}selected{{/if}}>{{t 'invoices.statusDraft'}}</option>
+        <option value="sent" {{#if (eq status 'sent')}}selected{{/if}}>{{t 'invoices.statusSent'}}</option>
+        <option value="paid" {{#if (eq status 'paid')}}selected{{/if}}>{{t 'invoices.statusPaid'}}</option>
+        <option value="overdue" {{#if (eq status 'overdue')}}selected{{/if}}>{{t 'invoices.statusOverdue'}}</option>
+        <option value="cancelled" {{#if (eq status 'cancelled')}}selected{{/if}}>{{t 'invoices.statusCancelled'}}</option>
       </select>
     </div>
-    <div>
-      <button type="submit" class="btn btn-primary">
-        <span data-feather="search"></span> {{t 'common.search'}}
-      </button>
+    <div class="filter-group filter-group-btn">
+      <label class="filter-label">&nbsp;</label>
+      <button type="submit" class="btn btn-modern-filter" title="{{t 'common.filter'}}"><i data-feather="search"></i></button>
     </div>
-    {{#if (or q status)}}<a href="/invoices" class="btn btn-ghost">{{t 'common.clear'}}</a>{{/if}}
   </form>
 </div>
 
-<div class="invoices-list">
-  {{#each invoices}}
-    <div class="invoice-card{{#if this.isOverdue}} overdue{{/if}}" onclick="window.location='/invoices/{{this.id}}'" style="cursor:pointer;">
-      <div class="invoice-number">
-        <span data-feather="file-text"></span>
-        {{this.invoiceNumber}}
-      </div>
-      
-      <div class="invoice-info">
-        {{#if this.booking}}
-          <div class="invoice-booking">
-            <span data-feather="user"></span>
-            {{#if this.booking.client}}
-              {{this.booking.client.firstName}} {{this.booking.client.lastName}}
-            {{/if}}
-            {{#if this.booking.property}}
-              • {{this.booking.property.name}}
-            {{/if}}
-          </div>
-          {{#if this.dueDate}}
-            <div class="invoice-due-date{{#if this.isOverdue}} overdue{{/if}}">
-              {{#if this.isOverdue}}
-                <span data-feather="alert-circle"></span>
-              {{else}}
-                <span data-feather="clock"></span>
-              {{/if}}
-              {{t 'invoices.dueDate'}}: {{formatDate this.dueDate}}
-            </div>
-          {{/if}}
-        {{/if}}
-      </div>
-
-      <div class="invoice-amount">
-        {{currency this.amount}}
-      </div>
-
-      <div class="invoice-status">
-        {{#if (eq this.status 'paid')}}
-          <span class="badge badge-paid">{{t 'invoices.statusPaid'}}</span>
-        {{else if (eq this.status 'sent')}}
-          <span class="badge badge-pending">{{t 'invoices.statusSent'}}</span>
-        {{else if (eq this.status 'draft')}}
-          <span class="badge badge-pending">{{t 'invoices.statusDraft'}}</span>
-        {{else if (eq this.status 'overdue')}}
-          <span class="badge badge-overdue">{{t 'invoices.statusOverdue'}}</span>
-        {{else if (eq this.status 'cancelled')}}
-          <span class="badge badge-cancelled">{{t 'invoices.statusCancelled'}}</span>
-        {{else}}
-          <span class="badge badge-pending">{{capitalize this.status}}</span>
-        {{/if}}
-      </div>
-
-      <div class="invoice-actions" onclick="event.stopPropagation();">
-        <a href="/invoices/{{this.id}}" class="btn btn-icon btn-ghost" title="{{t 'common.view'}}"><span data-feather="eye"></span></a>
-        <a href="/invoices/{{this.id}}/edit" class="btn btn-icon btn-secondary" title="{{t 'common.edit'}}"><span data-feather="edit-2"></span></a>
-        <button data-delete data-id="{{this.id}}" data-base="/invoices" data-confirm="{{t 'invoices.confirmDelete'}}" class="btn btn-icon btn-danger" title="{{t 'common.delete'}}"><span data-feather="trash-2"></span></button>
-      </div>
-    </div>
-  {{else}}
-    <div class="empty-state">
-      <span class="empty-icon" data-feather="file-text"></span>
-      <p>{{t 'invoices.noInvoices'}}</p>
-    </div>
-  {{/each}}
-</div>
-
-{{#if pagination}}
-  {{#if pagination.totalPages}}
-    {{#if (gt pagination.totalPages 1)}}
-      <div class="pagination">
-        <div class="pagination-info">
-          {{t 'common.showing'}} {{invoices.length}} {{t 'common.of'}} {{pagination.total}} {{t 'invoices.invoices'}}
-        </div>
-        <div class="pagination-controls">
-          {{#if pagination.hasPrev}}
-            <a href="/invoices?page={{sub pagination.currentPage 1}}" class="btn btn-secondary">
-              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
-            </a>
+<table class="invoices-table">
+  <thead>
+    <tr>
+      <th>{{t 'invoices.number' 'Invoice'}}</th>
+      <th>{{t 'invoices.client' 'Client'}}</th>
+      <th>{{t 'invoices.property' 'Property'}}</th>
+      <th>{{t 'invoices.dueDate' 'Due'}}</th>
+      <th>{{t 'invoices.amount' 'Amount'}}</th>
+      <th>{{t 'invoices.status' 'Status'}}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each invoices}}
+      <tr>
+        <td>{{this.invoiceNumber}}</td>
+        <td>{{#if this.booking}}{{#if this.booking.client}}{{this.booking.client.firstName}} {{this.booking.client.lastName}}{{else}}-{{/if}}{{else}}-{{/if}}</td>
+        <td>{{#if this.booking}}{{#if this.booking.property}}{{this.booking.property.name}}{{else}}-{{/if}}{{else}}-{{/if}}</td>
+        <td>{{#if this.dueDate}}{{formatDate this.dueDate}}{{else}}-{{/if}}</td>
+        <td>{{currency this.amount}}</td>
+        <td class="invoice-status">
+          {{#if (eq this.status 'paid')}}
+            <span class="badge badge-paid"><i data-feather="check-circle"></i> {{t 'invoices.statusPaid'}}</span>
+          {{else if (eq this.status 'sent')}}
+            <span class="badge badge-warning"><i data-feather="send"></i> {{t 'invoices.statusSent'}}</span>
+          {{else if (eq this.status 'draft')}}
+            <span class="badge badge-secondary"><i data-feather="file-text"></i> {{t 'invoices.statusDraft'}}</span>
+          {{else if (eq this.status 'overdue')}}
+            <span class="badge badge-overdue"><i data-feather="clock"></i> {{t 'invoices.statusOverdue'}}</span>
+          {{else if (eq this.status 'cancelled')}}
+            <span class="badge badge-cancelled"><i data-feather="x-circle"></i> {{t 'invoices.statusCancelled'}}</span>
           {{else}}
-            <button class="btn btn-secondary" disabled>
-              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
-            </button>
+            <span class="badge"><i data-feather="tag"></i> {{capitalize this.status}}</span>
           {{/if}}
-          
-          <span class="pagination-pages">
-            {{t 'common.page'}} {{pagination.currentPage}} {{t 'common.of'}} {{pagination.totalPages}}
-          </span>
-          
-          {{#if pagination.hasNext}}
-            <a href="/invoices?page={{add pagination.currentPage 1}}" class="btn btn-secondary">
-              {{t 'common.next'}} <span data-feather="chevron-right"></span>
-            </a>
-          {{else}}
-            <button class="btn btn-secondary" disabled>
-              {{t 'common.next'}} <span data-feather="chevron-right"></span>
-            </button>
-          {{/if}}
-        </div>
-      </div>
+        </td>
+        <td class="actions-cell">
+          <a href="/invoices/{{this.id}}" class="table-action" title="{{t 'common.view'}}"><i data-feather="eye"></i></a>
+          <a href="/invoices/{{this.id}}/edit" class="table-action" title="{{t 'common.edit'}}"><i data-feather="edit-2"></i></a>
+          <button data-delete data-id="{{this.id}}" data-base="/invoices" data-confirm="{{t 'invoices.confirmDelete'}}" class="table-action btn-icon btn-danger" title="{{t 'common.delete'}}"><i data-feather="trash-2"></i></button>
+        </td>
+      </tr>
+    {{else}}
+      <tr><td colspan="7" class="empty-table">{{t 'invoices.noInvoices'}}</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+
+<div class="table-pagination">
+  <div class="pagination-info-row">
+    <span>
+      {{t 'common.showing'}}
+      {{#if totalCount}}
+        {{math (math (math page 1 '-') perPage '*') 1 '+'}}-{{math (math (math page perPage '*') totalCount 'min') 0 'max'}}
+      {{else}}
+        0
+      {{/if}}
+      {{t 'common.of'}} {{totalCount}}
+    </span>
+    <form method="GET" action="/invoices" class="pagination-perpage-form">
+      <input type="hidden" name="q" value="{{q}}" />
+      <input type="hidden" name="status" value="{{status}}" />
+      <input type="hidden" name="page" value="{{page}}" />
+      <select id="perPage-select" name="perPage" class="filter-select-modern" title="{{t 'invoices.perPage'}}" onchange="this.form.submit()">
+        <option value="5" {{#if (eq perPage 5)}}selected{{/if}}>5 / page</option>
+        <option value="10" {{#if (eq perPage 10)}}selected{{/if}}>10 / page</option>
+        <option value="20" {{#if (eq perPage 20)}}selected{{/if}}>20 / page</option>
+        <option value="50" {{#if (eq perPage 50)}}selected{{/if}}>50 / page</option>
+      </select>
+    </form>
+  </div>
+  <div class="pagination-controls">
+    {{#if (gt page 1)}}
+      <a href="?{{queryString q=q status=status page=(math page 1 '-') perPage=perPage}}" class="pagination-btn">Previous</a>
+    {{else}}
+      <span class="pagination-btn disabled">Previous</span>
     {{/if}}
-  {{/if}}
-{{/if}}
+
+    {{#each (paginationPages page totalPages)}}
+      {{#if (eq this ../page)}}
+        <span class="pagination-btn active">{{this}}</span>
+      {{else}}
+        <a href="?{{queryString q=../q status=../status page=this perPage=../perPage}}" class="pagination-btn">{{this}}</a>
+      {{/if}}
+    {{/each}}
+
+    {{#if (lt page totalPages)}}
+      <a href="?{{queryString q=q status=status page=(math page 1 '+') perPage=perPage}}" class="pagination-btn">Next</a>
+    {{else}}
+      <span class="pagination-btn disabled">Next</span>
+    {{/if}}
+  </div>
+</div>
 
 {{> footer }}
