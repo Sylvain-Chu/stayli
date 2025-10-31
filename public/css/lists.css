@@ -11,7 +11,7 @@ ul {
 
 .list-item,
 li {
-  padding: var(--space-md) 0;
+  padding: var(--space-sm) 0;
   transition: background-color var(--transition-fast);
 }
 

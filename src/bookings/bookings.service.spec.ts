@@ -65,7 +65,7 @@ describe('BookingsService', () => {
     expect(prisma.booking.findMany).toHaveBeenCalledWith({
       where: undefined,
       include: { property: true, client: true, invoice: true },
-      orderBy: { startDate: 'asc' },
+      orderBy: { startDate: 'desc' }, // Default sort is now newest first
     });
   });
 
@@ -89,6 +89,38 @@ describe('BookingsService', () => {
     const to = new Date('2025-02-10');
     await service.findAll({ to });
     expect(prisma.booking.findMany).toHaveBeenCalled();
+  });
+
+  it('findAll with sort=oldest orders by startDate asc', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findAll(undefined, 'oldest');
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { startDate: 'asc' } }),
+    );
+  });
+
+  it('findAll with sort=price-high orders by totalPrice desc', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findAll(undefined, 'price-high');
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { totalPrice: 'desc' } }),
+    );
+  });
+
+  it('findAll with sort=price-low orders by totalPrice asc', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findAll(undefined, 'price-low');
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { totalPrice: 'asc' } }),
+    );
+  });
+
+  it('findAll with sort=name orders by property name asc', async () => {
+    prisma.booking.findMany.mockResolvedValue([]);
+    await service.findAll(undefined, 'name');
+    expect(prisma.booking.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({ orderBy: { property: { name: 'asc' } } }),
+    );
   });
 
   it('create validates date order and price', async () => {

@@ -10,15 +10,15 @@
     <div class="page-title-group">
       <h1>{{invoice.invoiceNumber}}</h1>
       {{#if (eq invoice.status 'paid')}}
-        <span class="badge badge-success">{{t 'invoices.statusPaid'}}</span>
+        <span class="badge badge-success">{{t 'common.statusPaid'}}</span>
       {{else if (eq invoice.status 'sent')}}
-        <span class="badge badge-warning">{{t 'invoices.statusSent'}}</span>
+        <span class="badge badge-warning">{{t 'common.statusSent'}}</span>
       {{else if (eq invoice.status 'overdue')}}
-        <span class="badge badge-danger">{{t 'invoices.statusOverdue'}}</span>
+        <span class="badge badge-danger">{{t 'common.statusOverdue'}}</span>
       {{else if (eq invoice.status 'draft')}}
-        <span class="badge badge-secondary">{{t 'invoices.statusDraft'}}</span>
+        <span class="badge badge-secondary">{{t 'common.statusDraft'}}</span>
       {{else if (eq invoice.status 'cancelled')}}
-        <span class="badge">{{t 'invoices.statusCancelled'}}</span>
+        <span class="badge">{{t 'common.statusCancelled'}}</span>
       {{else}}
         <span class="badge">{{capitalize invoice.status}}</span>
       {{/if}}
@@ -67,7 +67,7 @@
         <div class="info-item">
           <div class="info-label">
             <span data-feather="user"></span>
-            {{t 'invoices.client'}}
+            {{t 'entities.client'}}
           </div>
           <div class="info-value">
             <a href="/clients/{{invoice.booking.client.id}}" class="link-primary">
@@ -81,7 +81,7 @@
         <div class="info-item">
           <div class="info-label">
             <span data-feather="home"></span>
-            {{t 'bookings.property'}}
+            {{t 'entities.property'}}
           </div>
           <div class="info-value">
             <a href="/properties/{{invoice.booking.property.id}}" class="link-primary">
@@ -104,7 +104,7 @@
         <div class="info-item">
           <div class="info-label">
             <span data-feather="link"></span>
-            {{t 'invoices.booking'}}
+            {{t 'entities.booking'}}
           </div>
           <div class="info-value">
             <a href="/bookings/{{invoice.booking.id}}" class="link-primary">

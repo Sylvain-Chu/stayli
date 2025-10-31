@@ -1,7 +1,8 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Client, Property, Prisma, Invoice } from '@prisma/client';
+import { Booking, Client, Property, Prisma, Invoice, $Enums } from '@prisma/client';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { paginatePrisma } from '../common/prisma-pagination.util';
 
 export type BookingWithRelations = Booking & {
   property: Property;
@@ -18,26 +19,75 @@ function isValidBookingStatus(s: unknown): s is 'confirmed' | 'pending' | 'cance
   );
 }
 
+export type SortOption = 'newest' | 'oldest' | 'price-high' | 'price-low' | 'name';
+
 @Injectable()
 export class BookingsService {
   constructor(private prisma: PrismaService) {}
 
-  async findAll(range?: { from?: Date; to?: Date }): Promise<BookingWithRelations[]> {
-    const from = range?.from;
-    const to = range?.to;
-    const where: Prisma.BookingWhereInput | undefined =
-      from || to
+  async findAll(
+    {
+      from,
+      to,
+      status,
+      q,
+    }: { from?: Date; to?: Date; status?: $Enums.BookingStatus | undefined; q?: string } = {},
+    sort: SortOption = 'newest',
+    limit = 10,
+    page = 1,
+  ): Promise<{ data: BookingWithRelations[]; totalCount: number }> {
+    // Build where clause
+    const where: Prisma.BookingWhereInput = {
+      ...(from ? { endDate: { gte: from } } : {}),
+      ...(to ? { startDate: { lte: to } } : {}),
+      ...(status ? { status } : {}),
+      ...(q
         ? {
-            AND: [
-              ...(from ? [{ endDate: { gte: from } }] : []),
-              ...(to ? [{ startDate: { lte: to } }] : []),
+            OR: [
+              { property: { name: { contains: q, mode: 'insensitive' } } },
+              { client: { firstName: { contains: q, mode: 'insensitive' } } },
+              { client: { lastName: { contains: q, mode: 'insensitive' } } },
+              {
+                client: {
+                  AND: [
+                    { firstName: { contains: q.split(' ')[0] || '', mode: 'insensitive' } },
+                    { lastName: { contains: q.split(' ')[1] || '', mode: 'insensitive' } },
+                  ],
+                },
+              },
             ],
           }
-        : undefined;
-    return this.prisma.booking.findMany({
+        : {}),
+    };
+
+    // Build orderBy clause
+    let orderBy: Prisma.BookingOrderByWithRelationInput;
+    switch (sort) {
+      case 'oldest':
+        orderBy = { startDate: 'asc' };
+        break;
+      case 'price-high':
+        orderBy = { totalPrice: 'desc' };
+        break;
+      case 'price-low':
+        orderBy = { totalPrice: 'asc' };
+        break;
+      case 'name':
+        orderBy = { property: { name: 'asc' } };
+        break;
+      case 'newest':
+      default:
+        orderBy = { startDate: 'desc' };
+        break;
+    }
+
+    return paginatePrisma<BookingWithRelations>({
+      model: this.prisma.booking,
       where,
+      orderBy,
+      page,
+      perPage: limit,
       include: { property: true, client: true, invoice: true },
-      orderBy: { startDate: 'asc' },
     });
   }
 
@@ -151,7 +201,6 @@ export class BookingsService {
       throw new ConflictException('Overlapping booking exists');
     }
 
-    // Build Prisma-compliant update payload
     const updateData: Prisma.BookingUpdateInput = {
       startDate,
       endDate,
@@ -165,6 +214,23 @@ export class BookingsService {
       updateData.status = data.status;
     }
 
+    if (typeof data.cleaningFee !== 'undefined') {
+      updateData.cleaningFee = data.cleaningFee;
+    }
+    if (typeof data.taxes !== 'undefined') {
+      updateData.taxes = data.taxes;
+    }
+    if (typeof data.adults !== 'undefined') {
+      updateData.adults = data.adults;
+    }
+    if (typeof data.children !== 'undefined') {
+      updateData.children = data.children;
+    }
+    if (typeof data.specialRequests !== 'undefined') {
+      updateData.specialRequests = data.specialRequests;
+    }
+
+    // Permet la mise à jour du client et de la propriété
     if (data.propertyId && data.propertyId !== current.propertyId) {
       updateData.property = { connect: { id: data.propertyId } };
     }

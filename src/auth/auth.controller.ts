@@ -6,6 +6,25 @@ import { AuthExceptionFilter } from './auth-exception.filter';
 
 @Controller('auth')
 export class AuthController {
+  @Get('logout')
+  logoutGet(@Req() req: Request, @Res() res: Response) {
+    const r = req as Request & {
+      logout?: (cb: (err?: unknown) => void) => void;
+      session?: { destroy?: (cb: () => void) => void };
+    };
+    if (typeof r.logout === 'function') {
+      r.logout((err?: unknown) => {
+        if (err) return res.status(500).send('Logout failed');
+        if (r.session && typeof r.session.destroy === 'function') {
+          r.session.destroy(() => res.redirect('/auth/login'));
+          return;
+        }
+        return res.redirect('/auth/login');
+      });
+      return;
+    }
+    return res.redirect('/auth/login');
+  }
   @Public()
   @Get('login')
   loginForm(@Req() req: Request, @Res() res: Response) {

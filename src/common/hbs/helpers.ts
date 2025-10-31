@@ -1,3 +1,7 @@
+import { math } from '../hbs-helpers/math.helper';
+import { paginationPages } from '../hbs-helpers/paginationPages.helper';
+import { queryString } from '../hbs-helpers/queryString.helper';
+import { lt } from '../hbs-helpers/lt.helper';
 import hbsDefault from 'hbs';
 import { format, isToday as isTodayFn, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -14,6 +18,17 @@ const hbs = hbsDefault as unknown as HbsApi;
  * Includes date formatting, currency, i18n translation, and utility helpers.
  */
 export function registerHandlebarsHelpers(): void {
+  // Math helper: {{math a b operator}}
+  hbs.registerHelper('math', math);
+
+  // Pagination pages helper: {{paginationPages current total}}
+  hbs.registerHelper('paginationPages', paginationPages);
+
+  // Query string helper: {{queryString key1=value1 key2=value2}}
+  hbs.registerHelper('queryString', queryString);
+
+  // Less than helper: {{lt a b}}
+  hbs.registerHelper('lt', lt);
   // Date helper: formats date as YYYY-MM-DD for input[type=date]
   hbs.registerHelper('date', function (value?: Date | string) {
     if (!value) return '';
@@ -23,6 +38,19 @@ export function registerHandlebarsHelpers(): void {
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const dd = String(d.getDate()).padStart(2, '0');
     return `${yyyy}-${mm}-${dd}`;
+  });
+
+  // Format date pour input[type=datetime-local] : '2025-10-28T15:00'
+  hbs.registerHelper('dateTimeLocal', function (value?: Date | string) {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    if (Number.isNaN(d.getTime())) return '';
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
   });
 
   // Pretty localized date: "vendredi 10 octobre 2025" / "Friday October 10, 2025"
@@ -40,6 +68,19 @@ export function registerHandlebarsHelpers(): void {
       }
     },
   );
+
+  // Format date court : "10 oct. 2025"
+  hbs.registerHelper('formatDateShort', function (date?: Date | string) {
+    if (!date) return '';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    if (isNaN(d.getTime())) return '';
+    const options: Intl.DateTimeFormatOptions = {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    };
+    return d.toLocaleDateString('fr-FR', options);
+  });
 
   // Relative time: "dans 3 jours" / "in 3 days"
   hbs.registerHelper('fromNow', function (this: { lang?: string }, value?: Date | string) {

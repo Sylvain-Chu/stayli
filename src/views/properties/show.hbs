@@ -104,13 +104,13 @@
               </div>
               <div class="booking-status">
                 {{#if (eq this.status 'confirmed')}}
-                  <span class="badge badge-success">{{t 'bookings.statusConfirmed'}}</span>
+                  <span class="badge badge-success">{{t 'common.statusConfirmed'}}</span>
                 {{else if (eq this.status 'pending')}}
-                  <span class="badge badge-warning">{{t 'bookings.statusPending'}}</span>
+                  <span class="badge badge-warning">{{t 'common.statusPending'}}</span>
                 {{else if (eq this.status 'cancelled')}}
-                  <span class="badge badge-danger">{{t 'bookings.statusCancelled'}}</span>
+                  <span class="badge badge-danger">{{t 'common.statusCancelled'}}</span>
                 {{else if (eq this.status 'completed')}}
-                  <span class="badge badge-info">{{t 'bookings.statusCompleted'}}</span>
+                  <span class="badge badge-info">{{t 'common.statusCompleted'}}</span>
                 {{else}}
                   <span class="badge">{{capitalize this.status}}</span>
                 {{/if}}

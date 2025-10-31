@@ -38,6 +38,13 @@ model Booking {
   startDate  DateTime
   endDate    DateTime
   totalPrice Float
+  cleaningFee Float    @default(0)
+  taxes      Float     @default(0)
+  adults     Int       @default(1)
+  children   Int       @default(0)
+  specialRequests String?
+  discount   Float     @default(0)
+  discountType String? // 'amount' ou 'percent'
   status     BookingStatus @default(confirmed)
   propertyId String
   property   Property @relation(fields: [propertyId], references: [id])

@@ -1,3 +1,21 @@
+/* Modern page header for bookings (title left, button right) */
+.page-header-modern {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) 0 var(--space-lg);
+  background: var(--bg-subtle);
+}
+.page-header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 /* ===================================
    Common Page Styles
    Shared across all pages (properties, clients, invoices, bookings, etc.)
@@ -13,7 +31,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-xl);
-  padding: var(--space-md) 0 var(--space-lg);
   border-bottom: 1px solid var(--border-light);
   transition: box-shadow 0.2s ease;
 }
@@ -49,7 +66,7 @@
   align-items: center;
 }
 
-/* Pagination */
+/* Pagination (non-table) */
 .pagination {
   display: flex;
   justify-content: space-between;
@@ -115,9 +132,10 @@
 .filters-section {
   background: var(--bg-card);
   border-radius: var(--radius-xl);
-  padding: var(--space-lg);
+  padding: 24px 24px 12px 24px;
   margin-bottom: var(--space-xl);
   box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
 }
 
 .card {
@@ -143,51 +161,138 @@
 }
 
 .filters-form {
-  display: flex;
-  gap: var(--space-md);
-  align-items: center;
-  flex-wrap: wrap;
+  display: grid;
+  /* Colonnes: Rechercher (large), Statut, Trier par (un peu plus), Du, Au, Filtrer (bouton) */
+  grid-template-columns: 2fr 1fr 1.5fr 1fr 1fr min-content;
+  gap: 16px;
+  align-items: end;
+  padding: 0;
 }
 
 .filter-group {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-  min-width: 150px;
+  gap: 6px;
 }
 
 .filter-group label {
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--text-muted);
+  color: var(--text-dark);
+  display: block;
+  line-height: 1.4;
 }
 
 .filter-group input[type='search'],
 .filter-group input[type='text'],
+.filter-group input[type='date'],
 .search-input {
-  padding: var(--space-sm) var(--space-md);
+  width: 100%;
+  padding: 10px 14px;
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-md);
   font-size: var(--font-size-sm);
   transition: all var(--transition-fast);
   font-family: var(--font-family);
+  background: var(--bg-light);
+  max-height: fit-content;
+}
+
+.filter-group select,
+.filter-select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family);
+  background: var(--bg-light);
+  cursor: pointer;
 }
 
 .filter-group input:focus,
+.filter-group select:focus,
 .search-input:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(246, 92, 39, 0.1);
 }
 
-.search-input {
-  flex: 2;
-  min-width: 250px;
+.filters-form > div:last-child {
+  display: flex;
+  align-items: flex-end;
+}
+
+.filters-form .btn {
+  white-space: nowrap;
+  height: fit-content;
+  padding: 10px 20px;
+}
+
+.filter-group input[type='date'] {
+  position: relative;
+  cursor: pointer;
+}
+
+.filter-group input[type='date']::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.filter-group input[type='date']::-webkit-calendar-picker-indicator:hover {
+  opacity: 1;
 }
 
 /* Responsive Styles */
+
+/* Écrans moyens (tablettes larges / petits laptops) */
+@media (max-width: 1200px) {
+  .filters-form {
+    /* Passer à 3 colonnes: Rechercher (large), Statut, Trier par */
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  /* Du, Au, et Bouton prennent chacun une colonne sur la deuxième ligne */
+  .filter-group:nth-child(4), /* Du */
+  .filter-group:nth-child(5), /* Au */
+  .filters-form > div:nth-child(6) {
+    /* Bouton */
+    grid-column: span 1;
+  }
+
+  /* Si vous voulez que le bouton prenne toute la largeur */
+  .filters-form > div:last-child {
+    grid-column: 1 / -1;
+    margin-top: 4px;
+  }
+
+  .filters-form .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tablettes et grands mobiles */
 @media (max-width: 900px) {
+  .filters-form {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  /* Le champ recherche prend 2 colonnes */
+  .filter-group:first-child {
+    grid-column: span 2;
+  }
+
+  /* Le bouton prend toute la largeur */
+  .filters-form > div:last-child {
+    grid-column: 1 / -1;
+    margin-top: 8px;
+  }
+
   .page-header {
     flex-direction: column;
     align-items: flex-start;
@@ -224,6 +329,44 @@
   }
 }
 
+/* Mobiles (petits écrans) */
+@media (max-width: 768px) {
+  .filters-form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  /* Tous les éléments prennent une colonne */
+  .filter-group:first-child,
+  .filters-form > div:last-child {
+    grid-column: span 1;
+  }
+
+  /* Ajout d'une marge au-dessus du bouton */
+  .filters-form > div:last-child {
+    margin-top: 8px;
+  }
+
+  .filters-form .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .page-header-right {
+    width: 100%;
+  }
+
+  .page-header-right .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 @media (max-width: 768px) {
   .page-header {
     flex-direction: column;
@@ -238,4 +381,150 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Clients list tweaks: smaller rows, round avatars, right aligned actions */
+.clients-table tbody tr td {
+  padding: 8px 14px;
+  vertical-align: middle;
+}
+
+/* Properties table rows should match clients' compact height */
+.properties-table tbody tr td {
+  padding: 16px 14px;
+  vertical-align: middle;
+}
+
+.guest-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: 0 0 48px;
+  display: inline-block;
+}
+
+.guest-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.guest-name a {
+  color: var(--color-primary, #0b67d0);
+  font-weight: 600;
+}
+
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Make icon buttons slightly smaller to fit compact rows */
+.table-action i {
+  font-size: 14px;
+}
+
+/* Clients-specific filter layout: make search input expand and button compact */
+.clients-filters .filters-form-table-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.clients-filters .filters-form-table-modern .filter-group {
+  margin: 0;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child {
+  flex: 1 1 auto;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.clients-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  width: 100%;
+}
+
+.clients-filters .filters-form-table-modern .filter-group.filter-group-btn {
+  flex: 0 0 auto;
+}
+
+.clients-filters .filters-form-table-modern .btn-modern-filter {
+  padding: 8px 12px;
+  width: 48px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clients-filters .filter-label {
+  font-size: 0.9rem;
+}
+
+/* Ensure clients filters box uses same padding/height as bookings .table-filters-modern */
+.clients-filters.table-filters-modern {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  /* match bookings filter visual height on desktop */
+  min-height: 125px;
+}
+
+@media (max-width: 700px) {
+  /* on small screens let it size naturally (bookings reduces padding there) */
+  .clients-filters.table-filters-modern {
+    min-height: auto;
+    padding: 0.7rem 0.5rem;
+  }
+}
+
+/* Add space under the search input to match bookings filter spacing */
+.clients-filters .filters-form-table-modern .filter-group:first-child {
+  padding-bottom: 12px;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.clients-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  margin-bottom: 0; /* ensure input doesn't add extra margin, we use padding on parent */
+}
+
+/* Properties filters: mirror clients filters behavior */
+.properties-filters .filters-form-table-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.properties-filters .filters-form-table-modern .filter-group {
+  margin: 0;
+}
+
+.properties-filters .filters-form-table-modern .filter-group:first-child {
+  flex: 1 1 auto;
+  padding-bottom: 12px;
+}
+
+.properties-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.properties-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  width: 100%;
+}
+
+.properties-filters .filters-form-table-modern .filter-group.filter-group-btn {
+  flex: 0 0 auto;
+}
+
+.properties-filters .filters-form-table-modern .btn-modern-filter {
+  padding: 8px 12px;
+  width: 48px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.properties-filters.table-filters-modern {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  min-height: 125px;
 }

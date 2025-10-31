@@ -12,11 +12,10 @@
 
 .content {
   grid-area: content;
-  padding: 0 var(--space-xl);
+  padding: var(--space-md) var(--space-xl);
   background: var(--bg-subtle);
   overflow-y: auto;
-  height: 100%;
-  max-height: calc(100vh - 80px);
+  min-height: 0;
 }
 
 .content h1,
@@ -80,5 +79,7 @@
   background: var(--bg-subtle);
   font-size: var(--font-size-sm);
   text-align: center;
-  padding: var(--space-md) 0;
+  padding: 0;
+  height: fit-content;
+  position: relative;
 }
