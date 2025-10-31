@@ -201,7 +201,6 @@ export class BookingsService {
       throw new ConflictException('Overlapping booking exists');
     }
 
-    // Build Prisma-compliant update payload
     const updateData: Prisma.BookingUpdateInput = {
       startDate,
       endDate,
@@ -215,6 +214,23 @@ export class BookingsService {
       updateData.status = data.status;
     }
 
+    if (typeof data.cleaningFee !== 'undefined') {
+      updateData.cleaningFee = data.cleaningFee;
+    }
+    if (typeof data.taxes !== 'undefined') {
+      updateData.taxes = data.taxes;
+    }
+    if (typeof data.adults !== 'undefined') {
+      updateData.adults = data.adults;
+    }
+    if (typeof data.children !== 'undefined') {
+      updateData.children = data.children;
+    }
+    if (typeof data.specialRequests !== 'undefined') {
+      updateData.specialRequests = data.specialRequests;
+    }
+
+    // Permet la mise à jour du client et de la propriété
     if (data.propertyId && data.propertyId !== current.propertyId) {
       updateData.property = { connect: { id: data.propertyId } };
     }

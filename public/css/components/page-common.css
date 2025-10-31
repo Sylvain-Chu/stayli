@@ -31,7 +31,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: var(--space-xl);
-  padding: var(--space-md) 0 var(--space-lg);
   border-bottom: 1px solid var(--border-light);
   transition: box-shadow 0.2s ease;
 }
@@ -382,4 +381,150 @@
     width: 100%;
     justify-content: center;
   }
+}
+
+/* Clients list tweaks: smaller rows, round avatars, right aligned actions */
+.clients-table tbody tr td {
+  padding: 8px 14px;
+  vertical-align: middle;
+}
+
+/* Properties table rows should match clients' compact height */
+.properties-table tbody tr td {
+  padding: 16px 14px;
+  vertical-align: middle;
+}
+
+.guest-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: 0 0 48px;
+  display: inline-block;
+}
+
+.guest-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.guest-name a {
+  color: var(--color-primary, #0b67d0);
+  font-weight: 600;
+}
+
+.actions-cell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Make icon buttons slightly smaller to fit compact rows */
+.table-action i {
+  font-size: 14px;
+}
+
+/* Clients-specific filter layout: make search input expand and button compact */
+.clients-filters .filters-form-table-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.clients-filters .filters-form-table-modern .filter-group {
+  margin: 0;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child {
+  flex: 1 1 auto;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.clients-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  width: 100%;
+}
+
+.clients-filters .filters-form-table-modern .filter-group.filter-group-btn {
+  flex: 0 0 auto;
+}
+
+.clients-filters .filters-form-table-modern .btn-modern-filter {
+  padding: 8px 12px;
+  width: 48px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clients-filters .filter-label {
+  font-size: 0.9rem;
+}
+
+/* Ensure clients filters box uses same padding/height as bookings .table-filters-modern */
+.clients-filters.table-filters-modern {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  /* match bookings filter visual height on desktop */
+  min-height: 125px;
+}
+
+@media (max-width: 700px) {
+  /* on small screens let it size naturally (bookings reduces padding there) */
+  .clients-filters.table-filters-modern {
+    min-height: auto;
+    padding: 0.7rem 0.5rem;
+  }
+}
+
+/* Add space under the search input to match bookings filter spacing */
+.clients-filters .filters-form-table-modern .filter-group:first-child {
+  padding-bottom: 12px;
+}
+
+.clients-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.clients-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  margin-bottom: 0; /* ensure input doesn't add extra margin, we use padding on parent */
+}
+
+/* Properties filters: mirror clients filters behavior */
+.properties-filters .filters-form-table-modern {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.properties-filters .filters-form-table-modern .filter-group {
+  margin: 0;
+}
+
+.properties-filters .filters-form-table-modern .filter-group:first-child {
+  flex: 1 1 auto;
+  padding-bottom: 12px;
+}
+
+.properties-filters .filters-form-table-modern .filter-group:first-child .search-input-modern,
+.properties-filters .filters-form-table-modern .filter-group:first-child input[type='search'] {
+  width: 100%;
+}
+
+.properties-filters .filters-form-table-modern .filter-group.filter-group-btn {
+  flex: 0 0 auto;
+}
+
+.properties-filters .filters-form-table-modern .btn-modern-filter {
+  padding: 8px 12px;
+  width: 48px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.properties-filters.table-filters-modern {
+  padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+  margin-bottom: 1.5rem;
+  min-height: 125px;
 }

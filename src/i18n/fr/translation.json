@@ -103,6 +103,7 @@
   },
   "properties": {
     "title": "Propriétés",
+    "subtitle": "Gérez toutes vos propriétés ici.",
     "searchPlaceholder": "Rechercher des propriétés…",
     "addNew": "Ajouter une nouvelle propriété",
     "createTitle": "Créer une Propriété",
@@ -126,6 +127,7 @@
   },
   "clients": {
     "title": "Clients",
+    "subtitle": "Gérez tous vos clients ici.",
     "searchPlaceholder": "Rechercher des clients…",
     "addNew": "Ajouter un nouveau client",
     "createTitle": "Créer un Client",
@@ -218,6 +220,7 @@
   },
   "invoices": {
     "title": "Factures",
+    "subtitle": "Gérez toutes vos factures ici.",
     "createTitle": "Créer une Facture",
     "editTitle": "Modifier la Facture",
     "showTitle": "Détails de la Facture",

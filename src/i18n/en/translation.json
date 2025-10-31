@@ -93,6 +93,7 @@
   },
   "properties": {
     "title": "Properties",
+    "subtitle": "Manage all your properties here.",
     "searchPlaceholder": "Search properties…",
     "addNew": "Add a new property",
     "createTitle": "Create Property",
@@ -116,6 +117,7 @@
   },
   "clients": {
     "title": "Clients",
+    "subtitle": "Manage all your clients here.",
     "searchPlaceholder": "Search clients…",
     "addNew": "Add a new client",
     "createTitle": "Create Client",
@@ -209,6 +211,7 @@
   },
   "invoices": {
     "title": "Invoices",
+    "subtitle": "Manage all your invoices here.",
     "createTitle": "Create Invoice",
     "editTitle": "Edit Invoice",
     "showTitle": "Invoice Details",
