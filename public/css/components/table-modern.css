@@ -1,5 +1,8 @@
 /* Modern Table/List UI - Réutilisable */
-.bookings-table {
+.bookings-table,
+.clients-table,
+.properties-table,
+.invoices-table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
@@ -10,21 +13,33 @@
   overflow: hidden;
 }
 .bookings-table th,
-.bookings-table td {
+.bookings-table td,
+.clients-table th,
+.clients-table td,
+.properties-table th,
+.properties-table td,
+.invoices-table th,
+.invoices-table td {
   padding: 18px 18px;
   text-align: left;
   font-size: 1rem;
   border-bottom: 1px solid #f1f1f1;
   background: #fff;
 }
-.bookings-table th {
+.bookings-table th,
+.clients-table th,
+.properties-table th,
+.invoices-table th {
   color: #222;
   font-weight: 700;
   background: #f7f8fa;
   font-size: 1.08rem;
   letter-spacing: 0.01em;
 }
-.bookings-table tr:last-child td {
+.bookings-table tr:last-child td,
+.clients-table tr:last-child td,
+.properties-table tr:last-child td,
+.invoices-table tr:last-child td {
   border-bottom: none;
 }
 .bookings-table .guest-cell {
