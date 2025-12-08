@@ -57,8 +57,12 @@ export class ValidationExceptionFilter implements ExceptionFilter {
     const path = request.path || '';
     const method = request.method.toUpperCase();
 
-    // Only attempt to re-render on form submissions (POST)
-    if (method === 'POST') {
+    // API routes that should return JSON, not render views
+    const apiRoutes = ['/bookings/calculate-price', '/bookings/events'];
+    const isApiRoute = apiRoutes.some((route) => path.includes(route));
+
+    // Only attempt to re-render on form submissions (POST) and not API routes
+    if (method === 'POST' && !isApiRoute) {
       // Strip leading slash
       let view = path.startsWith('/') ? path.slice(1) : path;
       const url = (request.originalUrl || '').split('?')[0];

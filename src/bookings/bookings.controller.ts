@@ -19,6 +19,8 @@ import { UpdateBookingDto } from './dto/update-booking.dto';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { InvoicesService } from 'src/invoices/invoices.service';
+import { SettingsService } from 'src/settings/settings.service';
+import { BookingPriceCalculator } from './booking-price.calculator';
 import { validateOrReject } from 'class-validator';
 
 const INVOICE_DUE_DAYS = 14;
@@ -29,6 +31,8 @@ export class BookingsController {
     private readonly bookingsService: BookingsService,
     private readonly prisma: PrismaService,
     private readonly invoicesService: InvoicesService,
+    private readonly settingsService: SettingsService,
+    private readonly priceCalculator: BookingPriceCalculator,
   ) {}
 
   @Get()
@@ -209,11 +213,17 @@ export class BookingsController {
   @Get('create')
   @Render('bookings/create')
   async createForm() {
-    const [properties, clients] = await Promise.all([
+    const [properties, clients, settings] = await Promise.all([
       this.prisma.property.findMany({ orderBy: { name: 'asc' } }),
       this.prisma.client.findMany({ orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }] }),
+      this.settingsService.getSettings(),
     ]);
-    return { properties, clients };
+    return {
+      properties,
+      clients,
+      defaultLinensPrice: settings.linensOptionPrice,
+      defaultCleaningPrice: settings.cleaningOptionPrice,
+    };
   }
 
   @Post('create')
@@ -233,6 +243,44 @@ export class BookingsController {
         }
       }
       throw new InternalServerErrorException('Error creating booking.');
+    }
+  }
+
+  @Post('calculate-price')
+  @HttpCode(200)
+  async calculatePrice(@Body() body: CreateBookingDto) {
+    try {
+      if (!body.startDate || !body.endDate) {
+        throw new BadRequestException('Start and end dates are required');
+      }
+
+      const settings = await this.settingsService.getSettings();
+
+      const priceBreakdown = this.priceCalculator.calculate({
+        startDate: body.startDate,
+        endDate: body.endDate,
+        baseRateLowSeason: settings.lowSeasonRate,
+        baseRateHighSeason: settings.highSeasonRate,
+        lowSeasonMonths: settings.lowSeasonMonths,
+        hasLinens: body.hasLinens === true,
+        linensPrice: body.linensPrice ?? settings.linensOptionPrice,
+        hasCleaning: body.hasCleaning === true,
+        cleaningPrice: body.cleaningPrice ?? settings.cleaningOptionPrice,
+        discount: body.discount ?? 0,
+        discountType: (body.discountType as 'amount' | 'percent' | null) ?? 'amount',
+        hasCancellationInsurance: body.hasCancellationInsurance === true,
+        insuranceRate: settings.cancellationInsurancePercentage,
+        adults: body.adults ?? 1,
+        children: body.children ?? 0,
+        touristTaxRate: settings.touristTaxRatePerPersonPerDay,
+      });
+
+      return priceBreakdown;
+    } catch (err: unknown) {
+      if (err instanceof HttpException) {
+        throw err;
+      }
+      throw new InternalServerErrorException('Error calculating price.');
     }
   }
 
@@ -299,8 +347,28 @@ export class BookingsController {
       Math.round((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)),
     );
 
+    // Calculate discount amount for display
+    let discountAmount = 0;
+    if (booking.discount && booking.discount > 0) {
+      if (booking.discountType === 'percent') {
+        discountAmount = (booking.basePrice * booking.discount) / 100;
+      } else {
+        discountAmount = booking.discount;
+      }
+    }
+
+    // Determine season for display
+    const settings = await this.settingsService.getSettings();
+    const startMonth = startDate.getMonth() + 1; // 1-12
+    const isLowSeason = settings.lowSeasonMonths.includes(startMonth);
+    const seasonLabel = isLowSeason ? 'Low Season' : 'High Season';
+
     return {
-      booking,
+      booking: {
+        ...booking,
+        discountAmount: Math.round(discountAmount * 100) / 100,
+        seasonLabel,
+      },
       durationNights,
       canEdit,
       canEditReason,
