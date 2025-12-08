@@ -6,7 +6,6 @@
 @import url('variables.css');
 @import url('base.css');
 @import url('layout.css');
-@import url('header.css');
 @import url('sidebar.css');
 
 /* Component Modules */
@@ -18,6 +17,8 @@
 @import url('components/tooltips.css');
 @import url('components/dashboard.css');
 @import url('components/form-modern.css');
+@import url('components/table-modern.css');
+@import url('components/filters-modern.css');
 
 /* Other Modules */
 @import url('cards.css');
