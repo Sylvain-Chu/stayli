@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { Booking, Client, Property, Prisma, Invoice, $Enums } from '@prisma/client';
+import { Booking, Client, Property, Prisma, Invoice, BookingStatus } from '@prisma/client';
 import { UpdateBookingDto } from './dto/update-booking.dto';
 import { paginatePrisma } from '../common/prisma-pagination.util';
 
@@ -11,12 +11,9 @@ export type BookingWithRelations = Booking & {
 };
 type DateRange = { start?: Date; end?: Date };
 
-// Narrow and validate booking status without referencing enum static members (avoids ESLint unsafe-member-access)
-function isValidBookingStatus(s: unknown): s is 'confirmed' | 'pending' | 'cancelled' | 'blocked' {
-  return (
-    typeof s === 'string' &&
-    (s === 'confirmed' || s === 'pending' || s === 'cancelled' || s === 'blocked')
-  );
+// Narrow and validate booking status without referencing enum static members
+function isValidBookingStatus(s: unknown): s is BookingStatus {
+  return typeof s === 'string' && Object.values(BookingStatus).includes(s as BookingStatus);
 }
 
 export type SortOption = 'newest' | 'oldest' | 'price-high' | 'price-low' | 'name';
@@ -31,7 +28,7 @@ export class BookingsService {
       to,
       status,
       q,
-    }: { from?: Date; to?: Date; status?: $Enums.BookingStatus | undefined; q?: string } = {},
+    }: { from?: Date; to?: Date; status?: BookingStatus | undefined; q?: string } = {},
     sort: SortOption = 'newest',
     limit = 10,
     page = 1,

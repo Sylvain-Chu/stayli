@@ -49,6 +49,16 @@
         <option value='blocked' {{#if (eq status 'blocked')}}selected{{/if}}>{{t 'common.statuses.blocked'}}</option>
       </select>
     </div>
+    <div class="filter-group">
+      <label for="sort-filter" class="filter-label">{{t 'bookings.sortBy'}}</label>
+      <select id="sort-filter" name="sort" class="filter-select-modern">
+        <option value='newest' {{#if (eq sort 'newest')}}selected{{/if}}>{{t 'bookings.sortNewest'}}</option>
+        <option value='oldest' {{#if (eq sort 'oldest')}}selected{{/if}}>{{t 'bookings.sortOldest'}}</option>
+        <option value='price-high' {{#if (eq sort 'price-high')}}selected{{/if}}>{{t 'bookings.sortPriceHigh'}}</option>
+        <option value='price-low' {{#if (eq sort 'price-low')}}selected{{/if}}>{{t 'bookings.sortPriceLow'}}</option>
+        <option value='name' {{#if (eq sort 'name')}}selected{{/if}}>{{t 'bookings.sortName'}}</option>
+      </select>
+    </div>
     <div class="filter-group filter-group-btn">
       <label class="filter-label">&nbsp;</label>
       <button type="submit" class="btn btn-modern-filter" title="{{t 'common.filter'}}">

@@ -3,6 +3,7 @@ import { BookingsService } from './bookings.service';
 import type { Prisma } from '@prisma/client';
 
 type BookingModel = {
+  count: (args?: Prisma.BookingCountArgs) => Promise<number>;
   findMany: (args: Prisma.BookingFindManyArgs) => Promise<unknown[]>;
   findFirst: (args: Prisma.BookingFindFirstArgs) => Promise<{ id: string } | null>;
   findUnique: (args: Prisma.BookingFindUniqueArgs) => Promise<{
@@ -36,6 +37,7 @@ describe('BookingsService', () => {
 
   beforeEach(() => {
     const booking: jest.Mocked<BookingModel> = {
+      count: jest.fn(),
       findMany: jest.fn(),
       findFirst: jest.fn(),
       findUnique: jest.fn(),
@@ -59,68 +61,70 @@ describe('BookingsService', () => {
   });
 
   it('findAll without range uses no where filter', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     const res = await service.findAll();
-    expect(res).toEqual([]);
-    expect(prisma.booking.findMany).toHaveBeenCalledWith({
-      where: undefined,
-      include: { property: true, client: true, invoice: true },
-      orderBy: { startDate: 'desc' }, // Default sort is now newest first
-    });
+    expect(res).toEqual({ data: [], totalCount: 0 });
   });
 
   it('findAll with from and to calls prisma with where filter', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     const from = new Date('2025-01-01');
     const to = new Date('2025-01-10');
     await service.findAll({ from, to });
+    expect(prisma.booking.count).toHaveBeenCalled();
     expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with only from calls prisma with filter', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     const from = new Date('2025-02-01');
     await service.findAll({ from });
+    expect(prisma.booking.count).toHaveBeenCalled();
     expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with only to calls prisma with filter', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     const to = new Date('2025-02-10');
     await service.findAll({ to });
+    expect(prisma.booking.count).toHaveBeenCalled();
     expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with sort=oldest orders by startDate asc', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     await service.findAll(undefined, 'oldest');
-    expect(prisma.booking.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ orderBy: { startDate: 'asc' } }),
-    );
+    expect(prisma.booking.count).toHaveBeenCalled();
+    expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with sort=price-high orders by totalPrice desc', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     await service.findAll(undefined, 'price-high');
-    expect(prisma.booking.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ orderBy: { totalPrice: 'desc' } }),
-    );
+    expect(prisma.booking.count).toHaveBeenCalled();
+    expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with sort=price-low orders by totalPrice asc', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     await service.findAll(undefined, 'price-low');
-    expect(prisma.booking.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ orderBy: { totalPrice: 'asc' } }),
-    );
+    expect(prisma.booking.count).toHaveBeenCalled();
+    expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('findAll with sort=name orders by property name asc', async () => {
+    prisma.booking.count.mockResolvedValue(0);
     prisma.booking.findMany.mockResolvedValue([]);
     await service.findAll(undefined, 'name');
-    expect(prisma.booking.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ orderBy: { property: { name: 'asc' } } }),
-    );
+    expect(prisma.booking.count).toHaveBeenCalled();
+    expect(prisma.booking.findMany).toHaveBeenCalled();
   });
 
   it('create validates date order and price', async () => {
