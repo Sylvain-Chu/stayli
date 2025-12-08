@@ -19,6 +19,7 @@
 @import url('components/form-modern.css');
 @import url('components/table-modern.css');
 @import url('components/filters-modern.css');
+@import url('components/price-summary.css');
 
 /* Other Modules */
 @import url('cards.css');

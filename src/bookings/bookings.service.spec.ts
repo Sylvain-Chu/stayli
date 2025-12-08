@@ -34,6 +34,8 @@ type MockPrisma = {
 describe('BookingsService', () => {
   let service: BookingsService;
   let prisma: MockPrisma;
+  let mockPriceCalculator: any;
+  let mockSettingsService: any;
 
   beforeEach(() => {
     const booking: jest.Mocked<BookingModel> = {
@@ -56,8 +58,34 @@ describe('BookingsService', () => {
       $transaction: async (fn) => fn({ booking, invoice }),
     };
 
+    // Mock price calculator
+    mockPriceCalculator = {
+      calculate: jest.fn().mockReturnValue({
+        basePrice: 500,
+        linensPrice: 0,
+        cleaningPrice: 0,
+        discount: 0,
+        insuranceFee: 0,
+        touristTax: 10,
+        totalPrice: 510,
+      }),
+    };
+
+    // Mock settings service
+    mockSettingsService = {
+      getSettings: jest.fn().mockResolvedValue({
+        lowSeasonRate: 750,
+        highSeasonRate: 830,
+        lowSeasonMonths: [1, 2, 3, 11, 12],
+        linensOptionPrice: 20,
+        cleaningOptionPrice: 35,
+        cancellationInsurancePercentage: 6,
+        touristTaxRatePerPersonPerDay: 1,
+      }),
+    };
+
     const prismaTyped = prisma as unknown as import('src/prisma/prisma.service').PrismaService;
-    service = new BookingsService(prismaTyped);
+    service = new BookingsService(prismaTyped, mockPriceCalculator, mockSettingsService);
   });
 
   it('findAll without range uses no where filter', async () => {
@@ -134,7 +162,6 @@ describe('BookingsService', () => {
         startDate: undefined,
         // @ts-expect-error testing validation on missing dates
         endDate: undefined,
-        totalPrice: 100,
         propertyId: 'p1',
         clientId: 'c1',
       }),
@@ -144,17 +171,6 @@ describe('BookingsService', () => {
       service.create({
         startDate: new Date('2025-01-10'),
         endDate: new Date('2025-01-05'),
-        totalPrice: 100,
-        propertyId: 'p1',
-        clientId: 'c1',
-      }),
-    ).rejects.toBeInstanceOf(BadRequestException);
-
-    await expect(
-      service.create({
-        startDate: new Date('2025-01-01'),
-        endDate: new Date('2025-01-05'),
-        totalPrice: 0,
         propertyId: 'p1',
         clientId: 'c1',
       }),
@@ -168,7 +184,6 @@ describe('BookingsService', () => {
       service.create({
         startDate: badStart,
         endDate: new Date('2025-01-05'),
-        totalPrice: 100,
         propertyId: 'p1',
         clientId: 'c1',
       }),
@@ -178,7 +193,6 @@ describe('BookingsService', () => {
       service.create({
         startDate: new Date('2025-01-01'),
         endDate: badEnd,
-        totalPrice: 100,
         propertyId: 'p1',
         clientId: 'c1',
       }),
@@ -191,7 +205,6 @@ describe('BookingsService', () => {
       service.create({
         startDate: new Date('2025-01-01'),
         endDate: new Date('2025-01-05'),
-        totalPrice: 100,
         propertyId: 'p1',
         clientId: 'c1',
       }),
@@ -204,12 +217,12 @@ describe('BookingsService', () => {
     const data = {
       startDate: new Date('2025-01-01'),
       endDate: new Date('2025-01-05'),
-      totalPrice: 100,
       propertyId: 'p1',
       clientId: 'c1',
     };
     await service.create(data);
     expect(prisma.booking.create).toHaveBeenCalled();
+    expect(mockPriceCalculator.calculate).toHaveBeenCalled();
   });
 
   it('update validates and prevents overlaps', async () => {

@@ -1,14 +1,13 @@
 {{> header }}
 {{> sidebar }}
+<link rel="stylesheet" href="/css/pages/booking-create-modern.css">
 
-<div class="page-header">
-  <div>
-    <a href='/bookings' class="breadcrumb">
-      <i data-feather="arrow-left"></i>
-      {{t 'bookings.title'}}
-    </a>
-    <h1>{{t 'bookings.createTitle'}}</h1>
-  </div>
+<div class="page-header-sticky">
+  <a href='/bookings' class="breadcrumb-link">
+    <i data-feather="arrow-left"></i>
+    {{t 'bookings.title'}}
+  </a>
+  <h1>{{t 'bookings.createTitle'}}</h1>
 </div>
 
 {{#if errors}}
@@ -21,86 +20,292 @@
   </div>
 {{/if}}
 
-<div class="form-card">
-  <form method='post' action='/bookings/create' class="form-layout">
+<form method='post' action='/bookings/create' class="booking-create-container">
+  
+  <!-- Colonne de gauche : Formulaire -->
+  <div class="booking-form-column">
     
-    <div class="form-section">
-      <h3 class="form-section-title">
-        <i data-feather="map-pin"></i>
-        {{t 'bookings.propertyAndClient'}}
-      </h3>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="propertyId">{{t 'bookings.property'}}</label>
-          <select name='propertyId' id='propertyId' required>
-            <option value='' disabled {{#unless payload.propertyId}}selected{{/unless}}>{{t 'bookings.selectProperty'}}</option>
-            {{#each properties}}
-              <option value='{{this.id}}' {{#if (eq this.id ../payload.propertyId)}}selected{{/if}}>{{this.name}}</option>
-            {{/each}}
-          </select>
-        </div>
+    <!-- Section 1: Propriété et Client -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <i data-feather="home"></i>
+        <h3>{{t 'bookings.propertyAndClient'}}</h3>
+      </div>
+      <div class="form-card-body">
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="propertyId">{{t 'bookings.property'}}</label>
+            <select name='propertyId' id='propertyId' class="select-searchable" required>
+              <option value='' disabled {{#unless payload.propertyId}}selected{{/unless}}>{{t 'bookings.selectProperty'}}</option>
+              {{#each properties}}
+                <option value='{{this.id}}' {{#if (eq this.id ../payload.propertyId)}}selected{{/if}}>{{this.name}}</option>
+              {{/each}}
+            </select>
+          </div>
 
-        <div class="form-group">
-          <label for="clientId">{{t 'bookings.client'}}</label>
-          <select name='clientId' id='clientId' required>
-            <option value='' disabled {{#unless payload.clientId}}selected{{/unless}}>{{t 'bookings.selectClient'}}</option>
-            {{#each clients}}
-              <option value='{{this.id}}' {{#if (eq this.id ../payload.clientId)}}selected{{/if}}>{{this.lastName}} {{this.firstName}}</option>
-            {{/each}}
-          </select>
+          <div class="form-group">
+            <label for="clientId">{{t 'bookings.client'}}</label>
+            <select name='clientId' id='clientId' class="select-searchable" required>
+              <option value='' disabled {{#unless payload.clientId}}selected{{/unless}}>{{t 'bookings.selectClient'}}</option>
+              {{#each clients}}
+                <option value='{{this.id}}' {{#if (eq this.id ../payload.clientId)}}selected{{/if}}>{{this.lastName}} {{this.firstName}}</option>
+              {{/each}}
+            </select>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="form-section">
-      <h3 class="form-section-title">
+    <!-- Section 2: Dates -->
+    <div class="form-card">
+      <div class="form-card-header">
         <i data-feather="calendar"></i>
-        {{t 'bookings.datesAndPrice'}}
-      </h3>
-      
-      <div class="form-row">
-        <div class="form-group">
-          <label for="startDate">{{t 'bookings.startDate'}}</label>
-          <input type='date' name='startDate' id='startDate' value='{{payload.startDate}}' required />
-        </div>
+        <h3>Dates du séjour</h3>
+      </div>
+      <div class="form-card-body">
+        <div class="form-row-2col">
+          <div class="form-group">
+            <label for="startDate">{{t 'bookings.checkIn'}}</label>
+            <input type='date' name='startDate' id='startDate' value='{{date payload.startDate}}' required />
+          </div>
 
-        <div class="form-group">
-          <label for="endDate">{{t 'bookings.endDate'}}</label>
-          <input type='date' name='endDate' id='endDate' value='{{payload.endDate}}' required />
+          <div class="form-group">
+            <label for="endDate">{{t 'bookings.checkOut'}}</label>
+            <input type='date' name='endDate' id='endDate' value='{{date payload.endDate}}' required />
+          </div>
+        </div>
+        <div class="nights-badge" id="nightsBadge" style="display:none;">
+          <i data-feather="moon"></i>
+          <span id="nightsCount">0</span> {{t 'bookings.nights'}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: Voyageurs -->
+<div class="form-card">
+  <div class="form-card-header">
+    <i data-feather="users"></i>
+    <h3>{{t 'bookings.guests'}}</h3>
+  </div>
+  <div class="form-card-body">
+    <div class="stepper-container">
+      
+      <div class="stepper-row-modern">
+        <div class="stepper-label">
+          <span class="label-title">{{t 'bookings.adults'}}</span>
+          <span class="label-subtitle">Âge 13+</span>
+        </div>
+        <div class="stepper-control-modern">
+          <button type="button" class="btn-circle" data-action="decrease" data-target="adults" data-min="1">
+            <i data-feather="minus"></i>
+          </button>
+          <input type='number' name='adults' id='adults' min="1" value='{{#if payload.adults}}{{payload.adults}}{{else}}1{{/if}}' readonly />
+          <button type="button" class="btn-circle" data-action="increase" data-target="adults">
+            <i data-feather="plus"></i>
+          </button>
         </div>
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label for="totalPrice">{{t 'bookings.totalPrice'}}</label>
-          <div class="input-with-icon">
-            <i data-feather="dollar-sign"></i>
-            <input type='number' step='0.01' name='totalPrice' id='totalPrice' value='{{payload.totalPrice}}' placeholder="0.00" required />
+      <div class="divider-line"></div>
+
+      <div class="stepper-row-modern">
+        <div class="stepper-label">
+          <span class="label-title">{{t 'bookings.children'}}</span>
+          <span class="label-subtitle">2 - 12 ans</span>
+        </div>
+        <div class="stepper-control-modern">
+          <button type="button" class="btn-circle" data-action="decrease" data-target="children" data-min="0">
+            <i data-feather="minus"></i>
+          </button>
+          <input type='number' name='children' id='children' min="0" value='{{#if payload.children}}{{payload.children}}{{else}}0{{/if}}' readonly />
+          <button type="button" class="btn-circle" data-action="increase" data-target="children">
+            <i data-feather="plus"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+    <!-- Section 4: Options & Services -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <i data-feather="shopping-bag"></i>
+        <h3>{{t 'bookings.options'}}</h3>
+      </div>
+      <div class="form-card-body">
+        
+        <!-- Option Draps -->
+        <div class="option-row">
+          <label class="option-toggle">
+            <input type='checkbox' name='hasLinens' id='hasLinens' value='true' {{#if payload.hasLinens}}checked{{/if}} />
+            <span class="option-switch"></span>
+            <span class="option-label">
+              <strong>{{t 'bookings.hasLinens'}}</strong>
+            </span>
+          </label>
+          <div class="option-price">
+            <input type='number' step='0.01' name='linensPrice' id='linensPrice' value='{{#if payload.linensPrice}}{{payload.linensPrice}}{{else}}{{defaultLinensPrice}}{{/if}}' placeholder="{{defaultLinensPrice}}" />
+            <span class="price-suffix">€</span>
           </div>
         </div>
 
+        <!-- Option Ménage -->
+        <div class="option-row">
+          <label class="option-toggle">
+            <input type='checkbox' name='hasCleaning' id='hasCleaning' value='true' {{#if payload.hasCleaning}}checked{{/if}} />
+            <span class="option-switch"></span>
+            <span class="option-label">
+              <strong>{{t 'bookings.hasCleaning'}}</strong>
+            </span>
+          </label>
+          <div class="option-price">
+            <input type='number' step='0.01' name='cleaningPrice' id='cleaningPrice' value='{{#if payload.cleaningPrice}}{{payload.cleaningPrice}}{{else}}{{defaultCleaningPrice}}{{/if}}' placeholder="{{defaultCleaningPrice}}" />
+            <span class="price-suffix">€</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 5: Assurance & Réduction -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <i data-feather="credit-card"></i>
+        <h3>Paiement & Réductions</h3>
+      </div>
+      <div class="form-card-body">
+        
+        <!-- Assurance -->
+        <div class="option-row">
+          <label class="option-toggle">
+            <input type='checkbox' name='hasCancellationInsurance' id='hasCancellationInsurance' value='true' {{#if payload.hasCancellationInsurance}}checked{{/if}} />
+            <span class="option-switch"></span>
+            <span class="option-label">
+              <strong>{{t 'bookings.hasCancellationInsurance'}}</strong>
+              <small class="option-hint" id="insuranceHint"></small>
+            </span>
+          </label>
+        </div>
+
+        <!-- Réduction -->
+        <div class="form-row-discount">
+          
+
+
+
+          <div class="form-group form-group-30">
+            <label for="discountType">{{t 'bookings.discountType'}}</label>
+            <select name='discountType' id='discountType'>
+              <option value='amount' {{#unless payload.discountType}}selected{{/unless}}>{{t 'bookings.discountAmount'}}</option>
+              <option value='percent' {{#if (eq payload.discountType 'percent')}}selected{{/if}}>{{t 'bookings.discountPercent'}}</option>
+            </select>
+          </div>
+
+          <div class="form-group form-group-70">
+            <label for="discount">{{t 'bookings.discount'}}</label>
+            <div class="input-with-suffix">
+              <input type='number' step='0.01' name='discount' id='discount' min="0" value='{{#if payload.discount}}{{payload.discount}}{{else}}0{{/if}}' placeholder="0" />
+              <span class="input-suffix" id="discountSuffix">€</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Section 6: Demandes spéciales -->
+    <div class="form-card">
+      <div class="form-card-header">
+        <i data-feather="message-square"></i>
+        <h3>{{t 'bookings.specialRequests'}}</h3>
+      </div>
+      <div class="form-card-body">
         <div class="form-group">
-          <label for="status">{{t 'bookings.status'}}</label>
-          <select name='status' id='status'>
-            <option value='pending' selected>{{t 'bookings.statusPending'}}</option>
-            <option value='confirmed'>{{t 'bookings.statusConfirmed'}}</option>
-            <option value='blocked'>{{t 'bookings.statusBlocked'}}</option>
-          </select>
+          <textarea name='specialRequests' id='specialRequests' rows="3" maxlength="500" placeholder="{{t 'bookings.specialRequests'}}...">{{payload.specialRequests}}</textarea>
+          <div class="char-counter">
+            <span id="charCount">0</span>/500
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="form-actions">
-      <a href='/bookings' class="btn btn-ghost">
-        {{t 'common.cancel'}}
-      </a>
-      <button type='submit' class="btn btn-primary">
-        <i data-feather="plus"></i>
-        {{t 'common.create'}}
-      </button>
-    </div>
-  </form>
-</div>
 
+  </div>
+
+  <!-- Colonne de droite : Récapitulatif (Sticky) -->
+  <div class="booking-summary-column">
+    <div class="summary-card" id="summaryCard">
+      <div class="summary-header">
+        <i data-feather="file-text"></i>
+        <h3>{{t 'bookings.priceBreakdown'}}</h3>
+      </div>
+      
+      <div class="summary-body">
+        <div class="summary-section">
+          <div class="summary-line">
+            <span class="summary-label">{{t 'bookings.basePrice'}}</span>
+            <span class="summary-value" id="basePriceDisplay">-</span>
+          </div>
+          <div class="summary-detail" id="basePriceDetail"></div>
+        </div>
+
+        <div class="summary-section" id="optionsSection" style="display:none;">
+          <div class="summary-line">
+            <span class="summary-label">{{t 'bookings.options'}}</span>
+            <span class="summary-value" id="optionsDisplay">-</span>
+          </div>
+          <div class="summary-detail" id="optionsDetail"></div>
+        </div>
+
+        <div class="summary-section" id="discountSection" style="display:none;">
+          <div class="summary-line summary-discount">
+            <span class="summary-label">{{t 'bookings.discount'}}</span>
+            <span class="summary-value" id="discountDisplay">-</span>
+          </div>
+        </div>
+
+        <div class="summary-divider"></div>
+
+        <div class="summary-section">
+          <div class="summary-line">
+            <span class="summary-label">{{t 'bookings.insurance'}}</span>
+            <span class="summary-value" id="insuranceDisplay">-</span>
+          </div>
+        </div>
+
+        <div class="summary-section">
+          <div class="summary-line">
+            <span class="summary-label">{{t 'bookings.touristTax'}}</span>
+            <span class="summary-value" id="taxDisplay">-</span>
+          </div>
+          <div class="summary-detail" id="taxDetail"></div>
+        </div>
+
+        <div class="summary-divider-bold"></div>
+
+        <div class="summary-total">
+          <span class="summary-total-label">{{t 'bookings.totalPrice'}}</span>
+          <span class="summary-total-value" id="totalPriceDisplay">-</span>
+        </div>
+      </div>
+
+      <div class="summary-actions">
+        <button type='submit' class="btn btn-primary btn-block">
+          <i data-feather="check"></i>
+          {{t 'bookings.createTitle'}}
+        </button>
+        <a href='/bookings' class="btn btn-ghost btn-block">
+          {{t 'common.cancel'}}
+        </a>
+      </div>
+    </div>
+
+
+  </div>
+
+</form>
+
+<script src="/js/booking-calculator-enhanced.js"></script>
 {{> footer }}
