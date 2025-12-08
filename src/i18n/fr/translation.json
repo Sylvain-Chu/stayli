@@ -1,5 +1,12 @@
 {
   "common": {
+    "statuses": {
+      "pending": "En attente",
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée",
+      "completed": "Terminée",
+      "blocked": "Bloquée"
+    },
     "search": "Rechercher",
     "clear": "Effacer",
     "delete": "Supprimer",
@@ -23,6 +30,16 @@
     "page": "Page",
     "previous": "Précédent",
     "next": "Suivant"
+  },
+  "entities": {
+    "client": "Client",
+    "clients": "Clients",
+    "property": "Propriété",
+    "properties": "Propriétés",
+    "booking": "Réservation",
+    "bookings": "Réservations",
+    "invoice": "Facture",
+    "invoices": "Factures"
   },
   "header": {
     "searchPlaceholder": "Rechercher..."
@@ -86,6 +103,7 @@
   },
   "properties": {
     "title": "Propriétés",
+    "subtitle": "Gérez toutes vos propriétés ici.",
     "searchPlaceholder": "Rechercher des propriétés…",
     "addNew": "Ajouter une nouvelle propriété",
     "createTitle": "Créer une Propriété",
@@ -109,8 +127,10 @@
   },
   "clients": {
     "title": "Clients",
+    "subtitle": "Gérez tous vos clients ici.",
     "searchPlaceholder": "Rechercher des clients…",
     "addNew": "Ajouter un nouveau client",
+    "name": "Nom du client",
     "createTitle": "Créer un Client",
     "editTitle": "Modifier le Client",
     "showTitle": "Détails du Client",
@@ -134,13 +154,17 @@
   },
   "bookings": {
     "title": "Réservations",
-    "createTitle": "Créer une Réservation",
-    "editTitle": "Modifier la Réservation",
-    "showTitle": "Détails de la Réservation",
-
-    "addNew": "Créer une nouvelle réservation",
+    "subtitle": "Gérez toutes vos réservations ici.",
+    "addNew": "Ajouter une réservation",
+    "filterSearchLabel": "Rechercher",
+    "filterDateLabel": "Plage de dates",
+    "filterStatusLabel": "Statut",
+    "searchPlaceholder": "Rechercher des réservations...",
+    "guest": "Invité",
+    "dates": "Dates",
+    "noBookings": "Aucune réservation trouvée.",
+    "perPage": "Résultats par page",
     "openCalendar": "Ouvrir le calendrier",
-    "searchPlaceholder": "Rechercher par client ou propriété...",
     "property": "Propriété",
     "client": "Client",
     "startDate": "Date de début",
@@ -149,7 +173,6 @@
     "status": "Statut",
     "confirmDelete": "Supprimer cette réservation?",
     "confirmCancel": "Annuler cette réservation?",
-    "noBookings": "Aucune réservation pour le moment.",
     "selectProperty": "Sélectionner une propriété",
     "selectClient": "Sélectionner un client",
     "statusPending": "En attente",
@@ -166,7 +189,6 @@
     "generateInvoiceConfirm": "Générer une facture pour cette réservation?",
     "cancelNote": "Annuler libérera les dates pour de nouvelles réservations.",
     "filterByStatus": "Filtrer par statut:",
-    "statusBlocked": "Bloqué",
     "filterNote": "Décochez pour masquer des statuts spécifiques. Si aucun n'est sélectionné, le calendrier n'affiche aucun événement.",
     "calendarTitle": "Calendrier des réservations",
     "backToList": "Retour à la liste des réservations",
@@ -178,6 +200,13 @@
     "invoiceLabel": "Facture",
     "backToDetails": "Retour aux détails",
     "propertyAndClient": "Propriété et Client",
+    "sortBy": "Trier par",
+    "sortNewest": "Plus récent",
+    "sortOldest": "Plus ancien",
+    "sortPriceHigh": "Prix décroissant",
+    "sortPriceLow": "Prix croissant",
+    "sortName": "Nom de propriété",
+    "searchLabel": "Rechercher",
     "datesAndPrice": "Dates et Prix",
     "updateSuccess": "Réservation mise à jour avec succès !",
     "updateError": "Erreur lors de la mise à jour de la réservation",
@@ -192,10 +221,14 @@
   },
   "invoices": {
     "title": "Factures",
+    "subtitle": "Gérez toutes vos factures ici.",
     "createTitle": "Créer une Facture",
     "editTitle": "Modifier la Facture",
     "showTitle": "Détails de la Facture",
     "addNew": "Créer une nouvelle facture",
+    "filterSearchLabel": "Rechercher",
+    "number": "Facture",
+    "property": "Propriété",
     "invoiceNumber": "Numéro de facture",
     "invoiceNumberLabel": "Numéro de facture",
     "bookingLabel": "Réservation",

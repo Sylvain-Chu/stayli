@@ -1,97 +1,116 @@
 {{> header }}
 {{> sidebar }}
 
-<div class="page-header">
-  <h1>{{t 'properties.title'}}</h1>
-  <div class="page-actions">
-    <form method="GET" action="/properties" style="display: flex; gap: var(--space-sm); align-items: center;">
-      <input 
-        type="search" 
-        name="q" 
-        placeholder="{{t 'properties.searchPlaceholder'}}" 
-        value="{{q}}" 
-        class="search-input"
-        style="width: 250px; padding: var(--space-sm) var(--space-md); border: 1px solid var(--border-medium); border-radius: var(--radius-md); font-size: var(--font-size-sm);" 
-      />
-      <button type="submit" class="btn btn-secondary">
-        <span data-feather="search"></span>
-      </button>
-      {{#if q}}<a href="/properties" class="btn btn-ghost">{{t 'common.clear'}}</a>{{/if}}
-    </form>
+
+<div class="page-header-modern">
+  <div class="page-header-titles">
+    <h1>{{t 'properties.title'}}</h1>
+    <p class="page-subtitle">{{t 'properties.subtitle'}}</p>
+  </div>
+  <div class="page-header-actions">
     <a href="/properties/create" class="btn btn-primary">
-      <span data-feather="home"></span> {{t 'properties.addNew'}}
+      <i data-feather="home"></i>
+      {{t 'properties.addNew'}}
     </a>
   </div>
 </div>
 
-<div class="properties-list">
-  {{#each properties}}
-    <div class="property-card" onclick="window.location='/properties/{{this.id}}'" style="cursor:pointer;">
-      <div class="property-info">
-        <h3 class="property-name">
-          <span data-feather="home"></span>
-          {{this.name}}
-        </h3>
-        {{#if this.address}}
-          <span class="property-address">
-            <span data-feather="map-pin"></span> {{this.address}}
-          </span>
-        {{/if}}
-        {{#if this.description}}
-          <span class="property-description">
-            <span data-feather="file-text"></span> {{substr this.description 0 100}}{{#if (gt (indexOf this.description "") 100)}}...{{/if}}
-          </span>
-        {{/if}}
-      </div>
-      <div class="property-actions" onclick="event.stopPropagation();">
-        <a href="/properties/{{this.id}}" class="btn btn-icon btn-ghost" title="{{t 'common.view'}}"><span data-feather="eye"></span></a>
-        <a href="/properties/{{this.id}}/edit" class="btn btn-icon btn-secondary" title="{{t 'common.edit'}}"><span data-feather="edit-2"></span></a>
-        <button data-delete data-id="{{this.id}}" data-base="/properties" data-confirm="{{t 'properties.confirmDelete'}}" class="btn btn-icon btn-danger" title="{{t 'common.delete'}}"><span data-feather="trash-2"></span></button>
-      </div>
+<div class="filters-section table-filters-modern properties-filters">
+  <form method="GET" action="/properties" class="filters-form-table-modern">
+    <div class="filter-group">
+      <label for="search-input" class="filter-label">{{t 'common.search' 'Search'}}</label>
+      <input 
+        type="search" 
+        id="search-input"
+        name="q" 
+        placeholder="{{t 'properties.searchPlaceholder'}}" 
+        value="{{q}}"
+        class="search-input-modern"
+        autocomplete="off"
+      />
     </div>
-  {{else}}
-    <div class="empty-state">
-      <span class="empty-icon" data-feather="home"></span>
-      <p>{{t 'properties.noProperties'}}</p>
+    <div class="filter-group filter-group-btn">
+      <label class="filter-label">&nbsp;</label>
+      <button type="submit" class="btn btn-modern-filter" title="{{t 'common.filter'}}">
+        <i data-feather="search"></i>
+      </button>
     </div>
-  {{/each}}
+  </form>
 </div>
 
-{{#if pagination}}
-  {{#if pagination.totalPages}}
-    {{#if (gt pagination.totalPages 1)}}
-      <div class="pagination">
-        <div class="pagination-info">
-          {{t 'common.showing'}} {{properties.length}} {{t 'common.of'}} {{pagination.total}} {{t 'properties.properties'}}
-        </div>
-        <div class="pagination-controls">
-          {{#if pagination.hasPrev}}
-            <a href="/properties?page={{sub pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
-              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
-            </a>
-          {{else}}
-            <button class="btn btn-secondary" disabled>
-              <span data-feather="chevron-left"></span> {{t 'common.previous'}}
-            </button>
-          {{/if}}
-          
-          <span class="pagination-pages">
-            {{t 'common.page'}} {{pagination.currentPage}} {{t 'common.of'}} {{pagination.totalPages}}
-          </span>
-          
-          {{#if pagination.hasNext}}
-            <a href="/properties?page={{add pagination.currentPage 1}}{{#if q}}&q={{q}}{{/if}}" class="btn btn-secondary">
-              {{t 'common.next'}} <span data-feather="chevron-right"></span>
-            </a>
-          {{else}}
-            <button class="btn btn-secondary" disabled>
-              {{t 'common.next'}} <span data-feather="chevron-right"></span>
-            </button>
-          {{/if}}
-        </div>
-      </div>
+<table class="properties-table">
+  <thead>
+    <tr>
+      <th>{{t 'properties.name' 'Name'}}</th>
+      <th>{{t 'properties.address' 'Address'}}</th>
+      <th>{{t 'properties.bookings' 'Bookings'}}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each properties}}
+      <tr>
+        <td class="property-cell">
+          <div class="property-name"><a href="/properties/{{this.id}}">{{this.name}}</a></div>
+        </td>
+        <td class="property-address">{{#if this.address}}{{this.address}}{{else}}-{{/if}}</td>
+        <td class="property-bookings">{{#if this._count}}{{this._count.bookings}}{{else}}0{{/if}}</td>
+        <td class="actions-cell">
+          <a href="/properties/{{this.id}}" class="table-action" title="{{t 'common.view'}}"><i data-feather="eye"></i></a>
+          <a href="/properties/{{this.id}}/edit" class="table-action" title="{{t 'common.edit'}}"><i data-feather="edit-2"></i></a>
+          <button data-delete data-id="{{this.id}}" data-base="/properties" data-confirm="{{t 'properties.confirmDelete'}}" class="table-action btn-icon btn-danger" title="{{t 'common.delete'}}"><i data-feather="trash-2"></i></button>
+        </td>
+      </tr>
+    {{else}}
+      <tr><td colspan="4" class="empty-table">{{t 'properties.noProperties'}}</td></tr>
+    {{/each}}
+  </tbody>
+</table>
+
+
+<div class="table-pagination">
+  <div class="pagination-info-row">
+    <span>
+      {{t 'common.showing'}}
+      {{#if totalCount}}
+        {{math (math (math page 1 '-') perPage '*') 1 '+'}}-{{math (math (math page perPage '*') totalCount 'min') 0 'max'}}
+      {{else}}
+        0
+      {{/if}}
+      {{t 'common.of'}} {{totalCount}}
+    </span>
+    <form method="GET" action="/properties" class="pagination-perpage-form">
+      <input type="hidden" name="q" value="{{q}}" />
+      <input type="hidden" name="page" value="{{page}}" />
+      <select id="perPage-select" name="perPage" class="filter-select-modern" title="{{t 'properties.perPage'}}" onchange="this.form.submit()">
+        <option value="5" {{#if (eq perPage 5)}}selected{{/if}}>5 / page</option>
+        <option value="10" {{#if (eq perPage 10)}}selected{{/if}}>10 / page</option>
+        <option value="20" {{#if (eq perPage 20)}}selected{{/if}}>20 / page</option>
+        <option value="50" {{#if (eq perPage 50)}}selected{{/if}}>50 / page</option>
+      </select>
+    </form>
+  </div>
+  <div class="pagination-controls">
+    {{#if (gt page 1)}}
+      <a href="?{{queryString q=q page=(math page 1 '-') perPage=perPage}}" class="pagination-btn">Previous</a>
+    {{else}}
+      <span class="pagination-btn disabled">Previous</span>
     {{/if}}
-  {{/if}}
-{{/if}}
+
+    {{#each (paginationPages page totalPages)}}
+      {{#if (eq this ../page)}}
+        <span class="pagination-btn active">{{this}}</span>
+      {{else}}
+        <a href="?{{queryString q=../q page=this perPage=../perPage}}" class="pagination-btn">{{this}}</a>
+      {{/if}}
+    {{/each}}
+
+    {{#if (lt page totalPages)}}
+      <a href="?{{queryString q=q page=(math page 1 '+') perPage=perPage}}" class="pagination-btn">Next</a>
+    {{else}}
+      <span class="pagination-btn disabled">Next</span>
+    {{/if}}
+  </div>
+</div>
 
 {{> footer }}
