@@ -2,7 +2,10 @@ import { BadRequestException, ConflictException, Injectable } from '@nestjs/comm
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Booking, Client, Property, Prisma, Invoice, BookingStatus } from '@prisma/client';
 import { UpdateBookingDto } from './dto/update-booking.dto';
+import { CreateBookingDto } from './dto/create-booking.dto';
 import { paginatePrisma } from '../common/prisma-pagination.util';
+import { BookingPriceCalculator } from './booking-price.calculator';
+import { SettingsService } from '../settings/settings.service';
 
 export type BookingWithRelations = Booking & {
   property: Property;
@@ -20,7 +23,11 @@ export type SortOption = 'newest' | 'oldest' | 'price-high' | 'price-low' | 'nam
 
 @Injectable()
 export class BookingsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private priceCalculator: BookingPriceCalculator,
+    private settingsService: SettingsService,
+  ) {}
 
   async findAll(
     {
@@ -104,13 +111,7 @@ export class BookingsService {
     });
   }
 
-  async create(data: {
-    startDate: Date;
-    endDate: Date;
-    totalPrice: number;
-    propertyId: string;
-    clientId: string;
-  }): Promise<Booking> {
+  async create(data: CreateBookingDto): Promise<Booking> {
     // Basic validations
     if (!data.startDate || !data.endDate) {
       throw new BadRequestException('Start and end dates are required');
@@ -123,9 +124,6 @@ export class BookingsService {
     }
     if (data.endDate <= data.startDate) {
       throw new BadRequestException('End date must be after start date');
-    }
-    if (data.totalPrice == null || data.totalPrice <= 0) {
-      throw new BadRequestException('Total price must be greater than 0');
     }
 
     // Prevent overlapping bookings on the same property
@@ -141,7 +139,56 @@ export class BookingsService {
       throw new ConflictException('Overlapping booking exists');
     }
 
-    return this.prisma.booking.create({ data });
+    // Get settings for price calculation
+    const settings = await this.settingsService.getSettings();
+
+    // Calculate all pricing components
+    const priceBreakdown = this.priceCalculator.calculate({
+      startDate: data.startDate,
+      endDate: data.endDate,
+      baseRateLowSeason: settings.lowSeasonRate,
+      baseRateHighSeason: settings.highSeasonRate,
+      lowSeasonMonths: settings.lowSeasonMonths,
+      hasLinens: data.hasLinens === true,
+      linensPrice: data.linensPrice ?? settings.linensOptionPrice,
+      hasCleaning: data.hasCleaning === true,
+      cleaningPrice: data.cleaningPrice ?? settings.cleaningOptionPrice,
+      discount: data.discount ?? 0,
+      discountType: (data.discountType as 'amount' | 'percent' | null) ?? 'amount',
+      hasCancellationInsurance: data.hasCancellationInsurance === true,
+      insuranceRate: settings.cancellationInsurancePercentage,
+      adults: data.adults ?? 1,
+      children: data.children ?? 0,
+      touristTaxRate: settings.touristTaxRatePerPersonPerDay,
+    });
+
+    // Create booking with calculated prices
+    return this.prisma.booking.create({
+      data: {
+        startDate: data.startDate,
+        endDate: data.endDate,
+        propertyId: data.propertyId,
+        clientId: data.clientId,
+        adults: data.adults ?? 1,
+        children: data.children ?? 0,
+        specialRequests: data.specialRequests !== undefined ? data.specialRequests : null,
+        // Store pricing details
+        basePrice: priceBreakdown.basePrice,
+        hasLinens: data.hasLinens === true,
+        linensPrice: data.linensPrice ?? settings.linensOptionPrice,
+        hasCleaning: data.hasCleaning === true,
+        cleaningPrice: data.cleaningPrice ?? settings.cleaningOptionPrice,
+        hasCancellationInsurance: data.hasCancellationInsurance === true,
+        insuranceFee: priceBreakdown.insuranceFee,
+        discount: data.discount ?? 0,
+        discountType: data.discountType ?? null,
+        // Calculated totals
+        taxes: priceBreakdown.touristTax,
+        totalPrice: priceBreakdown.totalPrice,
+        // Keep cleaningFee for backward compatibility
+        cleaningFee: data.hasCleaning ? (data.cleaningPrice ?? settings.cleaningOptionPrice) : 0,
+      },
+    });
   }
 
   async delete(id: string): Promise<Booking> {
