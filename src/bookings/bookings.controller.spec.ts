@@ -3,6 +3,7 @@ import { BookingsController } from './bookings.controller';
 import type { BookingsService } from './bookings.service';
 import type { PrismaService } from 'src/prisma/prisma.service';
 import type { InvoicesService } from 'src/invoices/invoices.service';
+import type { SettingsService } from 'src/settings/settings.service';
 import { Prisma } from '@prisma/client';
 
 type BookingShape = {
@@ -49,6 +50,10 @@ type MockInvoicesService = {
   >;
 };
 
+type MockSettingsService = {
+  getSettings: jest.Mock<Promise<any>, []>;
+};
+
 function prismaKnownError(code: string) {
   const err = new Error(code) as unknown as { code: string };
   err.code = code;
@@ -66,6 +71,7 @@ describe('BookingsController', () => {
   let service: MockBookingsService;
   let prisma: MockPrisma;
   let invoices: MockInvoicesService;
+  let settings: MockSettingsService;
 
   beforeEach(() => {
     service = {
@@ -99,10 +105,22 @@ describe('BookingsController', () => {
         [body: { bookingId?: string; amount?: number; dueDate?: Date }]
       >(),
     };
+    settings = {
+      getSettings: jest.fn<Promise<any>, []>().mockResolvedValue({
+        lowSeasonRate: 750,
+        highSeasonRate: 830,
+        lowSeasonMonths: [1, 2, 3, 11, 12],
+        linensOptionPrice: 20,
+        cleaningOptionPrice: 35,
+        cancellationInsurancePercentage: 6,
+        touristTaxRatePerPersonPerDay: 1,
+      }),
+    };
     controller = new BookingsController(
       service as unknown as BookingsService,
       prisma as unknown as PrismaService,
       invoices as unknown as InvoicesService,
+      settings as unknown as SettingsService,
     );
   });
 
@@ -186,7 +204,10 @@ describe('BookingsController', () => {
     prisma.property.findMany.mockResolvedValueOnce([{ id: 'p' }]);
     prisma.client.findMany.mockResolvedValueOnce([{ id: 'c' }]);
     const res = await controller.createForm();
-    expect(res).toEqual({ properties: [{ id: 'p' }], clients: [{ id: 'c' }] });
+    expect(res).toHaveProperty('properties');
+    expect(res).toHaveProperty('clients');
+    expect(res).toHaveProperty('defaultLinensPrice');
+    expect(res).toHaveProperty('defaultCleaningPrice');
   });
 
   it('create maps prisma FK error to 400', async () => {

@@ -97,7 +97,10 @@
   margin-bottom: var(--space-xl);
 }
 
-.form-group:last-child {
+/* Ne retirer le margin-bottom que pour les form-group qui sont derniers enfants directs,
+   pas ceux dans des grids ou flex containers */
+.form-card-body > .form-group:last-child,
+.form-card-body > div > .form-group:last-child:only-child {
   margin-bottom: 0;
 }
 
