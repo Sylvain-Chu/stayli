@@ -3,27 +3,45 @@
    =================================== */
 
 /* === GLOBAL GRID LAYOUT === */
-.booking-grid-layout {
+.booking-create-container {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  max-width: 1200px;
+  gap: 2rem;
+  max-width: 1400px;
   margin: 0 auto;
-  padding-bottom: 40px;
-  align-items: start; /* Permet aux colonnes d'avoir leur hauteur naturelle */
+  padding-bottom: 3rem;
+  /* IMPORTANT: On laisse 'stretch' par défaut. 
+     Si on met align-items: start, la colonne de droite rétrécit 
+     et le sticky n'a plus d'espace pour bouger. */
 }
 
 @media (min-width: 1024px) {
-  .booking-grid-layout {
+  .booking-create-container {
     grid-template-columns: 2fr 1fr; /* 2/3 formulaire, 1/3 résumé */
   }
 }
 
+/* === COLONNE GAUCHE (Formulaire) === */
+.booking-form-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 0; /* Empêche le débordement flex */
+}
+
+/* === COLONNE DROITE (Sticky Wrapper) === */
+.booking-summary-column {
+  /* Cette colonne doit faire toute la hauteur pour que la carte puisse glisser dedans */
+  height: 100%;
+  min-width: 0;
+}
+
 /* === HEADER DE PAGE === */
 .page-header-sticky {
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .header-content h1 {
   margin: 0;
@@ -34,11 +52,10 @@
 .back-link {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0.5rem;
   color: #6b7280;
   text-decoration: none;
   font-size: 0.9rem;
-  margin-bottom: 8px;
   font-weight: 500;
   transition: color 0.2s;
 }
@@ -50,155 +67,175 @@
   height: 16px;
 }
 
-/* === CARTES ET SECTIONS (Colonne Gauche) === */
-.form-section {
-  background: white;
-  border-radius: 16px;
+/* === CARTES FORMULAIRE === */
+.form-card {
+  background: #ffffff;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
-  margin-bottom: 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  overflow: hidden; /* Nécessaire pour les coins arrondis du header */
 }
 
-.section-header-row {
+.form-card-header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 24px;
-  border-bottom: 1px solid #f3f4f6;
-  background: #ffffff;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
-.section-header-row i {
-  color: #f97316; /* Orange brand */
+
+.form-card-header i {
   width: 20px;
   height: 20px;
+  color: #f34d21; /* Ta couleur brand */
 }
-.section-header-row h3 {
+
+.form-card-header h3 {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #111827;
 }
 
-.section-body {
-  padding: 24px;
+.form-card-body {
+  padding: 1.5rem;
 }
 
-/* === FORM ELEMENTS === */
-.row-2 {
+/* === GRID INPUTS === */
+.form-row-2col {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 1.25rem;
 }
 @media (min-width: 640px) {
-  .row-2 {
+  .form-row-2col {
     grid-template-columns: 1fr 1fr;
   }
 }
 
-.field-group {
+.form-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 0.5rem;
 }
-.field-group label {
+.form-group label {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
 }
 
-.select-wrapper {
-  position: relative;
-}
-
-/* Inputs & Selects Globaux */
+/* Inputs Standardisés */
 input[type='text'],
 input[type='number'],
 input[type='date'],
+input[type='email'],
+input[type='tel'],
 select,
 textarea {
   width: 100%;
-  padding: 12px 16px;
+  padding: 0.625rem 0.875rem;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  font-size: 0.95rem;
   background: #fff;
   color: #111827;
-  transition: all 0.2s;
-  box-sizing: border-box; /* Important pour les padding */
+  font-size: 0.95rem;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+  box-sizing: border-box; /* TRES IMPORTANT */
 }
+
 input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  border-color: #f34d21;
+  box-shadow: 0 0 0 3px rgba(243, 77, 33, 0.1);
 }
 
-/* === CORRECTION REMISE (Inputs séparés) === */
+/* === MODIF: REMISE (Inputs séparés avec gap) === */
 .discount-wrapper label {
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 500;
   color: #374151;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
   display: block;
 }
 
-.input-group-merged {
+.input-group-separated {
   display: flex;
-  gap: 12px; /* ESPACE ENTRE LES CHAMPS */
-  border: none;
-  background: transparent;
+  gap: 1rem; /* ESPACE ENTRE LES DEUX INPUTS */
+  align-items: center;
 }
 
-.merged-select {
-  width: 150px; /* Largeur fixe pour le type */
-  flex-shrink: 0;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  background-color: #fff;
+.discount-select {
+  flex: 0 0 160px; /* Largeur fixe pour le type */
 }
 
-.merged-input {
-  flex: 1; /* Prend le reste de la place */
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+.discount-input-container {
+  flex: 1; /* Prend le reste */
+  position: relative;
+}
+
+/* Suffixe € ou % à l'intérieur de l'input */
+.discount-input-container input {
+  padding-right: 2rem;
   text-align: right;
 }
 
+.input-suffix {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6b7280;
+  font-weight: 500;
+  pointer-events: none;
+}
+
 /* === STEPPERS COMPACTS === */
-.stepper-line {
+.stepper-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0; /* Géré par le padding des rows */
+}
+
+.stepper-row-modern {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
+  padding: 0.75rem 0;
 }
+
 .stepper-label {
   display: flex;
   flex-direction: column;
 }
-.main-label {
+.label-title {
   font-weight: 600;
   color: #111827;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
-.sub-label {
+.label-subtitle {
   font-size: 0.85rem;
   color: #6b7280;
 }
-.stepper-actions {
+
+.stepper-control-modern {
   display: flex;
   align-items: center;
-  gap: 12px;
-  background: #f9fafb;
-  padding: 4px;
-  border-radius: 8px;
+  gap: 0.5rem;
+  background: #f3f4f6;
+  padding: 0.25rem;
+  border-radius: 999px; /* Pill shape */
   border: 1px solid #e5e7eb;
 }
-.stepper-btn {
+
+.btn-circle {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: 50%;
   border: 1px solid #e5e7eb;
   background: white;
   display: flex;
@@ -210,175 +247,146 @@ textarea:focus {
   transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
-.stepper-btn:hover {
+.btn-circle:hover {
   border-color: #d1d5db;
   color: #111827;
 }
-.stepper-btn:active {
-  transform: translateY(1px);
-}
-.stepper-btn i {
-  width: 16px;
-  height: 16px;
-}
-.stepper-actions input {
+
+.stepper-control-modern input {
   width: 40px;
   text-align: center;
   border: none;
-  font-weight: 700;
+  background: transparent;
+  font-weight: 600;
   font-size: 1rem;
   padding: 0;
-  background: transparent;
-  color: #111827;
+  margin: 0;
 }
-/* Enlever les flèches du input number */
-.stepper-actions input::-webkit-outer-spin-button,
-.stepper-actions input::-webkit-inner-spin-button {
+/* Cacher flèches input number */
+.stepper-control-modern input::-webkit-outer-spin-button,
+.stepper-control-modern input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
 /* === SWITCHES & OPTIONS === */
-.option-line {
+.option-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 48px;
-  padding: 8px 0;
+  padding: 0.75rem 0;
 }
-.switch-container {
+
+.option-toggle {
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 16px;
+  gap: 1rem;
   flex: 1;
 }
-.switch-container input {
+.option-toggle input {
   display: none;
 }
+
 .slider {
-  width: 48px;
-  height: 26px;
+  width: 44px;
+  height: 24px;
   background-color: #e5e7eb;
-  border-radius: 26px;
+  border-radius: 24px;
   position: relative;
-  transition: 0.3s;
+  transition: 0.2s;
   flex-shrink: 0;
   border: 1px solid #d1d5db;
 }
 .slider::before {
   content: '';
   position: absolute;
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   left: 2px;
   bottom: 2px;
   background-color: white;
   border-radius: 50%;
-  transition: 0.3s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: 0.2s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-input:checked + .slider {
-  background-color: #10b981;
+.option-toggle input:checked + .slider {
+  background-color: #10b981; /* Green success */
   border-color: #10b981;
 }
-input:checked + .slider::before {
-  transform: translateX(22px);
+.option-toggle input:checked + .slider::before {
+  transform: translateX(20px);
 }
+
 .switch-label {
-  font-weight: 600;
+  font-weight: 500;
   color: #111827;
-  font-size: 1rem;
-}
-.label-group {
-  display: flex;
-  flex-direction: column;
-}
-.hint-text {
-  color: #6b7280;
-  font-size: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .price-input-wrapper {
   position: relative;
-  width: 120px;
+  width: 100px;
 }
 .price-input-wrapper input {
-  padding-right: 32px;
   text-align: right;
-  font-weight: 600;
+  padding-right: 1.75rem;
+  font-weight: 500;
 }
 .price-input-wrapper input:disabled {
   background-color: #f9fafb;
   color: #9ca3af;
-  border-color: #e5e7eb;
 }
 .currency-symbol {
   position: absolute;
-  right: 12px;
+  right: 0.75rem;
   top: 50%;
   transform: translateY(-50%);
   color: #6b7280;
   font-size: 0.9rem;
-  font-weight: 500;
-  pointer-events: none;
 }
+
 .separator {
   height: 1px;
   background: #f3f4f6;
-  margin: 16px 0;
-}
-.mt-4 {
-  margin-top: 24px;
+  margin: 0.5rem 0;
 }
 
-/* === CARTE RÉCAPITULATIF (STICKY FIX) === */
-.right-column {
-  /* IMPORTANT : Cette div doit faire 100% de la hauteur du grid pour que le sticky fonctionne */
-  height: 100%;
-}
-
+/* === SUMMARY CARD (LE FIX STICKY) === */
 .summary-card {
-  position: -webkit-sticky; /* Safari */
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+
+  /* STICKY RULES */
+  position: -webkit-sticky;
   position: sticky;
-  top: 24px; /* Colle à 24px du haut */
+  top: 20px; /* Espace depuis le haut du .content */
   z-index: 10;
 
-  /* DESIGN */
-  background: white;
-  border-radius: 16px;
-  border: 1px solid #e5e7eb;
-  box-shadow:
-    0 10px 15px -3px rgba(0, 0, 0, 0.05),
-    0 4px 6px -2px rgba(0, 0, 0, 0.025);
-
-  /* !!! CORRECTION STICKY: JAMAIS de overflow:hidden sur l'élément sticky lui-même !!! */
-  /* J'ai retiré overflow: hidden ici */
+  /* Pas d'overflow: hidden ici, sinon le sticky casse parfois */
 }
 
-/* On applique les arrondis sur le header et footer pour compenser l'absence d'overflow:hidden sur le parent */
 .summary-header {
-  padding: 20px 24px;
-  border-bottom: 1px solid #f3f4f6;
-  background: #ffffff;
-  border-radius: 16px 16px 0 0;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px dashed #e5e7eb;
+  background: #fff;
+  border-radius: 12px 12px 0 0;
 }
 .summary-header h3 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: #111827;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .summary-content {
-  padding: 24px;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  /* Scroll interne si l'écran est petit */
-  max-height: calc(100vh - 200px);
-  overflow-y: auto;
-  background: white;
+  gap: 1rem;
+  background: #fff;
 }
 
 .line-item {
@@ -395,12 +403,10 @@ input:checked + .slider::before {
 .line-sub {
   font-size: 0.8rem;
   color: #9ca3af;
-  margin-top: 2px;
 }
 .line-value {
   font-weight: 600;
   color: #111827;
-  font-size: 1rem;
 }
 .text-success {
   color: #059669;
@@ -412,110 +418,97 @@ input:checked + .slider::before {
 .summary-divider {
   height: 1px;
   background: #e5e7eb;
-  margin: 8px 0;
+  margin: 0.5rem 0;
 }
 
 .summary-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 8px;
-  padding-top: 20px;
+  margin-top: 0.5rem;
+  padding-top: 1rem;
   border-top: 2px dashed #e5e7eb;
   font-weight: 800;
   color: #111827;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
 }
 .total-value {
-  font-size: 1.5rem;
-  color: #f34d21; /* Orange Brand */
+  font-size: 1.4rem;
+  color: #f34d21;
 }
 
 .summary-footer {
-  padding: 24px;
+  padding: 1.5rem;
   background: #f9fafb;
   border-top: 1px solid #f3f4f6;
-  border-radius: 0 0 16px 16px;
+  border-radius: 0 0 12px 12px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .btn-primary-block {
   width: 100%;
-  padding: 14px;
-  background: linear-gradient(135deg, #f34d21 0%, #ea580c 100%);
+  padding: 0.875rem;
+  background: #f34d21;
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  transition:
-    transform 0.1s,
-    box-shadow 0.2s;
-  box-shadow: 0 4px 6px rgba(243, 77, 33, 0.2);
+  gap: 0.5rem;
+  transition: background 0.2s;
 }
 .btn-primary-block:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 12px rgba(243, 77, 33, 0.3);
-}
-.btn-primary-block:active {
-  transform: translateY(0);
+  background: #d93d15;
 }
 
 .btn-secondary-block {
   width: 100%;
-  padding: 12px;
+  padding: 0.75rem;
   background: white;
   color: #6b7280;
   border: 1px solid #d1d5db;
-  border-radius: 12px;
+  border-radius: 8px;
   text-align: center;
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 500;
   transition: all 0.2s;
 }
 .btn-secondary-block:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
+  background: #f3f4f6;
+  color: #111827;
 }
 
 /* Badge Nuits */
 .nights-badge {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  padding: 8px 16px;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
   background: #eff6ff;
   color: #1d4ed8;
-  border-radius: 99px;
-  font-size: 0.9rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
   font-weight: 600;
-  border: 1px solid #dbeafe;
 }
 .nights-badge i {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Responsive Mobile */
 @media (max-width: 1023px) {
-  .booking-grid-layout {
+  .booking-create-container {
     grid-template-columns: 1fr;
   }
   .summary-card {
     position: static;
-    z-index: 1;
-  }
-  .summary-content {
-    max-height: none;
   }
 }
