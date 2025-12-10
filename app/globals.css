@@ -1,0 +1,151 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+/* New premium design system - Forest green & warm neutrals */
+:root {
+  /* Background colors - warm off-white */
+  --background: #faf9f7;
+  --foreground: #1a1a1a;
+
+  /* Card/Container - pure white */
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+
+  --popover: #ffffff;
+  --popover-foreground: #1a1a1a;
+
+  /* Primary - Forest Green */
+  --primary: #2d5a47;
+  --primary-foreground: #ffffff;
+
+  /* Secondary - Warm gray */
+  --secondary: #f5f3f0;
+  --secondary-foreground: #4a4a4a;
+
+  /* Muted - Light warm */
+  --muted: #f0eeeb;
+  --muted-foreground: #737373;
+
+  /* Accent - Light sage */
+  --accent: #e8f0ec;
+  --accent-foreground: #2d5a47;
+
+  /* Destructive */
+  --destructive: #c53030;
+  --destructive-foreground: #ffffff;
+
+  /* Borders - subtle warm gray */
+  --border: #e8e6e3;
+  --input: #e8e6e3;
+  --ring: #2d5a47;
+
+  /* Sidebar - Deep forest */
+  --sidebar: #1e3a2f;
+  --sidebar-foreground: #f5f3f0;
+  --sidebar-primary: #4a9e7a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #2d4a3f;
+  --sidebar-accent-foreground: #f5f3f0;
+  --sidebar-border: #2d4a3f;
+  --sidebar-ring: #4a9e7a;
+  --sidebar-muted: #9ca89f;
+
+  /* Chart colors - natural palette */
+  --chart-1: #2d5a47;
+  --chart-2: #4a9e7a;
+  --chart-3: #d4a853;
+  --chart-4: #c53030;
+  --chart-5: #7c9885;
+
+  /* Status colors */
+  --status-confirmed: #2d5a47;
+  --status-pending: #d4a853;
+  --status-cancelled: #c53030;
+  --status-completed: #4a9e7a;
+
+  --radius: 0.625rem;
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Geist', 'Geist Fallback', sans-serif;
+  --font-mono: 'Geist Mono', 'Geist Mono Fallback', monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Custom date input styling */
+  input[type='date'] {
+    font-weight: 500;
+    position: relative;
+    color: #1a1a1a;
+    padding: 0.5rem 0.75rem;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+    width: 1.25rem;
+    height: 1.25rem;
+    filter: invert(0.4);
+  }
+
+  input[type='date']:hover::-webkit-calendar-picker-indicator {
+    opacity: 1;
+    filter: invert(0.2);
+    transform: scale(1.1);
+  }
+
+  input[type='date']:focus::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+  }
+
+  /* Style the placeholder/empty state */
+  input[type='date']:not(:focus):invalid {
+    color: #737373;
+  }
+}

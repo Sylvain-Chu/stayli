@@ -1,314 +1,363 @@
-import { PrismaClient } from '@prisma/client';
-import { existsSync } from 'fs';
-import path from 'path';
-import * as dotenv from 'dotenv';
-import bcrypt from 'bcrypt';
-const bcryptHash = bcrypt.hash;
+import 'dotenv/config'
+import { PrismaClient } from '@prisma/client'
 
-// Load .env.local if present, else .env so DATABASE_URL is available when running via ts-node
-const localEnv = path.join(process.cwd(), '.env.local');
-if (existsSync(localEnv)) {
-  dotenv.config({ path: localEnv });
-} else {
-  dotenv.config();
-}
-
-// Ensure Prisma uses a reachable DATABASE_URL when running locally with Docker DB
-(() => {
-  const { POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_DB, DB_HOST, DB_PORT } = process.env;
-  const hasParts = POSTGRES_USER && POSTGRES_PASSWORD && POSTGRES_DB;
-
-  if (!process.env.DATABASE_URL && hasParts) {
-    const host = DB_HOST || 'localhost';
-    const port = DB_PORT || '5432';
-    const user = encodeURIComponent(POSTGRES_USER ?? 'postgres');
-    const pass = encodeURIComponent(POSTGRES_PASSWORD ?? 'postgres');
-    const db = POSTGRES_DB ?? 'postgres';
-    process.env.DATABASE_URL = `postgresql://${user}:${pass}@${host}:${port}/${db}`;
-  } else if (process.env.DATABASE_URL) {
-    try {
-      const url = new URL(process.env.DATABASE_URL);
-      if (url.hostname === 'db') {
-        url.hostname = DB_HOST || 'localhost';
-        if (DB_PORT) url.port = DB_PORT;
-        // Optionally remap credentials if provided
-        if (POSTGRES_USER) url.username = POSTGRES_USER;
-        if (POSTGRES_PASSWORD) url.password = POSTGRES_PASSWORD;
-        process.env.DATABASE_URL = url.toString();
-      }
-    } catch {
-      // ignore parse errors; leave DATABASE_URL as-is
-    }
-  }
-})();
-
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
 async function main() {
-  // Seed admin user if credentials provided
-  const { ADMIN_EMAIL, ADMIN_PASSWORD } = process.env;
-  if (ADMIN_EMAIL && ADMIN_PASSWORD) {
-    console.log('Seeding admin user...');
-    const passwordHash: string = await bcryptHash(ADMIN_PASSWORD, 12);
-    // Narrowly type the prisma.user model without using any
-    type Role = 'ADMIN' | 'USER';
-    type UserModel = {
-      upsert: (args: {
-        where: { email: string };
-        update: { passwordHash: string; role: Role; name?: string };
-        create: { email: string; passwordHash: string; role: Role; name?: string };
-      }) => Promise<unknown>;
-    };
-    const userModel = (prisma as unknown as { user: UserModel }).user;
-    await userModel.upsert({
-      where: { email: ADMIN_EMAIL },
-      update: { passwordHash, role: 'ADMIN', name: 'Admin' },
-      create: { email: ADMIN_EMAIL, passwordHash, role: 'ADMIN', name: 'Admin' },
-    });
-  }
-  console.log('Seeding properties (upsert)...');
-  const propertiesData = [
-    { name: 'Seaside Villa', address: '1 Ocean Dr, Nice', description: 'Sea view' },
-    { name: 'Mountain Cabin', address: '12 High Peak Rd', description: 'Cozy cabin' },
-    { name: 'City Flat', address: '45 Center St', description: 'Close to amenities' },
-  ];
+  console.log('Début du seeding...')
 
-  for (const p of propertiesData) {
-    const existing = await prisma.property.findFirst({ where: { name: p.name } });
-    if (existing) {
-      await prisma.property.update({
-        where: { id: existing.id },
-        data: { address: p.address, description: p.description },
-      });
-    } else {
-      await prisma.property.create({ data: p });
-    }
-  }
+  // Nettoyer les données existantes
+  await prisma.invoice.deleteMany()
+  await prisma.booking.deleteMany()
+  await prisma.client.deleteMany()
+  await prisma.property.deleteMany()
 
-  console.log('Seeding clients (upsert)...');
-  const clientsData = [
-    { firstName: 'John', lastName: 'Doe', email: 'john.doe@example.com', phone: '123-456-7890' },
-    {
-      firstName: 'Jane',
-      lastName: 'Smith',
-      email: 'jane.smith@example.com',
-      phone: '987-654-3210',
-    },
-  ];
+  console.log('Données existantes supprimées')
 
-  for (const c of clientsData) {
-    await prisma.client.upsert({
-      where: { email: c.email },
-      update: { firstName: c.firstName, lastName: c.lastName, phone: c.phone },
-      create: c,
-    });
-  }
-
-  console.log('Seeding sample bookings...');
-  // Clean up legacy non-UUID seeded IDs from previous runs
-  const legacyBookingIds = ['booking-seaside-john', 'booking-cabin-jane'];
-  await prisma.invoice.deleteMany({ where: { bookingId: { in: legacyBookingIds } } });
-  await prisma.booking.deleteMany({ where: { id: { in: legacyBookingIds } } });
-  const seaside = await prisma.property.findFirst({ where: { name: 'Seaside Villa' } });
-  const cabin = await prisma.property.findFirst({ where: { name: 'Mountain Cabin' } });
-  const john = await prisma.client.findUnique({ where: { email: 'john.doe@example.com' } });
-  const jane = await prisma.client.findUnique({ where: { email: 'jane.smith@example.com' } });
-  // Helpers to compute dates relative to the current week
-  function startOfWeek(date = new Date()) {
-    const d = new Date(date);
-    d.setHours(0, 0, 0, 0);
-    // getDay(): 0 (Sun) .. 6 (Sat). We want Monday as start of week.
-    const day = d.getDay();
-    const diffFromMonday = (day + 6) % 7; // 0 if Monday
-    d.setDate(d.getDate() - diffFromMonday);
-    return d;
-  }
-
-  function addDays(base: Date, days: number) {
-    const d = new Date(base);
-    d.setDate(d.getDate() + days);
-    return d;
-  }
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const weekStart = startOfWeek(today); // Monday of the current week
-
-  if (seaside && john) {
-    await prisma.booking.upsert({
-      where: { id: '11111111-1111-4111-8111-111111111111' },
-      update: {},
-      create: {
-        id: '11111111-1111-4111-8111-111111111111',
-        // Current stay spanning the start of the current week
-        startDate: addDays(weekStart, 0),
-        endDate: addDays(weekStart, 4),
-        totalPrice: 1200,
-        propertyId: seaside.id,
-        clientId: john.id,
+  // Créer les propriétés
+  const properties = await Promise.all([
+    prisma.property.create({
+      data: {
+        name: 'Villa Méditerranée',
+        address: '123 Avenue de la Mer, 06400 Cannes',
+        description: 'Magnifique villa avec vue sur mer, piscine privée et 5 chambres',
       },
-    });
-  }
-  if (cabin && jane) {
-    await prisma.booking.upsert({
-      where: { id: '22222222-2222-4222-8222-222222222222' },
-      update: {},
-      create: {
-        id: '22222222-2222-4222-8222-222222222222',
-        // Another booking occurring within the current week
-        startDate: addDays(weekStart, 2),
-        endDate: addDays(weekStart, 5),
-        totalPrice: 800,
-        propertyId: cabin.id,
-        clientId: jane.id,
+    }),
+    prisma.property.create({
+      data: {
+        name: 'Appartement Centre-Ville',
+        address: '45 Rue de la République, 75001 Paris',
+        description: 'Appartement moderne en plein cœur de Paris, 3 chambres, métro à 2 min',
       },
-    });
+    }),
+    prisma.property.create({
+      data: {
+        name: 'Chalet Montagne',
+        address: '78 Route des Alpes, 74400 Chamonix',
+        description: 'Chalet authentique au pied des pistes, 6 chambres, sauna et jacuzzi',
+      },
+    }),
+    prisma.property.create({
+      data: {
+        name: 'Studio Plage',
+        address: '12 Promenade du Bord de Mer, 64200 Biarritz',
+        description: 'Studio cosy face à la mer, idéal pour 2 personnes',
+      },
+    }),
+    prisma.property.create({
+      data: {
+        name: 'Maison de Campagne',
+        address: '56 Chemin des Vignes, 84000 Avignon',
+        description: 'Maison provençale avec jardin, 4 chambres, calme absolu',
+      },
+    }),
+  ])
+
+  console.log(`${properties.length} propriétés créées`)
+
+  // Créer les clients
+  const clients = await Promise.all([
+    prisma.client.create({
+      data: {
+        firstName: 'Marie',
+        lastName: 'Dupont',
+        email: 'marie.dupont@email.com',
+        phone: '06 12 34 56 78',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Pierre',
+        lastName: 'Martin',
+        email: 'pierre.martin@email.com',
+        phone: '06 23 45 67 89',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Sophie',
+        lastName: 'Bernard',
+        email: 'sophie.bernard@email.com',
+        phone: '06 34 56 78 90',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Jean',
+        lastName: 'Lefebvre',
+        email: 'jean.lefebvre@email.com',
+        phone: '06 45 67 89 01',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Claire',
+        lastName: 'Moreau',
+        email: 'claire.moreau@email.com',
+        phone: '06 56 78 90 12',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Thomas',
+        lastName: 'Dubois',
+        email: 'thomas.dubois@email.com',
+        phone: '06 67 89 01 23',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Emma',
+        lastName: 'Laurent',
+        email: 'emma.laurent@email.com',
+        phone: '06 78 90 12 34',
+      },
+    }),
+    prisma.client.create({
+      data: {
+        firstName: 'Lucas',
+        lastName: 'Simon',
+        email: 'lucas.simon@email.com',
+        phone: '06 89 01 23 45',
+      },
+    }),
+  ])
+
+  console.log(`${clients.length} clients créés`)
+
+  // Créer les réservations avec dates variées
+  const now = new Date()
+  const bookings = []
+
+  // Réservations passées (avec factures payées)
+  for (let i = 0; i < 5; i++) {
+    const startDate = new Date(now)
+    startDate.setMonth(now.getMonth() - 3 + i)
+    startDate.setDate(5)
+
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 7)
+
+    const basePrice = 800 + Math.random() * 1200
+    const cleaningFee = 80
+    const taxes = basePrice * 0.1
+    const totalPrice = basePrice + cleaningFee + taxes
+
+    const booking = await prisma.booking.create({
+      data: {
+        startDate,
+        endDate,
+        basePrice,
+        cleaningFee,
+        taxes,
+        totalPrice,
+        adults: Math.floor(Math.random() * 4) + 1,
+        children: Math.floor(Math.random() * 3),
+        status: 'confirmed',
+        propertyId: properties[i % properties.length].id,
+        clientId: clients[i % clients.length].id,
+      },
+    })
+
+    bookings.push(booking)
+
+    // Créer une facture payée
+    const issueDate = new Date(startDate)
+    issueDate.setDate(startDate.getDate() - 30)
+
+    const dueDate = new Date(issueDate)
+    dueDate.setDate(issueDate.getDate() + 15)
+
+    const invoiceNumber = `INV-${issueDate.getFullYear()}${String(issueDate.getMonth() + 1).padStart(2, '0')}${String(i + 1).padStart(4, '0')}`
+
+    await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        issueDate,
+        dueDate,
+        amount: totalPrice,
+        status: 'paid',
+        bookingId: booking.id,
+      },
+    })
   }
 
-  // Arrival in 5 days from today
-  if (cabin && john) {
-    await prisma.booking.upsert({
-      where: { id: '88888888-8888-4888-8888-888888888888' },
-      update: {},
-      create: {
-        id: '88888888-8888-4888-8888-888888888888',
-        startDate: addDays(today, 5),
-        endDate: addDays(today, 10),
-        totalPrice: 650,
-        propertyId: cabin.id,
-        clientId: john.id,
+  // Réservations en cours (avec factures envoyées)
+  for (let i = 0; i < 3; i++) {
+    const startDate = new Date(now)
+    startDate.setDate(now.getDate() - 5 + i * 3)
+
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 10)
+
+    const basePrice = 1000 + Math.random() * 1500
+    const cleaningFee = 100
+    const taxes = basePrice * 0.1
+    const linensPrice = 50
+    const totalPrice = basePrice + cleaningFee + taxes + linensPrice
+
+    const booking = await prisma.booking.create({
+      data: {
+        startDate,
+        endDate,
+        basePrice,
+        cleaningFee,
+        taxes,
+        totalPrice,
+        hasLinens: true,
+        linensPrice,
+        adults: Math.floor(Math.random() * 4) + 2,
+        children: Math.floor(Math.random() * 2),
+        status: 'confirmed',
+        propertyId: properties[(i + 1) % properties.length].id,
+        clientId: clients[(i + 2) % clients.length].id,
       },
-    });
+    })
+
+    bookings.push(booking)
+
+    // Créer une facture envoyée
+    const issueDate = new Date(startDate)
+    issueDate.setDate(startDate.getDate() - 20)
+
+    const dueDate = new Date(now)
+    dueDate.setDate(now.getDate() + 10 + i * 5)
+
+    const invoiceNumber = `INV-${issueDate.getFullYear()}${String(issueDate.getMonth() + 1).padStart(2, '0')}${String(i + 6).padStart(4, '0')}`
+
+    await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        issueDate,
+        dueDate,
+        amount: totalPrice,
+        status: 'sent',
+        bookingId: booking.id,
+      },
+    })
   }
 
-  // Additional bookings to populate dashboard lists
-  const flat = await prisma.property.findFirst({ where: { name: 'City Flat' } });
-  if (flat && john) {
-    // Upcoming arrival within 7 days
-    await prisma.booking.upsert({
-      where: { id: '33333333-3333-4333-8333-333333333333' },
-      update: {},
-      create: {
-        id: '33333333-3333-4333-8333-333333333333',
-        startDate: addDays(today, 3),
-        endDate: addDays(today, 8),
-        totalPrice: 600,
-        propertyId: flat.id,
-        clientId: john.id,
+  // Réservations futures (avec factures en retard)
+  for (let i = 0; i < 2; i++) {
+    const startDate = new Date(now)
+    startDate.setMonth(now.getMonth() - 1)
+    startDate.setDate(15 + i * 5)
+
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 5)
+
+    const basePrice = 600 + Math.random() * 800
+    const cleaningFee = 60
+    const taxes = basePrice * 0.1
+    const totalPrice = basePrice + cleaningFee + taxes
+
+    const booking = await prisma.booking.create({
+      data: {
+        startDate,
+        endDate,
+        basePrice,
+        cleaningFee,
+        taxes,
+        totalPrice,
+        adults: 2,
+        children: 0,
+        status: 'confirmed',
+        propertyId: properties[(i + 2) % properties.length].id,
+        clientId: clients[(i + 5) % clients.length].id,
       },
-    });
-  }
-  // Ensure there's an active current occupation covering today
-  if (seaside && john) {
-    await prisma.booking.upsert({
-      where: { id: '66666666-6666-4666-8666-666666666666' },
-      update: {},
-      create: {
-        id: '66666666-6666-4666-8666-666666666666',
-        // Starts 2 days ago, ends in 3 days => currently active
-        startDate: addDays(today, -2),
-        endDate: addDays(today, 3),
-        totalPrice: 750,
-        propertyId: seaside.id,
-        clientId: john.id,
+    })
+
+    bookings.push(booking)
+
+    // Créer une facture en retard
+    const issueDate = new Date(startDate)
+    issueDate.setDate(startDate.getDate() - 25)
+
+    const dueDate = new Date(now)
+    dueDate.setDate(now.getDate() - 5 - i * 3)
+
+    const invoiceNumber = `INV-${issueDate.getFullYear()}${String(issueDate.getMonth() + 1).padStart(2, '0')}${String(i + 9).padStart(4, '0')}`
+
+    await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        issueDate,
+        dueDate,
+        amount: totalPrice,
+        status: 'sent',
+        bookingId: booking.id,
       },
-    });
+    })
   }
 
-  // Add a booking that departs within the next 7 days
-  if (flat && jane) {
-    await prisma.booking.upsert({
-      where: { id: '77777777-7777-4777-8777-777777777777' },
-      update: {},
-      create: {
-        id: '77777777-7777-4777-8777-777777777777',
-        // Starts 4 days ago, ends in 4 days => departure within next 7 days
-        startDate: addDays(today, -4),
-        endDate: addDays(today, 4),
-        totalPrice: 420,
-        propertyId: flat.id,
-        clientId: jane.id,
+  // Réservations futures (à venir)
+  for (let i = 0; i < 4; i++) {
+    const startDate = new Date(now)
+    startDate.setMonth(now.getMonth() + 1 + Math.floor(i / 2))
+    startDate.setDate(10 + i * 7)
+
+    const endDate = new Date(startDate)
+    endDate.setDate(startDate.getDate() + 14)
+
+    const basePrice = 1200 + Math.random() * 2000
+    const cleaningFee = 120
+    const taxes = basePrice * 0.1
+    const insuranceFee = 50
+    const totalPrice = basePrice + cleaningFee + taxes + insuranceFee
+
+    const booking = await prisma.booking.create({
+      data: {
+        startDate,
+        endDate,
+        basePrice,
+        cleaningFee,
+        taxes,
+        totalPrice,
+        hasCancellationInsurance: true,
+        insuranceFee,
+        adults: Math.floor(Math.random() * 6) + 2,
+        children: Math.floor(Math.random() * 4),
+        status: 'confirmed',
+        propertyId: properties[(i + 3) % properties.length].id,
+        clientId: clients[(i + 3) % clients.length].id,
       },
-    });
-  }
-  if (seaside && jane) {
-    // Recent departure (ended yesterday)
-    await prisma.booking.upsert({
-      where: { id: '44444444-4444-4444-8444-444444444444' },
-      update: {},
-      create: {
-        id: '44444444-4444-4444-8444-444444444444',
-        startDate: addDays(today, -6),
-        endDate: addDays(today, -1),
-        totalPrice: 500,
-        propertyId: seaside.id,
-        clientId: jane.id,
+    })
+
+    bookings.push(booking)
+
+    // Créer une facture brouillon ou envoyée
+    const issueDate = new Date(now)
+
+    const dueDate = new Date(startDate)
+    dueDate.setDate(startDate.getDate() - 7)
+
+    const invoiceNumber = `INV-${issueDate.getFullYear()}${String(issueDate.getMonth() + 1).padStart(2, '0')}${String(i + 11).padStart(4, '0')}`
+
+    await prisma.invoice.create({
+      data: {
+        invoiceNumber,
+        issueDate,
+        dueDate,
+        amount: totalPrice,
+        status: i % 2 === 0 ? 'draft' : 'sent',
+        bookingId: booking.id,
       },
-    });
-  }
-  if (cabin && john) {
-    // Cancelled booking (should not show in lists)
-    await prisma.booking.upsert({
-      where: { id: '55555555-5555-4555-8555-555555555555' },
-      update: { status: 'cancelled' as never },
-      create: {
-        id: '55555555-5555-4555-8555-555555555555',
-        startDate: addDays(today, 2),
-        endDate: addDays(today, 4),
-        totalPrice: 300,
-        status: 'cancelled' as never,
-        propertyId: cabin.id,
-        clientId: john.id,
-      },
-    });
+    })
   }
 
-  console.log('Seeding sample invoices...');
-  const booking1 = await prisma.booking.findUnique({
-    where: { id: '11111111-1111-4111-8111-111111111111' },
-  });
-  const booking2 = await prisma.booking.findUnique({
-    where: { id: '22222222-2222-4222-8222-222222222222' },
-  });
-  // intentionally no invoice for booking3 to keep it eligible
-  const booking4 = await prisma.booking.findUnique({
-    where: { id: '44444444-4444-4444-8444-444444444444' },
-  });
+  console.log(`${bookings.length} réservations créées`)
 
-  // For booking1 (current stay): ensure an invoice exists and is paid
-  if (booking1) {
-    await prisma.invoice.upsert({
-      where: { bookingId: booking1.id },
-      update: { amount: 1200, dueDate: addDays(today, 30), status: 'paid' },
-      create: { dueDate: addDays(today, 30), amount: 1200, status: 'paid', bookingId: booking1.id },
-    });
-  }
-  // For booking2 (future > 7 days): invoice in draft to count as pending
-  if (booking2) {
-    await prisma.invoice.upsert({
-      where: { bookingId: booking2.id },
-      update: { amount: 800, dueDate: addDays(today, 40), status: 'draft' },
-      create: { dueDate: addDays(today, 40), amount: 800, status: 'draft', bookingId: booking2.id },
-    });
-  }
-  // For booking3 (upcoming within 7 days): no invoice yet (eligible)
-  // For booking4 (recent departure): paid invoice
-  if (booking4) {
-    await prisma.invoice.upsert({
-      where: { bookingId: booking4.id },
-      update: { amount: 500, dueDate: addDays(today, 10), status: 'paid' },
-      create: { dueDate: addDays(today, 10), amount: 500, status: 'paid', bookingId: booking4.id },
-    });
-  }
+  const totalInvoices = await prisma.invoice.count()
+  console.log(`${totalInvoices} factures créées`)
 
-  console.log('Seeding done.');
+  console.log('Seeding terminé avec succès!')
 }
 
 main()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    console.error('Erreur lors du seeding:', e)
+    process.exit(1)
   })
-  .finally(() => {
-    void prisma.$disconnect();
-  });
+  .finally(async () => {
+    await prisma.$disconnect()
+  })

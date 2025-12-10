@@ -1,23 +1,40 @@
-# compiled output
-/dist
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
 /node_modules
+/.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
 /build
 
-# Logs
-logs
-*.log
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
-pnpm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 
-# OS
-.DS_Store
+# local env files
+.env*.local
+.env
 
-# Tests
-/coverage
-/.nyc_output
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
 
 # IDEs and editors
 /.idea
@@ -35,16 +52,16 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-# dotenv environment variable files
-.env
-.env.development.local
-.env.test.local
-.env.production.local
-.env.local
+# Logs
+logs
+*.log
 
-# temp directory
-.temp
-.tmp
+# OS
+.DS_Store
+Thumbs.db
+
+# Prisma
+/generated/prisma
 
 # Runtime data
 pids
@@ -52,7 +69,9 @@ pids
 *.seed
 *.pid.lock
 
-# Diagnostic reports (https://nodejs.org/api/report.html)
+# Diagnostic reports
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
-/generated/prisma
+# temp directory
+.temp
+.tmp
