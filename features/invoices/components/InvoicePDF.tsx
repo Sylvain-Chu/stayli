@@ -3,7 +3,7 @@ import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/rendere
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-// Register fonts for better rendering
+// Enregistrement des polices (Inter serait l'idéal pour matcher le site, mais Roboto est standard et fiable pour le PDF)
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -26,148 +26,224 @@ Font.register({
   ],
 })
 
+// Styles basés sur votre globals.css (Design System "Forest Green & Warm Neutrals")
 const styles = StyleSheet.create({
   page: {
     padding: 40,
     fontSize: 10,
     fontFamily: 'Roboto',
-    color: '#333',
+    color: '#1a1a1a', // --foreground
+    backgroundColor: '#ffffff', // Fond blanc pour le papier (plus propre à l'impression que le #faf9f7 de l'écran)
   },
-  header: {
-    marginBottom: 30,
-    paddingBottom: 20,
-    borderBottomWidth: 2,
-    borderBottomColor: '#2563eb',
-  },
-  companyInfo: {
-    marginBottom: 10,
-  },
-  companyName: {
-    fontSize: 24,
-    fontWeight: 700,
-    color: '#2563eb',
-    marginBottom: 5,
-  },
-  companyDetails: {
-    fontSize: 9,
-    color: '#666',
-    marginBottom: 2,
-  },
-  invoiceTitle: {
-    fontSize: 28,
-    fontWeight: 700,
-    color: '#1e40af',
-    marginTop: 20,
-    marginBottom: 5,
-  },
-  invoiceNumber: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 3,
-  },
-  sectionRow: {
+  // En-tête
+  headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    alignItems: 'flex-start',
+    marginBottom: 40,
   },
-  section: {
-    width: '48%',
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  sectionTitle: {
-    fontSize: 12,
+  logoBox: {
+    width: 30,
+    height: 30,
+    backgroundColor: '#2d5a47', // --primary
+    borderRadius: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  logoText: {
+    color: '#ffffff',
+    fontSize: 16,
     fontWeight: 700,
-    color: '#2563eb',
-    marginBottom: 8,
-    textTransform: 'uppercase',
   },
-  text: {
+  brandName: {
+    fontSize: 18,
+    fontWeight: 700,
+    color: '#1a1a1a',
+  },
+  headerSubText: {
+    fontSize: 9,
+    color: '#737373', // --muted-foreground
+    marginTop: 2,
+  },
+
+  // Titre Facture
+  invoiceTitleBlock: {
+    alignItems: 'flex-end',
+  },
+  invoiceTitle: {
+    fontSize: 24,
+    fontWeight: 700,
+    color: '#1a1a1a',
+    textTransform: 'uppercase',
+    marginBottom: 5,
+  },
+  invoiceId: {
+    fontSize: 11,
+    color: '#2d5a47', // --primary
+    fontWeight: 500,
+    marginBottom: 10,
+  },
+  dateRow: {
+    flexDirection: 'row',
+    marginBottom: 2,
+  },
+  dateLabel: {
+    fontSize: 9,
+    color: '#737373',
+    width: 60,
+  },
+  dateValue: {
+    fontSize: 9,
+    color: '#1a1a1a',
+    fontWeight: 500,
+  },
+
+  // Adresses (Grid)
+  addressContainer: {
+    flexDirection: 'row',
+    marginBottom: 40,
+    gap: 40,
+  },
+  addressBlock: {
+    width: '45%',
+  },
+  addressLabel: {
+    fontSize: 8,
+    color: '#737373', // --muted-foreground
+    fontWeight: 700,
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  addressTextMain: {
     fontSize: 10,
-    marginBottom: 4,
+    fontWeight: 700,
+    color: '#1a1a1a',
+    marginBottom: 2,
+  },
+  addressText: {
+    fontSize: 10,
+    color: '#4a4a4a', // --secondary-foreground
     lineHeight: 1.4,
   },
-  textBold: {
-    fontWeight: 700,
-  },
-  table: {
-    marginTop: 20,
+
+  // Tableau
+  tableContainer: {
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#e8e6e3', // --border
+    overflow: 'hidden',
     marginBottom: 20,
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    padding: 10,
-    fontWeight: 700,
-    fontSize: 10,
+    backgroundColor: '#f5f3f0', // --secondary / --muted
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e8e6e3',
+  },
+  tableHeaderCell: {
+    fontSize: 9,
+    fontWeight: 500,
+    color: '#1a1a1a',
   },
   tableRow: {
     flexDirection: 'row',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
-    padding: 10,
-    fontSize: 9,
+    borderBottomColor: '#e8e6e3', // --border
   },
-  tableRowAlt: {
-    backgroundColor: '#f9fafb',
+  // Colonnes
+  colDesc: { width: '55%' },
+  colQty: { width: '10%', textAlign: 'center' },
+  colPrice: { width: '15%', textAlign: 'right' },
+  colTotal: { width: '20%', textAlign: 'right' },
+
+  cellText: { fontSize: 10, color: '#1a1a1a' },
+  cellTextMuted: { fontSize: 10, color: '#737373' },
+  cellTextBold: { fontSize: 10, fontWeight: 700, color: '#1a1a1a' },
+
+  // Totaux
+  totalsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 40,
   },
-  col1: {
-    width: '50%',
-  },
-  col2: {
-    width: '15%',
-    textAlign: 'center',
-  },
-  col3: {
-    width: '18%',
-    textAlign: 'right',
-  },
-  col4: {
-    width: '17%',
-    textAlign: 'right',
-  },
-  totalSection: {
-    marginLeft: 'auto',
-    width: '40%',
-    marginTop: 10,
+  totalsBox: {
+    width: 200,
   },
   totalRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 8,
+    marginBottom: 6,
+  },
+  totalLabel: {
     fontSize: 10,
+    color: '#737373',
   },
-  totalRowFinal: {
-    backgroundColor: '#2563eb',
-    color: '#fff',
+  totalValue: {
+    fontSize: 10,
+    color: '#1a1a1a',
+    fontWeight: 500,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#e8e6e3',
+    marginVertical: 8,
+  },
+  finalTotalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  finalTotalLabel: {
+    fontSize: 11,
     fontWeight: 700,
-    fontSize: 12,
-    padding: 12,
-    marginTop: 5,
+    color: '#1a1a1a',
   },
+  finalTotalValue: {
+    fontSize: 14,
+    fontWeight: 700,
+    color: '#2d5a47', // --primary
+  },
+
+  // Pied de page
   footer: {
-    marginTop: 'auto',
-    paddingTop: 20,
+    position: 'absolute',
+    bottom: 40,
+    left: 40,
+    right: 40,
     borderTopWidth: 1,
-    borderTopColor: '#e5e7eb',
+    borderTopColor: '#e8e6e3',
+    paddingTop: 20,
   },
-  paymentInstructions: {
-    fontSize: 9,
-    color: '#666',
-    marginBottom: 15,
-  },
-  footerTitle: {
-    fontSize: 10,
-    fontWeight: 700,
-    marginBottom: 5,
-  },
-  notes: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: '#f9fafb',
-    borderRadius: 5,
-    fontSize: 9,
-    color: '#666',
+  footerText: {
+    fontSize: 8,
+    color: '#737373',
+    textAlign: 'center',
     lineHeight: 1.5,
+  },
+  notesBox: {
+    backgroundColor: '#faf9f7', // --background (warm)
+    padding: 10,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#e8e6e3',
+    marginBottom: 20,
+  },
+  notesLabel: {
+    fontSize: 9,
+    fontWeight: 700,
+    color: '#2d5a47',
+    marginBottom: 4,
   },
 })
 
@@ -231,21 +307,23 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
   client,
   settings,
 }) => {
+  const currency = settings.currencySymbol || '€'
+
   const formatCurrency = (amount: number) => {
-    return `${amount.toFixed(2)} ${settings.currencySymbol || '€'}`
+    return `${amount.toFixed(2)} ${currency}`
   }
 
   const formatDate = (date: string | Date) => {
     const parsedDate = typeof date === 'string' ? new Date(date) : date
-    return format(parsedDate, 'dd MMMM yyyy', { locale: fr })
+    return format(parsedDate, 'dd MMM yyyy', { locale: fr })
   }
 
+  // Calculs
   const calculateNights = () => {
     const start = new Date(booking.startDate)
     const end = new Date(booking.endDate)
     const diffTime = Math.abs(end.getTime() - start.getTime())
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
   }
 
   const nights = calculateNights()
@@ -257,174 +335,195 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
   const discount = booking.discount || 0
   const total = booking.totalPrice
 
+  const logoInitial = settings.companyName ? settings.companyName[0].toUpperCase() : 'S'
+
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.companyInfo}>
-            <Text style={styles.companyName}>{settings.companyName || 'Vacation Rentals'}</Text>
-            {settings.companyAddress && (
-              <Text style={styles.companyDetails}>{settings.companyAddress}</Text>
-            )}
-            {settings.companyPhoneNumber && (
-              <Text style={styles.companyDetails}>Tél: {settings.companyPhoneNumber}</Text>
-            )}
-            {settings.companyEmail && (
-              <Text style={styles.companyDetails}>Email: {settings.companyEmail}</Text>
-            )}
+        {/* HEADER */}
+        <View style={styles.headerContainer}>
+          <View>
+            <View style={styles.logoContainer}>
+              <View style={styles.logoBox}>
+                <Text style={styles.logoText}>{logoInitial}</Text>
+              </View>
+              <Text style={styles.brandName}>{settings.companyName || 'Stayli'}</Text>
+            </View>
+            <Text style={styles.headerSubText}>{settings.companyAddress}</Text>
+            <Text style={styles.headerSubText}>{settings.companyEmail}</Text>
           </View>
 
-          <Text style={styles.invoiceTitle}>FACTURE</Text>
-          <Text style={styles.invoiceNumber}>N° {invoice.invoiceNumber}</Text>
-          <Text style={styles.invoiceNumber}>Date d'émission: {formatDate(invoice.issueDate)}</Text>
-          <Text style={styles.invoiceNumber}>Date d'échéance: {formatDate(invoice.dueDate)}</Text>
+          <View style={styles.invoiceTitleBlock}>
+            <Text style={styles.invoiceTitle}>FACTURE</Text>
+            <Text style={styles.invoiceId}>{invoice.invoiceNumber}</Text>
+            <View style={styles.dateRow}>
+              <Text style={styles.dateLabel}>Date :</Text>
+              <Text style={styles.dateValue}>{formatDate(invoice.issueDate)}</Text>
+            </View>
+            <View style={styles.dateRow}>
+              <Text style={styles.dateLabel}>Échéance :</Text>
+              <Text style={styles.dateValue}>{formatDate(invoice.dueDate)}</Text>
+            </View>
+          </View>
         </View>
 
-        {/* Client and Booking Info */}
-        <View style={styles.sectionRow}>
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Facturé à</Text>
-            <Text style={[styles.text, styles.textBold]}>
+        {/* ADDRESSES */}
+        <View style={styles.addressContainer}>
+          <View style={styles.addressBlock}>
+            <Text style={styles.addressLabel}>Émetteur</Text>
+            <Text style={styles.addressTextMain}>{property.name}</Text>
+            <Text style={styles.addressText}>{property.address}</Text>
+          </View>
+
+          <View style={styles.addressBlock}>
+            <Text style={styles.addressLabel}>Facturé à</Text>
+            <Text style={styles.addressTextMain}>
               {client.firstName} {client.lastName}
             </Text>
-            {client.address && <Text style={styles.text}>{client.address}</Text>}
-            {(client.zipCode || client.city) && (
-              <Text style={styles.text}>
-                {client.zipCode} {client.city}
-              </Text>
-            )}
-            {client.email && <Text style={styles.text}>Email: {client.email}</Text>}
-            {client.phone && <Text style={styles.text}>Tél: {client.phone}</Text>}
-          </View>
-
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Détails de la réservation</Text>
-            <Text style={[styles.text, styles.textBold]}>{property.name}</Text>
-            {property.address && <Text style={styles.text}>{property.address}</Text>}
-            <Text style={styles.text}>
-              Du {formatDate(booking.startDate)} au {formatDate(booking.endDate)}
+            <Text style={styles.addressText}>{client.address}</Text>
+            <Text style={styles.addressText}>
+              {client.zipCode} {client.city}
             </Text>
-            <Text style={styles.text}>
-              {nights} nuit{nights > 1 ? 's' : ''}
-            </Text>
-            <Text style={styles.text}>
-              {booking.adults} adulte{booking.adults > 1 ? 's' : ''}
-              {booking.children > 0 &&
-                `, ${booking.children} enfant${booking.children > 1 ? 's' : ''}`}
-            </Text>
+            <Text style={styles.addressText}>{client.email}</Text>
           </View>
         </View>
 
-        {/* Items Table */}
-        <View style={styles.table}>
+        {/* TABLE */}
+        <View style={styles.tableContainer}>
           <View style={styles.tableHeader}>
-            <Text style={styles.col1}>Description</Text>
-            <Text style={styles.col2}>Quantité</Text>
-            <Text style={styles.col3}>Prix unitaire</Text>
-            <Text style={styles.col4}>Total</Text>
+            <Text style={[styles.tableHeaderCell, styles.colDesc]}>Description</Text>
+            <Text style={[styles.tableHeaderCell, styles.colQty]}>Qté</Text>
+            <Text style={[styles.tableHeaderCell, styles.colPrice]}>Prix unit.</Text>
+            <Text style={[styles.tableHeaderCell, styles.colTotal]}>Total</Text>
           </View>
 
           <View style={styles.tableRow}>
-            <Text style={styles.col1}>Location - {property.name}</Text>
-            <Text style={styles.col2}>
-              {nights} nuit{nights > 1 ? 's' : ''}
+            <View style={styles.colDesc}>
+              <Text style={styles.cellText}>Séjour - {property.name}</Text>
+              <Text style={[styles.cellTextMuted, { fontSize: 8, marginTop: 2 }]}>
+                Du {formatDate(booking.startDate)} au {formatDate(booking.endDate)}
+              </Text>
+            </View>
+            <Text style={[styles.cellTextMuted, styles.colQty]}>{nights}</Text>
+            <Text style={[styles.cellTextMuted, styles.colPrice]}>
+              {formatCurrency(subtotal / nights)}
             </Text>
-            <Text style={styles.col3}>{formatCurrency(subtotal / nights)}</Text>
-            <Text style={styles.col4}>{formatCurrency(subtotal)}</Text>
+            <Text style={[styles.cellTextBold, styles.colTotal]}>{formatCurrency(subtotal)}</Text>
           </View>
 
           {booking.hasCleaning && cleaningFee > 0 && (
-            <View style={[styles.tableRow, styles.tableRowAlt]}>
-              <Text style={styles.col1}>Frais de ménage</Text>
-              <Text style={styles.col2}>1</Text>
-              <Text style={styles.col3}>{formatCurrency(cleaningFee)}</Text>
-              <Text style={styles.col4}>{formatCurrency(cleaningFee)}</Text>
+            <View style={styles.tableRow}>
+              <Text style={[styles.cellText, styles.colDesc]}>Ménage fin de séjour</Text>
+              <Text style={[styles.cellTextMuted, styles.colQty]}>1</Text>
+              <Text style={[styles.cellTextMuted, styles.colPrice]}>
+                {formatCurrency(cleaningFee)}
+              </Text>
+              <Text style={[styles.cellTextBold, styles.colTotal]}>
+                {formatCurrency(cleaningFee)}
+              </Text>
             </View>
           )}
 
           {booking.hasLinens && linensFee > 0 && (
             <View style={styles.tableRow}>
-              <Text style={styles.col1}>Linge de maison</Text>
-              <Text style={styles.col2}>1</Text>
-              <Text style={styles.col3}>{formatCurrency(linensFee)}</Text>
-              <Text style={styles.col4}>{formatCurrency(linensFee)}</Text>
+              <Text style={[styles.cellText, styles.colDesc]}>Linge de maison</Text>
+              <Text style={[styles.cellTextMuted, styles.colQty]}>1</Text>
+              <Text style={[styles.cellTextMuted, styles.colPrice]}>
+                {formatCurrency(linensFee)}
+              </Text>
+              <Text style={[styles.cellTextBold, styles.colTotal]}>
+                {formatCurrency(linensFee)}
+              </Text>
             </View>
           )}
 
           {booking.hasCancellationInsurance && insuranceFee > 0 && (
-            <View style={[styles.tableRow, styles.tableRowAlt]}>
-              <Text style={styles.col1}>
-                Assurance annulation -{' '}
-                {settings.cancellationInsuranceProviderName || 'Holiday Peace of Mind Insurance'}
+            <View style={styles.tableRow}>
+              <Text style={[styles.cellText, styles.colDesc]}>
+                Assurance annulation ({settings.cancellationInsuranceProviderName || 'Inclus'})
               </Text>
-              <Text style={styles.col2}>1</Text>
-              <Text style={styles.col3}>{formatCurrency(insuranceFee)}</Text>
-              <Text style={styles.col4}>{formatCurrency(insuranceFee)}</Text>
+              <Text style={[styles.cellTextMuted, styles.colQty]}>1</Text>
+              <Text style={[styles.cellTextMuted, styles.colPrice]}>
+                {formatCurrency(insuranceFee)}
+              </Text>
+              <Text style={[styles.cellTextBold, styles.colTotal]}>
+                {formatCurrency(insuranceFee)}
+              </Text>
             </View>
           )}
 
           {taxes > 0 && (
             <View style={styles.tableRow}>
-              <Text style={styles.col1}>Taxes de séjour</Text>
-              <Text style={styles.col2}>-</Text>
-              <Text style={styles.col3}>-</Text>
-              <Text style={styles.col4}>{formatCurrency(taxes)}</Text>
+              <Text style={[styles.cellText, styles.colDesc]}>Taxe de séjour</Text>
+              <Text style={[styles.cellTextMuted, styles.colQty]}>-</Text>
+              <Text style={[styles.cellTextMuted, styles.colPrice]}>-</Text>
+              <Text style={[styles.cellTextBold, styles.colTotal]}>{formatCurrency(taxes)}</Text>
             </View>
           )}
 
           {discount > 0 && (
-            <View style={[styles.tableRow, styles.tableRowAlt]}>
-              <Text style={styles.col1}>
-                Réduction{booking.discountType ? ` (${booking.discountType})` : ''}
+            <View style={styles.tableRow}>
+              <Text style={[styles.cellText, styles.colDesc]}>
+                Remise {booking.discountType ? `(${booking.discountType})` : ''}
               </Text>
-              <Text style={styles.col2}>-</Text>
-              <Text style={styles.col3}>-</Text>
-              <Text style={styles.col4}>-{formatCurrency(discount)}</Text>
+              <Text style={[styles.cellTextMuted, styles.colQty]}>1</Text>
+              <Text style={[styles.cellTextMuted, styles.colPrice]}>
+                -{formatCurrency(discount)}
+              </Text>
+              <Text style={[styles.cellTextBold, styles.colTotal, { color: '#2d5a47' }]}>
+                -{formatCurrency(discount)}
+              </Text>
             </View>
           )}
         </View>
 
-        {/* Total */}
-        <View style={styles.totalSection}>
-          <View style={styles.totalRow}>
-            <Text>Sous-total:</Text>
-            <Text>{formatCurrency(subtotal + cleaningFee + linensFee + insuranceFee)}</Text>
-          </View>
-          <View style={styles.totalRow}>
-            <Text>Taxes:</Text>
-            <Text>{formatCurrency(taxes)}</Text>
-          </View>
-          {discount > 0 && (
+        {/* TOTALS */}
+        <View style={styles.totalsContainer}>
+          <View style={styles.totalsBox}>
             <View style={styles.totalRow}>
-              <Text>Réduction:</Text>
-              <Text>-{formatCurrency(discount)}</Text>
+              <Text style={styles.totalLabel}>Sous-total</Text>
+              <Text style={styles.totalValue}>
+                {formatCurrency(subtotal + cleaningFee + linensFee + insuranceFee)}
+              </Text>
             </View>
-          )}
-          <View style={[styles.totalRow, styles.totalRowFinal]}>
-            <Text>TOTAL:</Text>
-            <Text>{formatCurrency(total)}</Text>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Taxes (0%)</Text>
+              <Text style={styles.totalValue}>{formatCurrency(taxes)}</Text>
+            </View>
+
+            <View style={styles.separator} />
+
+            <View style={styles.finalTotalRow}>
+              <Text style={styles.finalTotalLabel}>Total TTC</Text>
+              <Text style={styles.finalTotalValue}>{formatCurrency(total)}</Text>
+            </View>
           </View>
         </View>
 
-        {/* Payment Instructions */}
+        {/* NOTES / INSTRUCTIONS */}
+        {(settings.invoicePaymentInstructions || booking.specialRequests) && (
+          <View style={styles.notesBox}>
+            {settings.invoicePaymentInstructions && (
+              <View style={{ marginBottom: 10 }}>
+                <Text style={styles.notesLabel}>Instructions de paiement</Text>
+                <Text style={styles.addressText}>{settings.invoicePaymentInstructions}</Text>
+              </View>
+            )}
+
+            {booking.specialRequests && (
+              <View>
+                <Text style={styles.notesLabel}>Notes</Text>
+                <Text style={styles.addressText}>{booking.specialRequests}</Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* FOOTER */}
         <View style={styles.footer}>
-          {settings.invoicePaymentInstructions && (
-            <>
-              <Text style={styles.footerTitle}>Instructions de paiement</Text>
-              <Text style={styles.paymentInstructions}>{settings.invoicePaymentInstructions}</Text>
-            </>
-          )}
-
-          {booking.specialRequests && (
-            <View style={styles.notes}>
-              <Text style={styles.footerTitle}>Notes et demandes spéciales:</Text>
-              <Text>{booking.specialRequests}</Text>
-            </View>
-          )}
-
-          <Text style={[styles.paymentInstructions, { marginTop: 15, textAlign: 'center' }]}>
-            Merci pour votre confiance !
+          <Text style={styles.footerText}>
+            Merci de votre confiance. En cas de retard de paiement, des pénalités pourront être
+            appliquées conformément à la législation en vigueur.
           </Text>
         </View>
       </Page>

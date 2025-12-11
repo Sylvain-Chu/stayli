@@ -3,24 +3,14 @@ import { prisma } from '@/lib/prisma'
 import ReactPDF from '@react-pdf/renderer'
 import { InvoicePDF } from '@/features/invoices/components/InvoicePDF'
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } } | { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    let id: string | undefined
-    if ('then' in context.params) {
-      // params is a Promise (Next.js 14+)
-      const resolved = await context.params
-      id = resolved.id
-    } else {
-      id = context.params.id
-    }
+    const { id } = await params
+
     if (!id) {
       return NextResponse.json({ error: 'Missing invoice id' }, { status: 400 })
     }
 
-    // Get invoice with all relations
     const invoice = await prisma.invoice.findUnique({
       where: { id },
       include: {
@@ -37,13 +27,12 @@ export async function GET(
       return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
     }
 
-    // Get settings
     const settings = await prisma.settings.findFirst()
     if (!settings) {
       return NextResponse.json({ error: 'Settings not found' }, { status: 500 })
     }
 
-    // Generate PDF
+    // Le JSX ci-dessous nécessite l'extension .tsx
     const pdfStream = await ReactPDF.renderToStream(
       <InvoicePDF
         invoice={{
@@ -96,20 +85,17 @@ export async function GET(
           invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,
           cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
         }}
-      />
-    );
+      />,
+    )
 
-    // Convert stream to buffer
     const chunks: Buffer[] = []
     for await (const chunk of pdfStream) {
-      // chunk peut être string ou Buffer, on force Buffer
       chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
     }
     const buffer = Buffer.concat(chunks)
 
-    // Return PDF with proper headers
     const fileName = `Facture-${invoice.invoiceNumber}-${invoice.booking.client.lastName}.pdf`
-    
+
     return new NextResponse(buffer, {
       headers: {
         'Content-Type': 'application/pdf',
@@ -118,9 +104,6 @@ export async function GET(
     })
   } catch (error) {
     console.error('Error generating PDF:', error)
-    return NextResponse.json(
-      { error: 'Failed to generate PDF' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
   }
 }
