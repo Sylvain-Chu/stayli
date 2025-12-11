@@ -193,7 +193,7 @@ export function SeasonSettings({ settings }: { settings: Settings }) {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="insuranceRate">Taux d'assurance (%)</Label>
+              <Label htmlFor="insuranceRate">Taux d&apos;assurance (%)</Label>
               <div className="relative">
                 <Input
                   id="insuranceRate"

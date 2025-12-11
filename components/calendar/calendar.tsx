@@ -22,6 +22,7 @@ import {
 import { ChevronLeft, ChevronRight, Plus, UserPlus, Check, Search } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
+// ... (Gardez les constantes MONTHS, properties, initialBookings, statusColors, statusLabels, existingClients comme avant)
 const MONTHS = [
   'Janvier',
   'Février',
@@ -103,13 +104,6 @@ const statusColors = {
   blocked: 'bg-[#9ca3af] hover:bg-[#8b929b]',
 }
 
-const statusLabels = {
-  confirmed: 'Confirmé',
-  pending: 'En attente',
-  cancelled: 'Annulé',
-  blocked: 'Bloqué',
-}
-
 type Booking = (typeof initialBookings)[number]
 
 const existingClients = [
@@ -171,9 +165,15 @@ export function FullCalendar() {
     return bookings.filter((b) => b.propertyId === propertyId)
   }
 
-  const isDayOccupied = (propertyId: number, day: number) => {
-    return bookings.some((b) => b.propertyId === propertyId && day >= b.startDay && day <= b.endDay)
-  }
+  // Memoized to be used in dependencies
+  const isDayOccupied = useCallback(
+    (propertyId: number, day: number) => {
+      return bookings.some(
+        (b) => b.propertyId === propertyId && day >= b.startDay && day <= b.endDay,
+      )
+    },
+    [bookings],
+  )
 
   const handleMouseDown = (propertyId: number, day: number) => {
     if (isDayOccupied(propertyId, day)) return
@@ -201,9 +201,10 @@ export function FullCalendar() {
         setDragState({ ...dragState, endDay: day })
       }
     },
-    [isDragging, dragState, bookings],
+    [isDragging, dragState, isDayOccupied], // Added isDayOccupied to dependencies
   )
 
+  // ... (Le reste du fichier reste identique, assurez-vous juste de bien copier le reste de la fonction et le JSX)
   const handleMouseUp = () => {
     if (isDragging && dragState) {
       const start = Math.min(dragState.startDay, dragState.endDay)
@@ -214,6 +215,7 @@ export function FullCalendar() {
     setIsDragging(false)
   }
 
+  // ... (Code suivant inchangé jusqu'à la fin du composant)
   const filteredClients = clients.filter(
     (client) =>
       client.name.toLowerCase().includes(clientSearch.toLowerCase()) ||
@@ -311,7 +313,7 @@ export function FullCalendar() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
+      {/* ... (JSX Header identique) */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Button
@@ -473,7 +475,7 @@ export function FullCalendar() {
         </div>
       </Card>
 
-      {/* Booking Modal */}
+      {/* ... (Reste du JSX du modal inchangé) */}
       <Dialog open={showModal} onOpenChange={setShowModal}>
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
@@ -482,7 +484,6 @@ export function FullCalendar() {
 
           {dragState && (
             <div className="space-y-5 py-2">
-              {/* Summary */}
               <div className="bg-accent/50 space-y-2 rounded-xl p-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Propriété</span>
@@ -567,7 +568,9 @@ export function FullCalendar() {
                               <UserPlus className="text-primary-foreground h-4 w-4" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-sm font-medium">Créer "{clientSearch}"</p>
+                              <p className="text-sm font-medium">
+                                Créer &quot;{clientSearch}&quot;
+                              </p>
                               <p className="text-muted-foreground text-xs">Nouveau client</p>
                             </div>
                           </button>

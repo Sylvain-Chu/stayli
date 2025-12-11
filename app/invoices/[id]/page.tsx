@@ -13,15 +13,12 @@ import { InvoicePDF } from '@/features/invoices/components/InvoicePDF'
 
 export default function InvoiceDetailPage() {
   const params = useParams()
-  // Sécurisation de l'ID (tableau ou string)
   const id =
     typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : ''
 
-  // Récupération des données
   const { invoice, isLoading: invoiceLoading, isError: invoiceError } = useInvoice(id)
   const { settings, isLoading: settingsLoading } = useSettings()
 
-  // État de chargement
   if (invoiceLoading || settingsLoading) {
     return (
       <AppLayout title="Chargement de la facture...">
@@ -36,13 +33,12 @@ export default function InvoiceDetailPage() {
     )
   }
 
-  // État d'erreur
   if (invoiceError || !invoice || !settings) {
     return (
       <AppLayout title="Facture introuvable">
         <div className="flex h-[60vh] flex-col items-center justify-center space-y-4 text-center">
           <p className="text-destructive font-medium">
-            Impossible de charger la facture ou les paramètres de l'entreprise.
+            Impossible de charger la facture ou les paramètres de l&apos;entreprise.
           </p>
           <Link href="/invoices" className="text-primary text-sm hover:underline">
             Retourner à la liste
@@ -52,7 +48,6 @@ export default function InvoiceDetailPage() {
     )
   }
 
-  // Conversion des null en undefined pour éviter les conflits de types TS avec React-PDF
   const safeSettings = {
     companyName: settings.companyName,
     companyAddress: settings.companyAddress || undefined,
@@ -71,7 +66,6 @@ export default function InvoiceDetailPage() {
   return (
     <AppLayout title={`Facture ${invoice.invoiceNumber}`}>
       <div className="flex h-[calc(100vh-100px)] flex-col space-y-4">
-        {/* Barre d'outils / Navigation */}
         <div className="flex shrink-0 items-center justify-between px-1">
           <Link
             href="/invoices"
@@ -82,7 +76,6 @@ export default function InvoiceDetailPage() {
           </Link>
         </div>
 
-        {/* Visualiseur PDF */}
         <div className="bg-muted/30 border-border w-full flex-1 overflow-hidden rounded-xl border shadow-sm">
           <PDFViewer
             width="100%"

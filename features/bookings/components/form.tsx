@@ -70,50 +70,64 @@ export function BookingForm() {
       .catch((err) => console.error('Error fetching clients:', err))
   }, [])
 
-  // Check availability when property or dates change
   useEffect(() => {
-    if (!formData.propertyId || !formData.startDate || !formData.endDate) {
-      setAvailabilityError(null)
-      return
+    let isMounted = true
+
+    const timer = setTimeout(() => {
+      if (!formData.propertyId || !formData.startDate || !formData.endDate) {
+        if (isMounted) setAvailabilityError(null)
+        return
+      }
+
+      if (isMounted) setCheckingAvailability(true)
+
+      fetch('/api/bookings/check-availability', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          propertyId: formData.propertyId,
+          startDate: formData.startDate,
+          endDate: formData.endDate,
+          clientId: formData.clientId,
+        }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (!isMounted) return
+
+          if (!data.available && data.conflicts.length > 0) {
+            const conflict = data.conflicts[0]
+            const startDate = new Date(conflict.startDate).toLocaleDateString('fr-FR')
+            const endDate = new Date(conflict.endDate).toLocaleDateString('fr-FR')
+
+            const errorMessage = conflict.isSameClient
+              ? `Ce client a déjà une réservation pour cette propriété du ${startDate} au ${endDate}`
+              : `Cette propriété est déjà réservée du ${startDate} au ${endDate} par ${conflict.clientName}`
+
+            setAvailabilityError(errorMessage)
+            toast({
+              title: conflict.isSameClient ? 'Réservation existante' : 'Propriété non disponible',
+              description: errorMessage,
+              variant: 'destructive',
+            })
+          } else {
+            setAvailabilityError(null)
+          }
+        })
+        .catch((err) => {
+          if (!isMounted) return
+          console.error('Error checking availability:', err)
+        })
+        .finally(() => {
+          if (isMounted) setCheckingAvailability(false)
+        })
+    }, 0)
+
+    // Cleanup function
+    return () => {
+      isMounted = false
+      clearTimeout(timer)
     }
-
-    setCheckingAvailability(true)
-    fetch('/api/bookings/check-availability', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        propertyId: formData.propertyId,
-        startDate: formData.startDate,
-        endDate: formData.endDate,
-        clientId: formData.clientId,
-      }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (!data.available && data.conflicts.length > 0) {
-          const conflict = data.conflicts[0]
-          const startDate = new Date(conflict.startDate).toLocaleDateString('fr-FR')
-          const endDate = new Date(conflict.endDate).toLocaleDateString('fr-FR')
-
-          const errorMessage = conflict.isSameClient
-            ? `Ce client a déjà une réservation pour cette propriété du ${startDate} au ${endDate}`
-            : `Cette propriété est déjà réservée du ${startDate} au ${endDate} par ${conflict.clientName}`
-
-          setAvailabilityError(errorMessage)
-          toast({
-            title: conflict.isSameClient ? 'Réservation existante' : 'Propriété non disponible',
-            description: errorMessage,
-            variant: 'destructive',
-          })
-        } else {
-          setAvailabilityError(null)
-        }
-        setCheckingAvailability(false)
-      })
-      .catch((err) => {
-        console.error('Error checking availability:', err)
-        setCheckingAvailability(false)
-      })
   }, [formData.propertyId, formData.startDate, formData.endDate, formData.clientId, toast])
 
   return (
