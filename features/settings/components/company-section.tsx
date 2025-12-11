@@ -12,8 +12,11 @@ import { useToast } from '@/hooks/use-toast'
 interface Settings {
   companyName: string
   companyAddress: string | null
+  companyZipCode: string | null // Ajout
+  companyCity: string | null // Ajout
   companyPhoneNumber: string | null
   companyEmail: string | null
+  companySiret: string | null
   companyLogoUrl: string | null
 }
 
@@ -22,8 +25,11 @@ export function CompanySettings({ settings }: { settings: Settings }) {
   const [formData, setFormData] = useState({
     companyName: settings.companyName,
     companyAddress: settings.companyAddress || '',
+    companyZipCode: settings.companyZipCode || '',
+    companyCity: settings.companyCity || '',
     companyPhoneNumber: settings.companyPhoneNumber || '',
     companyEmail: settings.companyEmail || '',
+    companySiret: settings.companySiret || '',
   })
   const [saving, setSaving] = useState(false)
 
@@ -54,22 +60,55 @@ export function CompanySettings({ settings }: { settings: Settings }) {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="companyName">Nom de l&apos;entreprise</Label>
-          <Input
-            id="companyName"
-            value={formData.companyName}
-            onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-          />
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="companyName">Nom de l&apos;entreprise</Label>
+            <Input
+              id="companyName"
+              value={formData.companyName}
+              onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="siret">Numéro SIRET</Label>
+            <Input
+              id="siret"
+              value={formData.companySiret}
+              onChange={(e) => setFormData({ ...formData, companySiret: e.target.value })}
+              placeholder="123 456 789 00012"
+            />
+          </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="address">Adresse</Label>
+          <Label htmlFor="address">Adresse (Rue)</Label>
           <Input
             id="address"
             value={formData.companyAddress}
             onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
+            placeholder="123 Rue de la Paix"
           />
+        </div>
+
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="space-y-2">
+            <Label htmlFor="zipCode">Code Postal</Label>
+            <Input
+              id="zipCode"
+              value={formData.companyZipCode}
+              onChange={(e) => setFormData({ ...formData, companyZipCode: e.target.value })}
+              placeholder="75000"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="city">Ville</Label>
+            <Input
+              id="city"
+              value={formData.companyCity}
+              onChange={(e) => setFormData({ ...formData, companyCity: e.target.value })}
+              placeholder="Paris"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">

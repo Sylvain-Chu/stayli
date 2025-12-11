@@ -1,234 +1,139 @@
 'use client'
 
 import Link from 'next/link'
-import { AppLayout } from '@/components/layouts/app-shell'
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, Printer } from 'lucide-react'
-import { DownloadInvoiceServerButton } from '@/features/invoices/components'
-import { useInvoice } from '@/features/invoices/hooks/useInvoices'
 import { useParams } from 'next/navigation'
-import { useMemo } from 'react'
+import { AppLayout } from '@/components/layouts/app-shell'
+import { Skeleton } from '@/components/ui/skeleton'
+import { ChevronLeft } from 'lucide-react'
+import { PDFViewer } from '@react-pdf/renderer'
+
+import { useInvoice } from '@/features/invoices/hooks/useInvoices'
+import { useSettings } from '@/features/settings/hooks/useSettings'
+import { InvoicePDF } from '@/features/invoices/components/InvoicePDF'
 
 export default function InvoiceDetailPage() {
   const params = useParams()
+  // Sécurisation de l'ID (tableau ou string)
   const id =
     typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : ''
-  const { invoice, isLoading, isError } = useInvoice(id)
 
-  // Calculs pour affichage
-  const items = useMemo(() => {
-    if (!invoice?.booking) return []
-    const nights = Math.ceil(
-      (new Date(invoice.booking.endDate).getTime() -
-        new Date(invoice.booking.startDate).getTime()) /
-        (1000 * 60 * 60 * 24),
-    )
-    const arr = [
-      {
-        description: `Séjour ${invoice.booking.property?.name || ''} (${nights} nuit${nights > 1 ? 's' : ''})`,
-        quantity: 1,
-        unitPrice: invoice.booking.basePrice,
-        total: invoice.booking.basePrice,
-      },
-    ]
-    if (invoice.booking.hasLinens && invoice.booking.linensPrice > 0) {
-      arr.push({
-        description: 'Linge de maison',
-        quantity: 1,
-        unitPrice: invoice.booking.linensPrice,
-        total: invoice.booking.linensPrice,
-      })
-    }
-    if (invoice.booking.hasCleaning && invoice.booking.cleaningPrice > 0) {
-      arr.push({
-        description: 'Ménage fin de séjour',
-        quantity: 1,
-        unitPrice: invoice.booking.cleaningPrice,
-        total: invoice.booking.cleaningPrice,
-      })
-    }
-    if (invoice.booking.taxes > 0) {
-      arr.push({
-        description: 'Taxe de séjour',
-        quantity: 1,
-        unitPrice: invoice.booking.taxes,
-        total: invoice.booking.taxes,
-      })
-    }
-    if (invoice.booking.discount > 0) {
-      arr.push({
-        description: 'Remise',
-        quantity: 1,
-        unitPrice: -invoice.booking.discount,
-        total: -invoice.booking.discount,
-      })
-    }
-    return arr
-  }, [invoice])
+  // Récupération des données
+  const { invoice, isLoading: invoiceLoading, isError: invoiceError } = useInvoice(id)
+  const { settings, isLoading: settingsLoading } = useSettings()
 
-  const subtotal = useMemo(() => items.reduce((acc, item) => acc + item.total, 0), [items])
-  const tva = 0
-  const total = invoice?.amount || 0
-
-  if (isLoading) {
-    return <div className="text-muted-foreground p-8 text-center">Chargement...</div>
-  }
-  if (isError || !invoice) {
+  // État de chargement
+  if (invoiceLoading || settingsLoading) {
     return (
-      <div className="text-destructive p-8 text-center">
-        Erreur lors du chargement de la facture.
-      </div>
+      <AppLayout title="Chargement de la facture...">
+        <div className="flex h-[calc(100vh-120px)] flex-col space-y-4">
+          <div className="mb-4 flex items-center gap-2">
+            <Skeleton className="h-4 w-4" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+          <Skeleton className="w-full flex-1 rounded-xl" />
+        </div>
+      </AppLayout>
     )
+  }
+
+  // État d'erreur
+  if (invoiceError || !invoice || !settings) {
+    return (
+      <AppLayout title="Facture introuvable">
+        <div className="flex h-[60vh] flex-col items-center justify-center space-y-4 text-center">
+          <p className="text-destructive font-medium">
+            Impossible de charger la facture ou les paramètres de l'entreprise.
+          </p>
+          <Link href="/invoices" className="text-primary text-sm hover:underline">
+            Retourner à la liste
+          </Link>
+        </div>
+      </AppLayout>
+    )
+  }
+
+  // Conversion des null en undefined pour éviter les conflits de types TS avec React-PDF
+  const safeSettings = {
+    companyName: settings.companyName,
+    companyAddress: settings.companyAddress || undefined,
+    companyZipCode: settings.companyZipCode || undefined,
+    companyCity: settings.companyCity || undefined,
+    companyPhoneNumber: settings.companyPhoneNumber || undefined,
+    companyEmail: settings.companyEmail || undefined,
+    companyLogoUrl: settings.companyLogoUrl || undefined,
+    companySiret: settings.companySiret || undefined,
+    currencySymbol: settings.currencySymbol,
+    invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,
+    cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
+    touristTaxRatePerPersonPerDay: settings.touristTaxRatePerPersonPerDay,
   }
 
   return (
     <AppLayout title={`Facture ${invoice.invoiceNumber}`}>
-      <div className="space-y-4">
-        {/* Header */}
-        <div className="flex items-center justify-between">
+      <div className="flex h-[calc(100vh-100px)] flex-col space-y-4">
+        {/* Barre d'outils / Navigation */}
+        <div className="flex shrink-0 items-center justify-between px-1">
           <Link
             href="/invoices"
-            className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm"
+            className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-sm transition-colors"
           >
             <ChevronLeft className="h-4 w-4" />
-            Retour
+            Retour aux factures
           </Link>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" className="bg-transparent">
-              <Printer className="mr-2 h-4 w-4" />
-              Imprimer
-            </Button>
-            <DownloadInvoiceServerButton
-              invoiceId={invoice.id}
-              invoiceNumber={invoice.invoiceNumber}
-              variant="default"
-              size="default"
-            />
-          </div>
         </div>
 
-        {/* Invoice Paper */}
-        <div className="mx-auto max-w-3xl">
-          <div className="border-border bg-card rounded-lg border p-12 shadow-sm">
-            {/* Invoice Header */}
-            <div className="mb-12 flex items-start justify-between">
-              <div>
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-primary-foreground text-lg font-bold">
-                      {invoice.booking?.property?.name?.[0] || 'F'}
-                    </span>
-                  </div>
-                  <span className="text-foreground text-xl font-semibold">
-                    {invoice.booking?.property?.name || 'Propriété'}
-                  </span>
-                </div>
-                <div className="text-muted-foreground space-y-0.5 text-sm">
-                  <p>{invoice.booking?.property?.address}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <h1 className="text-foreground mb-2 text-3xl font-bold">FACTURE</h1>
-                <p className="text-primary text-lg font-semibold">{invoice.invoiceNumber}</p>
-                <div className="text-muted-foreground mt-4 text-sm">
-                  <p>Date: {new Date(invoice.issueDate).toLocaleDateString('fr-FR')}</p>
-                  <p>Échéance: {new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Addresses */}
-            <div className="mb-10 grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                  Émetteur
-                </h3>
-                <div className="text-foreground text-sm">
-                  <p className="font-medium">{invoice.booking?.property?.name}</p>
-                  <p>{invoice.booking?.property?.address}</p>
-                </div>
-              </div>
-              <div>
-                <h3 className="text-muted-foreground mb-2 text-xs font-semibold tracking-wider uppercase">
-                  Facturé à
-                </h3>
-                <div className="text-foreground text-sm">
-                  <p className="font-medium">
-                    {invoice.booking?.client?.firstName} {invoice.booking?.client?.lastName}
-                  </p>
-                  <p>{invoice.booking?.client?.address}</p>
-                  <p>{invoice.booking?.client?.city}</p>
-                  <p>{invoice.booking?.client?.email}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Items Table */}
-            <div className="border-border mb-8 overflow-hidden rounded-lg border">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="text-foreground px-4 py-3 text-left text-sm font-medium">
-                      Description
-                    </th>
-                    <th className="text-foreground px-4 py-3 text-center text-sm font-medium">
-                      Qté
-                    </th>
-                    <th className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                      Prix unit.
-                    </th>
-                    <th className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {items.map((item, index) => (
-                    <tr key={index} className="border-border border-t">
-                      <td className="text-foreground px-4 py-3 text-sm">{item.description}</td>
-                      <td className="text-muted-foreground px-4 py-3 text-center text-sm">
-                        {item.quantity}
-                      </td>
-                      <td className="text-muted-foreground px-4 py-3 text-right text-sm">
-                        {item.unitPrice} €
-                      </td>
-                      <td className="text-foreground px-4 py-3 text-right text-sm font-medium">
-                        {item.total} €
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Totals */}
-            <div className="flex justify-end">
-              <div className="w-64 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Sous-total HT</span>
-                  <span className="text-foreground">{subtotal} €</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">TVA (0%)</span>
-                  <span className="text-foreground">{tva} €</span>
-                </div>
-                <div className="border-border mt-2 border-t pt-2">
-                  <div className="flex justify-between">
-                    <span className="text-foreground font-semibold">Total TTC</span>
-                    <span className="text-foreground text-xl font-bold">{total} €</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Footer */}
-            <div className="border-border mt-12 border-t pt-8">
-              <p className="text-muted-foreground text-center text-xs">
-                Merci pour votre confiance. En cas de retard de paiement, des pénalités pourront
-                être appliquées conformément à la législation en vigueur.
-              </p>
-            </div>
-          </div>
+        {/* Visualiseur PDF */}
+        <div className="bg-muted/30 border-border w-full flex-1 overflow-hidden rounded-xl border shadow-sm">
+          <PDFViewer
+            width="100%"
+            height="100%"
+            className="h-full w-full border-none"
+            showToolbar={true}
+          >
+            <InvoicePDF
+              invoice={{
+                invoiceNumber: invoice.invoiceNumber,
+                issueDate: invoice.issueDate,
+                dueDate: invoice.dueDate,
+                amount: invoice.amount,
+                status: invoice.status,
+              }}
+              booking={{
+                id: invoice.booking.id,
+                startDate: invoice.booking.startDate,
+                endDate: invoice.booking.endDate,
+                totalPrice: invoice.booking.totalPrice,
+                basePrice: invoice.booking.basePrice,
+                cleaningFee: invoice.booking.cleaningFee,
+                taxes: invoice.booking.taxes,
+                adults: invoice.booking.adults,
+                children: invoice.booking.children,
+                discount: invoice.booking.discount,
+                discountType: invoice.booking.discountType,
+                hasLinens: invoice.booking.hasLinens,
+                linensPrice: invoice.booking.linensPrice,
+                hasCleaning: invoice.booking.hasCleaning,
+                cleaningPrice: invoice.booking.cleaningPrice,
+                hasCancellationInsurance: invoice.booking.hasCancellationInsurance,
+                insuranceFee: invoice.booking.insuranceFee,
+                specialRequests: invoice.booking.specialRequests,
+              }}
+              property={{
+                name: invoice.booking.property.name,
+                address: invoice.booking.property.address,
+              }}
+              client={{
+                firstName: invoice.booking.client.firstName,
+                lastName: invoice.booking.client.lastName,
+                email: invoice.booking.client.email,
+                phone: invoice.booking.client.phone,
+                address: invoice.booking.client.address || undefined,
+                zipCode: invoice.booking.client.zipCode || undefined,
+                city: invoice.booking.client.city || undefined,
+              }}
+              settings={safeSettings}
+            />
+          </PDFViewer>
         </div>
       </div>
     </AppLayout>
