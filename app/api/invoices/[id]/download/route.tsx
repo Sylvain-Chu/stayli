@@ -65,7 +65,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         property={{
           name: invoice.booking.property.name,
           address: invoice.booking.property.address || undefined,
-          description: invoice.booking.property.description || undefined,
         }}
         client={{
           firstName: invoice.booking.client.firstName,
@@ -79,11 +78,16 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         settings={{
           companyName: settings.companyName || undefined,
           companyAddress: settings.companyAddress || undefined,
+          companyZipCode: settings.companyZipCode || undefined,
+          companyCity: settings.companyCity || undefined,
           companyPhoneNumber: settings.companyPhoneNumber || undefined,
           companyEmail: settings.companyEmail || undefined,
+          companyLogoUrl: settings.companyLogoUrl || undefined,
+          companySiret: settings.companySiret || undefined,
           currencySymbol: settings.currencySymbol,
           invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,
           cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
+          touristTaxRatePerPersonPerDay: settings.touristTaxRatePerPersonPerDay,
         }}
       />,
     )
@@ -94,7 +98,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
     const buffer = Buffer.concat(chunks)
 
-    const fileName = `Facture-${invoice.invoiceNumber}-${invoice.booking.client.lastName}.pdf`
+    const safeInvoiceNumber = invoice.invoiceNumber.replace(/[^a-zA-Z0-9-_]/g, '')
+    const fileName = `${safeInvoiceNumber}_${invoice.booking.client.lastName}.pdf`
 
     return new NextResponse(buffer, {
       headers: {

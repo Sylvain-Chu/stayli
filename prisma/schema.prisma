@@ -112,7 +112,10 @@ model Settings {
   companyAddress                       String?
   companyPhoneNumber                   String?
   companyEmail                         String?
+  companySiret                         String?  
   companyLogoUrl                       String?
+  companyZipCode                       String?  
+  companyCity                          String?
   defaultLanguage                      String   @default("fr")
   currencyCode                         String   @default("EUR")
   currencySymbol                       String   @default("€")
