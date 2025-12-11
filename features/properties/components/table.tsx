@@ -3,13 +3,7 @@
 import * as React from 'react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MoreHorizontal, Eye, Pencil, Trash2, MapPin, Home } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { Eye, Pencil, Trash2, MapPin, Home } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -49,11 +43,15 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
+
+  // État du formulaire d'édition mis à jour avec le nouveau champ
   const [editFormData, setEditFormData] = useState({
     name: '',
     address: '',
     description: '',
+    contractDescription: '',
   })
+
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { toast } = useToast()
 
@@ -91,10 +89,13 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
   const handleEditProperty = (property: Property) => {
     setEditProperty(property)
+    // Pré-remplissage du formulaire avec les données existantes
     setEditFormData({
       name: property.name,
       address: property.address || '',
       description: property.description || '',
+      // @ts-ignore - Le type Property doit être mis à jour dans types.ts
+      contractDescription: property.contractDescription || '',
     })
     setErrors({})
   }
@@ -345,7 +346,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
         )}
       </div>
 
-      {/* View Dialog */}
       <Dialog open={!!viewProperty} onOpenChange={() => setViewProperty(null)}>
         <DialogContent>
           <DialogHeader>
@@ -366,6 +366,12 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                 <p className="text-sm">{viewProperty.description || 'Aucune description'}</p>
               </div>
               <div>
+                <Label>Désignation contractuelle</Label>
+                <p className="text-muted-foreground text-sm whitespace-pre-wrap">
+                  {viewProperty.contractDescription || 'Aucune description contractuelle'}
+                </p>
+              </div>
+              <div>
                 <Label>Réservations</Label>
                 <p className="text-sm">{viewProperty._count?.bookings || 0}</p>
               </div>
@@ -376,7 +382,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
       {/* Edit Dialog */}
       <Dialog open={!!editProperty} onOpenChange={() => setEditProperty(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
           <form onSubmit={handleSubmitEdit}>
             <DialogHeader>
               <DialogTitle>Modifier la propriété</DialogTitle>
@@ -401,14 +407,30 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="edit-description">Description</Label>
+                <Label htmlFor="edit-description">Description (Marketing)</Label>
                 <Textarea
                   id="edit-description"
                   value={editFormData.description}
                   onChange={(e) =>
                     setEditFormData({ ...editFormData, description: e.target.value })
                   }
-                  rows={4}
+                  rows={2}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="edit-contractDescription">
+                  Description contractuelle (Désignation des lieux)
+                </Label>
+                <Textarea
+                  id="edit-contractDescription"
+                  value={editFormData.contractDescription}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, contractDescription: e.target.value })
+                  }
+                  rows={6}
+                  className="font-mono text-sm"
+                  placeholder="Texte juridique pour le contrat..."
                 />
               </div>
             </div>
@@ -429,7 +451,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}

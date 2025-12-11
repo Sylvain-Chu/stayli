@@ -1,48 +1,88 @@
+'use client'
+
 import Link from 'next/link'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { Button } from '@/components/ui/button'
-import { ChevronLeft, Download, Printer } from 'lucide-react'
+import { ChevronLeft, Printer } from 'lucide-react'
+import { DownloadInvoiceServerButton } from '@/features/invoices/components'
+import { useInvoice } from '@/features/invoices/hooks/useInvoices'
+import { useParams } from 'next/navigation'
+import { useMemo } from 'react'
 
-export default async function InvoiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+export default function InvoiceDetailPage() {
+  const params = useParams()
+  const id =
+    typeof params?.id === 'string' ? params.id : Array.isArray(params?.id) ? params.id[0] : ''
+  const { invoice, isLoading, isError } = useInvoice(id)
 
-  // Mock data
-  const invoice = {
-    id,
-    date: '2 décembre 2025',
-    dueDate: '15 décembre 2025',
-    company: {
-      name: 'Sayli SARL',
-      address: '45 Avenue des Champs-Élysées',
-      city: '75008 Paris',
-      phone: '+33 1 23 45 67 89',
-      email: 'contact@sayli.fr',
-      siret: '123 456 789 00001',
-    },
-    client: {
-      name: 'Marie Dupont',
-      address: '123 Rue de la Paix',
-      city: '75001 Paris',
-      email: 'marie.dupont@email.com',
-    },
-    items: [
+  // Calculs pour affichage
+  const items = useMemo(() => {
+    if (!invoice?.booking) return []
+    const nights = Math.ceil(
+      (new Date(invoice.booking.endDate).getTime() -
+        new Date(invoice.booking.startDate).getTime()) /
+        (1000 * 60 * 60 * 24),
+    )
+    const arr = [
       {
-        description: 'Séjour Villa Méditerranée (7 nuits)',
+        description: `Séjour ${invoice.booking.property?.name || ''} (${nights} nuit${nights > 1 ? 's' : ''})`,
         quantity: 1,
-        unitPrice: 1260,
-        total: 1260,
+        unitPrice: invoice.booking.basePrice,
+        total: invoice.booking.basePrice,
       },
-      { description: 'Linge de maison', quantity: 1, unitPrice: 25, total: 25 },
-      { description: 'Ménage fin de séjour', quantity: 1, unitPrice: 60, total: 60 },
-      { description: 'Taxe de séjour (7 nuits x 2€)', quantity: 1, unitPrice: 14, total: 14 },
-    ],
-    subtotal: 1359,
-    tva: 0,
-    total: 1359,
+    ]
+    if (invoice.booking.hasLinens && invoice.booking.linensPrice > 0) {
+      arr.push({
+        description: 'Linge de maison',
+        quantity: 1,
+        unitPrice: invoice.booking.linensPrice,
+        total: invoice.booking.linensPrice,
+      })
+    }
+    if (invoice.booking.hasCleaning && invoice.booking.cleaningPrice > 0) {
+      arr.push({
+        description: 'Ménage fin de séjour',
+        quantity: 1,
+        unitPrice: invoice.booking.cleaningPrice,
+        total: invoice.booking.cleaningPrice,
+      })
+    }
+    if (invoice.booking.taxes > 0) {
+      arr.push({
+        description: 'Taxe de séjour',
+        quantity: 1,
+        unitPrice: invoice.booking.taxes,
+        total: invoice.booking.taxes,
+      })
+    }
+    if (invoice.booking.discount > 0) {
+      arr.push({
+        description: 'Remise',
+        quantity: 1,
+        unitPrice: -invoice.booking.discount,
+        total: -invoice.booking.discount,
+      })
+    }
+    return arr
+  }, [invoice])
+
+  const subtotal = useMemo(() => items.reduce((acc, item) => acc + item.total, 0), [items])
+  const tva = 0
+  const total = invoice?.amount || 0
+
+  if (isLoading) {
+    return <div className="text-muted-foreground p-8 text-center">Chargement...</div>
+  }
+  if (isError || !invoice) {
+    return (
+      <div className="text-destructive p-8 text-center">
+        Erreur lors du chargement de la facture.
+      </div>
+    )
   }
 
   return (
-    <AppLayout title={`Facture ${id}`}>
+    <AppLayout title={`Facture ${invoice.invoiceNumber}`}>
       <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
@@ -58,10 +98,12 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               <Printer className="mr-2 h-4 w-4" />
               Imprimer
             </Button>
-            <Button className="bg-primary hover:bg-primary/90">
-              <Download className="mr-2 h-4 w-4" />
-              Télécharger PDF
-            </Button>
+            <DownloadInvoiceServerButton
+              invoiceId={invoice.id}
+              invoiceNumber={invoice.invoiceNumber}
+              variant="default"
+              size="default"
+            />
           </div>
         </div>
 
@@ -73,26 +115,24 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               <div>
                 <div className="mb-4 flex items-center gap-2">
                   <div className="bg-primary flex h-10 w-10 items-center justify-center rounded-lg">
-                    <span className="text-primary-foreground text-lg font-bold">LG</span>
+                    <span className="text-primary-foreground text-lg font-bold">
+                      {invoice.booking?.property?.name?.[0] || 'F'}
+                    </span>
                   </div>
                   <span className="text-foreground text-xl font-semibold">
-                    {invoice.company.name}
+                    {invoice.booking?.property?.name || 'Propriété'}
                   </span>
                 </div>
                 <div className="text-muted-foreground space-y-0.5 text-sm">
-                  <p>{invoice.company.address}</p>
-                  <p>{invoice.company.city}</p>
-                  <p>{invoice.company.phone}</p>
-                  <p>{invoice.company.email}</p>
-                  <p className="pt-1">SIRET: {invoice.company.siret}</p>
+                  <p>{invoice.booking?.property?.address}</p>
                 </div>
               </div>
               <div className="text-right">
                 <h1 className="text-foreground mb-2 text-3xl font-bold">FACTURE</h1>
-                <p className="text-primary text-lg font-semibold">{invoice.id}</p>
+                <p className="text-primary text-lg font-semibold">{invoice.invoiceNumber}</p>
                 <div className="text-muted-foreground mt-4 text-sm">
-                  <p>Date: {invoice.date}</p>
-                  <p>Échéance: {invoice.dueDate}</p>
+                  <p>Date: {new Date(invoice.issueDate).toLocaleDateString('fr-FR')}</p>
+                  <p>Échéance: {new Date(invoice.dueDate).toLocaleDateString('fr-FR')}</p>
                 </div>
               </div>
             </div>
@@ -104,9 +144,8 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                   Émetteur
                 </h3>
                 <div className="text-foreground text-sm">
-                  <p className="font-medium">{invoice.company.name}</p>
-                  <p>{invoice.company.address}</p>
-                  <p>{invoice.company.city}</p>
+                  <p className="font-medium">{invoice.booking?.property?.name}</p>
+                  <p>{invoice.booking?.property?.address}</p>
                 </div>
               </div>
               <div>
@@ -114,10 +153,12 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                   Facturé à
                 </h3>
                 <div className="text-foreground text-sm">
-                  <p className="font-medium">{invoice.client.name}</p>
-                  <p>{invoice.client.address}</p>
-                  <p>{invoice.client.city}</p>
-                  <p>{invoice.client.email}</p>
+                  <p className="font-medium">
+                    {invoice.booking?.client?.firstName} {invoice.booking?.client?.lastName}
+                  </p>
+                  <p>{invoice.booking?.client?.address}</p>
+                  <p>{invoice.booking?.client?.city}</p>
+                  <p>{invoice.booking?.client?.email}</p>
                 </div>
               </div>
             </div>
@@ -142,7 +183,7 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
                   </tr>
                 </thead>
                 <tbody>
-                  {invoice.items.map((item, index) => (
+                  {items.map((item, index) => (
                     <tr key={index} className="border-border border-t">
                       <td className="text-foreground px-4 py-3 text-sm">{item.description}</td>
                       <td className="text-muted-foreground px-4 py-3 text-center text-sm">
@@ -165,16 +206,16 @@ export default async function InvoiceDetailPage({ params }: { params: Promise<{ 
               <div className="w-64 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Sous-total HT</span>
-                  <span className="text-foreground">{invoice.subtotal} €</span>
+                  <span className="text-foreground">{subtotal} €</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">TVA (0%)</span>
-                  <span className="text-foreground">{invoice.tva} €</span>
+                  <span className="text-foreground">{tva} €</span>
                 </div>
                 <div className="border-border mt-2 border-t pt-2">
                   <div className="flex justify-between">
                     <span className="text-foreground font-semibold">Total TTC</span>
-                    <span className="text-foreground text-xl font-bold">{invoice.total} €</span>
+                    <span className="text-foreground text-xl font-bold">{total} €</span>
                   </div>
                 </div>
               </div>

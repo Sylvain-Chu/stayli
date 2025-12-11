@@ -25,11 +25,14 @@ export function PropertiesToolbar() {
   const [search, setSearch] = useState('')
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+
   const [formData, setFormData] = useState({
     name: '',
     address: '',
     description: '',
+    contractDescription: '',
   })
+
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [isPending, startTransition] = useTransition()
 
@@ -58,7 +61,8 @@ export function PropertiesToolbar() {
 
           await mutate()
           setIsDialogOpen(false)
-          setFormData({ name: '', address: '', description: '' })
+          // Reset du formulaire complet
+          setFormData({ name: '', address: '', description: '', contractDescription: '' })
           toast({
             title: 'Succès',
             description: 'Propriété créée avec succès',
@@ -145,7 +149,9 @@ export function PropertiesToolbar() {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[600px]">
+          {' '}
+          {/* Élargi un peu pour le confort */}
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>Nouvelle Propriété</DialogTitle>
@@ -177,14 +183,34 @@ export function PropertiesToolbar() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Description (Marketing)</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Description de la propriété..."
-                  rows={4}
+                  placeholder="Description courte pour l'interface..."
+                  rows={2}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="contractDescription">
+                  Description contractuelle (Désignation des lieux)
+                </Label>
+                <Textarea
+                  id="contractDescription"
+                  value={formData.contractDescription}
+                  onChange={(e) =>
+                    setFormData({ ...formData, contractDescription: e.target.value })
+                  }
+                  placeholder="Copiez ici le paragraphe 'DÉSIGNATION DES LIEUX' complet du contrat (surface, étage, équipements, etc.)"
+                  rows={6}
+                  className="font-mono text-sm"
+                />
+                <p className="text-muted-foreground text-xs">
+                  Ce texte apparaîtra tel quel dans la section "Désignation des lieux" du contrat
+                  PDF généré.
+                </p>
               </div>
             </div>
 
