@@ -112,6 +112,9 @@ export async function POST(request: NextRequest) {
         lastName: body.lastName,
         email: body.email,
         phone: body.phone,
+        address: body.address,
+        zipCode: body.zipCode,
+        city: body.city,
       },
     })
 

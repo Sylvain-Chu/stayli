@@ -1,17 +1,17 @@
 'use client'
 
+import { PDFDownloadLink } from '@react-pdf/renderer'
 import { Button } from '@/components/ui/button'
 import { FileText } from 'lucide-react'
-import { PDFDownloadLink } from '@react-pdf/renderer'
-import { InvoicePDF } from './InvoicePDF'
+import { ContractPDF } from './ContractPDF'
 
-export function DownloadInvoiceButton({ booking, property, client, settings }: any) {
-  const fileName = `Facture-${client.lastName}-${new Date(booking.startDate).toISOString().split('T')[0]}.pdf`
+export function DownloadContractButton({ booking, property, client, settings }: any) {
+  const fileName = `Contrat-${client.lastName}-${new Date(booking.startDate).toISOString().split('T')[0]}.pdf`
 
   return (
     <PDFDownloadLink
       document={
-        <InvoicePDF booking={booking} property={property} client={client} settings={settings} />
+        <ContractPDF booking={booking} property={property} client={client} settings={settings} />
       }
       fileName={fileName}
     >

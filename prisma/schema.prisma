@@ -17,6 +17,7 @@ model Property {
   name        String
   address     String?
   description String?
+  contractDescription String?
   bookings    Booking[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -28,6 +29,9 @@ model Client {
   lastName  String
   email     String    @unique
   phone     String?
+  address   String?
+  zipCode   String?
+  city      String?
   bookings  Booking[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt

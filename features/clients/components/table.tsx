@@ -1,16 +1,9 @@
 'use client'
 
-import * as React from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MoreHorizontal, Eye, Pencil, Trash2, Mail, Phone } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { Eye, Pencil, Trash2, Mail, Phone } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -38,6 +31,9 @@ type ClientRow = {
   lastName: string
   email: string
   phone?: string | null
+  address?: string | null
+  zipCode?: string | null
+  city?: string | null
   createdAt: string
 }
 
@@ -65,6 +61,9 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     lastName: '',
     email: '',
     phone: '',
+    address: '',
+    zipCode: '',
+    city: '',
   })
   const { toast } = useToast()
 
@@ -105,6 +104,9 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
       lastName: client.lastName,
       email: client.email,
       phone: client.phone || '',
+      address: client.address || '',
+      zipCode: client.zipCode || '',
+      city: client.city || '',
     })
   }
 
@@ -423,6 +425,17 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     </a>
                   </div>
                 )}
+                {(viewClient.address || viewClient.zipCode || viewClient.city) && (
+                  <div className="mt-1 border-t pt-3">
+                    <p className="text-muted-foreground mb-1 text-xs font-semibold uppercase">
+                      Adresse
+                    </p>
+                    <p className="text-sm">{viewClient.address}</p>
+                    <p className="text-sm">
+                      {viewClient.zipCode} {viewClient.city}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -445,7 +458,6 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog Modifier */}
       <Dialog open={!!editClient} onOpenChange={() => setEditClient(null)}>
         <DialogContent className="sm:max-w-[500px]">
           <form onSubmit={handleSubmitEdit}>
@@ -490,6 +502,34 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                   value={editFormData.phone}
                   onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
                 />
+              </div>
+
+              <div className="grid gap-2">
+                <Label htmlFor="edit-address">Adresse</Label>
+                <Input
+                  id="edit-address"
+                  value={editFormData.address}
+                  onChange={(e) => setEditFormData({ ...editFormData, address: e.target.value })}
+                  placeholder="123 rue de la Paix"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-zipCode">Code Postal</Label>
+                  <Input
+                    id="edit-zipCode"
+                    value={editFormData.zipCode}
+                    onChange={(e) => setEditFormData({ ...editFormData, zipCode: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="edit-city">Ville</Label>
+                  <Input
+                    id="edit-city"
+                    value={editFormData.city}
+                    onChange={(e) => setEditFormData({ ...editFormData, city: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>

@@ -35,6 +35,9 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
     lastName: '',
     email: '',
     phone: '',
+    address: '',
+    zipCode: '',
+    city: '',
   })
   const { toast } = useToast()
   const { selectedIds, clearSelection } = useClientsContext()
@@ -69,19 +72,22 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      // Valider les données
       const validatedData = clientSchema.parse(formData)
 
-      // Créer le client
       await createClient(validatedData)
 
-      // Revalider les données avec SWR
       await mutate((key) => typeof key === 'string' && key.startsWith('/api/clients'))
 
-      // Réinitialiser le formulaire
       setOpen(false)
-      setFormData({ firstName: '', lastName: '', email: '', phone: '' })
-
+      setFormData({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        address: '',
+        zipCode: '',
+        city: '',
+      })
       toast({
         title: 'Client créé',
         description: 'Le client a été créé avec succès.',
@@ -140,47 +146,79 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>Nouveau client</DialogTitle>
-              <DialogDescription>
-                Créez un nouveau client en remplissant les informations ci-dessous.
-              </DialogDescription>
+              {/* ... */}
             </DialogHeader>
             <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="firstName">Prénom *</Label>
+                  <Input
+                    id="firstName"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="lastName">Nom *</Label>
+                  <Input
+                    id="lastName"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="email">Email *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="phone">Téléphone</Label>
+                  <Input
+                    id="phone"
+                    type="tel"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              {/* SECTION ADRESSE */}
               <div className="grid gap-2">
-                <Label htmlFor="firstName">Prénom *</Label>
+                <Label htmlFor="address">Adresse</Label>
                 <Input
-                  id="firstName"
-                  value={formData.firstName}
-                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                  required
+                  id="address"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  placeholder="123 rue de la Paix"
                 />
               </div>
-              <div className="grid gap-2">
-                <Label htmlFor="lastName">Nom *</Label>
-                <Input
-                  id="lastName"
-                  value={formData.lastName}
-                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="email">Email *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  required
-                />
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="phone">Téléphone</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="zipCode">Code Postal</Label>
+                  <Input
+                    id="zipCode"
+                    value={formData.zipCode}
+                    onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })}
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="city">Ville</Label>
+                  <Input
+                    id="city"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
             <DialogFooter>

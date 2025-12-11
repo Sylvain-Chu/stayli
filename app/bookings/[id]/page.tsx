@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ChevronLeft, Calendar, Mail, Phone, MapPin, Clock, Users } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { GenerateInvoiceButton } from '@/features/bookings/components/generate-invoice-button'
+import { DownloadContractButton } from '@/features/bookings/components/download-contract-button'
 
 export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -23,6 +24,9 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
   if (!booking) {
     notFound()
   }
+
+  // 1. Récupération des paramètres pour le contrat (Infos propriétaire)
+  const settings = await prisma.settings.findFirst()
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -115,6 +119,16 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
           </div>
           <div className="flex items-center gap-2">
             <GenerateInvoiceButton bookingId={id} hasInvoice={!!booking.invoice} />
+
+            {/* 2. Ajout du bouton de téléchargement du contrat */}
+            {settings && booking.client && booking.property && (
+              <DownloadContractButton
+                booking={booking}
+                property={booking.property}
+                client={booking.client}
+                settings={settings}
+              />
+            )}
 
             <Button
               variant="ghost"
