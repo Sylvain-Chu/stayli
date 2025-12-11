@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, lazy, useState, useEffect } from 'react'
+import { Suspense, lazy, useState } from 'react'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { BookingsToolbar, BookingsStats } from '@/features/bookings'
 import { BookingsProvider } from '@/features/bookings/context/BookingsContext'
@@ -31,22 +31,38 @@ function BookingsContent() {
 
   const { bookings, isLoading, isError, mutate } = useBookings(filters, page, 10)
 
-  useEffect(() => {
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value)
     setPage(1)
-  }, [debouncedSearch, dateFrom, dateTo, status])
+  }
+
+  const handleDateFromChange = (value: string) => {
+    setDateFrom(value)
+    setPage(1)
+  }
+
+  const handleDateToChange = (value: string) => {
+    setDateTo(value)
+    setPage(1)
+  }
+
+  const handleStatusChange = (value: BookingStatus | 'all') => {
+    setStatus(value)
+    setPage(1)
+  }
 
   return (
     <>
       <BookingsStats />
       <BookingsToolbar
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
+        onSearchChange={handleSearchChange}
         dateFrom={dateFrom}
-        onDateFromChange={setDateFrom}
+        onDateFromChange={handleDateFromChange}
         dateTo={dateTo}
-        onDateToChange={setDateTo}
+        onDateToChange={handleDateToChange}
         status={status}
-        onStatusChange={setStatus}
+        onStatusChange={handleStatusChange}
         onDataChange={mutate}
       />
       <Suspense fallback={<Skeleton className="h-[400px] w-full" />}>

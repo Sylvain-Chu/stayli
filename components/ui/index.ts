@@ -17,16 +17,8 @@ export * from './popover'
 
 // Data Display
 export * from './data-table'
-export * from './status-badge'
-
-// Layout & Structure
-export * from './sidebar'
-export * from './table'
 
 // Forms & Validation
-export * from './form'
-export * from './field'
-export * from './input-group'
 export * from './textarea'
 
 // Feedback & Status
@@ -36,4 +28,3 @@ export * from './skeleton'
 
 // Utilities
 export * from './use-toast'
-export * from './use-mobile'

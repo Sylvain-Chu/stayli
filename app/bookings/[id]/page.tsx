@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ChevronLeft, Calendar, Mail, Phone, MapPin, Clock, Users } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
-import { GenerateInvoiceButton } from '@/features/bookings/components/generate-invoice-button'
+// import { GenerateInvoiceButton } from '@/features/bookings/components/generate-invoice-button'
 import { DownloadContractButton } from '@/features/bookings/components/download-contract-button'
 
 export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -118,7 +118,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
             {getStatusBadge(booking.status)}
           </div>
           <div className="flex items-center gap-2">
-            <GenerateInvoiceButton bookingId={id} hasInvoice={!!booking.invoice} />
+            {/* <GenerateInvoiceButton bookingId={id} hasInvoice={!!booking.invoice} /> */}
 
             {/* 2. Ajout du bouton de téléchargement du contrat */}
             {settings && booking.client && booking.property && (

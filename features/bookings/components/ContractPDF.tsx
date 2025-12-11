@@ -6,7 +6,7 @@ import { fr } from 'date-fns/locale'
 
 // --- STYLES ---
 const styles = StyleSheet.create({
-  // Style de base (Page 1) : alignement haut
+  // ... (styles inchangés)
   page: {
     padding: 35,
     fontSize: 9,
@@ -14,18 +14,15 @@ const styles = StyleSheet.create({
     lineHeight: 1.3,
     color: '#000',
   },
-  // Style spécifique (Page 2) : centré verticalement
   pageCentered: {
     padding: 35,
-    fontSize: 8, // Police compacte pour tout faire tenir
+    fontSize: 8,
     fontFamily: 'Helvetica',
-    lineHeight: 1.25, // Interligne compact
+    lineHeight: 1.25,
     color: '#000',
     flexDirection: 'column',
-    justifyContent: 'center', // C'est ici que se fait le centrage vertical
+    justifyContent: 'center',
   },
-
-  // -- TITRES --
   mainTitle: {
     fontSize: 12,
     fontWeight: 'bold',
@@ -50,8 +47,6 @@ const styles = StyleSheet.create({
     textDecoration: 'underline',
     textTransform: 'uppercase',
   },
-
-  // -- TEXTE --
   text: {
     marginBottom: 4,
     textAlign: 'justify',
@@ -60,8 +55,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Helvetica-Bold',
     fontWeight: 'bold',
   },
-
-  // -- TABLEAU (Page 1) --
   table: {
     display: 'flex',
     width: 'auto',
@@ -96,15 +89,12 @@ const styles = StyleSheet.create({
     padding: 3,
     textAlign: 'right',
   },
-  // Lignes simples pour page 1 (hors tableau)
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 2,
   },
-
-  // -- SIGNATURES --
   signatureSection: {
     marginTop: 20,
     flexDirection: 'row',
@@ -124,8 +114,6 @@ const styles = StyleSheet.create({
     fontSize: 8,
     fontStyle: 'italic',
   },
-
-  // -- PAGE 2 (Colonnes) --
   columnsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -155,7 +143,6 @@ const styles = StyleSheet.create({
     marginBottom: 6,
     textAlign: 'justify',
   },
-  // Puces
   bulletPoint: {
     flexDirection: 'row',
     marginBottom: 2,
@@ -209,13 +196,10 @@ interface ContractProps {
 }
 
 export const ContractPDF = ({ booking, property, client, settings }: ContractProps) => {
-  // Formatage
   const formatDate = (date: Date | string) => format(new Date(date), 'd MMMM yyyy', { locale: fr })
-
   const formatPrice = (amount: number) =>
     amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' €'
 
-  // Calculs
   const deposit = booking.totalPrice * 0.25
   const balance = booking.totalPrice - deposit
 
@@ -224,7 +208,6 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
   const nights = Math.ceil(Math.abs(end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
   const totalPersons = (booking.adults || 1) + (booking.children || 0)
 
-  // Adresses
   const ownerAddress = settings.companyAddress || ''
   const ownerPhone = settings.companyPhoneNumber ? ` - ${settings.companyPhoneNumber}` : ''
   const clientAddress = client.address || '..............................'
@@ -232,7 +215,6 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
 
   return (
     <Document>
-      {/* ======================= PAGE 1 ======================= */}
       <Page size="A4" style={styles.page}>
         <Text style={styles.mainTitle}>CONTRAT DE LOCATION SAISONNIERE MEUBLEE</Text>
         <Text style={styles.propertyTitle}>{property.name.toUpperCase()}</Text>
@@ -248,7 +230,7 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
           </Text>
           <Text style={styles.text}>Eventuellement représenté par :</Text>
           <Text style={styles.text}>
-            Ci-après dénommé(e) <Text style={styles.bold}>LE PROPRIETAIRE</Text> d'une part,
+            Ci-après dénommé(e) <Text style={styles.bold}>LE PROPRIETAIRE</Text> d&apos;une part,
           </Text>
         </View>
 
@@ -268,7 +250,7 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
           </View>
           <Text style={styles.text}>Adresse mail : {client.email}</Text>
           <Text style={styles.text}>
-            Ci-après dénommé(e) <Text style={styles.bold}>LE LOCATAIRE</Text> d'autre part,
+            Ci-après dénommé(e) <Text style={styles.bold}>LE LOCATAIRE</Text> d&apos;autre part,
           </Text>
         </View>
 
@@ -298,7 +280,7 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
           </Text>
         </View>
 
-        {/* TABLEAU "FAUX" AVEC BORDURES */}
+        {/* TABLEAU */}
         <View style={styles.table}>
           <View style={styles.tableRow}>
             <View style={styles.tableColDesc}>
@@ -374,12 +356,12 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
         <Text style={styles.sectionTitle}>ETAT DES LIEUX, INVENTAIRE :</Text>
         <View style={{ marginBottom: 5 }}>
           <Text style={styles.text}>
-            Un état des lieux contradictoire s'effectuera à l'entrée dans les lieux, ainsi qu'au
-            départ du LOCATAIRE.
+            Un état des lieux contradictoire s&apos;effectuera à l&apos;entrée dans les lieux, ainsi
+            qu&apos;au départ du LOCATAIRE.
           </Text>
           <Text style={styles.text}>
-            J'ai pris bonne note que sans l'assurance annulation proposée par le propriétaire, le
-            solde de la location de ce séjour est dû en cas d'annulation.
+            J&apos;ai pris bonne note que sans l&apos;assurance annulation proposée par le
+            propriétaire, le solde de la location de ce séjour est dû en cas d&apos;annulation.
           </Text>
           <Text style={[styles.text, { marginTop: 5 }]}>
             Le présent contrat est rédigé en deux exemplaires et signé par chacune des Parties.
@@ -404,31 +386,29 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
         </View>
       </Page>
 
-      {/* ======================= PAGE 2 : CONDITIONS GENERALES (Centrée verticalement) ======================= */}
       <Page size="A4" style={styles.pageCentered}>
         <Text style={styles.cgTitle}>CONDITIONS GENERALES</Text>
 
         <View style={styles.columnsContainer}>
-          {/* --- COLONNE GAUCHE --- */}
           <View style={styles.column}>
             <Text style={styles.cgText}>
               La présente location est conclue à titre de résidence provisoire et de plaisance, les
-              locaux ne pourront être utilisés à titre d'habitation principale ou même secondaire et
-              le Locataire ne pourra y pratiquer aucune activité commerciale, artisanale ou
-              professionnelle. En conséquence, le contrat sera régi par les dispositions du Code
-              Civil ainsi que par les conditions prévues aux présentes.
+              locaux ne pourront être utilisés à titre d&apos;habitation principale ou même
+              secondaire et le Locataire ne pourra y pratiquer aucune activité commerciale,
+              artisanale ou professionnelle. En conséquence, le contrat sera régi par les
+              dispositions du Code Civil ainsi que par les conditions prévues aux présentes.
             </Text>
             <Text style={styles.cgText}>
-              Le bail cesse de plein droit à l'expiration du terme fixé au recto, sans qu'il soit
-              besoin de donner congé. La location ne pourra être prorogée sans l'accord préalable
-              écrit du Propriétaire.
+              Le bail cesse de plein droit à l&apos;expiration du terme fixé au recto, sans
+              qu&apos;il soit besoin de donner congé. La location ne pourra être prorogée sans
+              l&apos;accord préalable écrit du Propriétaire.
             </Text>
 
             <Text style={styles.cgSectionTitle}>RESERVATION PAR LE LOCATAIRE</Text>
             <Text style={styles.cgText}>
               Le Locataire effectuant une réservation signe et renvoie au Propriétaire le contrat
-              accompagné impérativement de l'acompte dont le montant est indiqué au recto, le solde
-              de la location reste payable à la remise des clés dès l'arrivée.
+              accompagné impérativement de l&apos;acompte dont le montant est indiqué au recto, le
+              solde de la location reste payable à la remise des clés dès l&apos;arrivée.
             </Text>
 
             <Text style={styles.cgSectionTitle}>DEPOT DE GARANTIE</Text>
@@ -438,9 +418,9 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
               pourraient être causés aux objets, mobiliers et autres garnissant les lieux loués.
             </Text>
             <Text style={styles.cgText}>
-              Au départ du Locataire, après restitution des clés et en l'absence de dégradation
-              constatée dans l'état des lieux de sortie contradictoirement établi par les parties,
-              le dépôt de garantie sera immédiatement et intégralement restitué.
+              Au départ du Locataire, après restitution des clés et en l&apos;absence de dégradation
+              constatée dans l&apos;état des lieux de sortie contradictoirement établi par les
+              parties, le dépôt de garantie sera immédiatement et intégralement restitué.
             </Text>
             <Text style={styles.cgText}>
               A défaut, le dépôt de garantie sera restitué, déduction faite des réparations
@@ -455,36 +435,35 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
               départ.
             </Text>
             <Text style={styles.cgText}>
-              Le Propriétaire s'oblige à délivrer les lieux loués suivant descriptif, un inventaire
-              est établi à l'arrivée ainsi que l'état de propreté. Le Locataire devra à son départ
-              laisser les lieux au même état qu'à l'arrivée.
+              Le Propriétaire s&apos;oblige à délivrer les lieux loués suivant descriptif, un
+              inventaire est établi à l&apos;arrivée ainsi que l&apos;état de propreté. Le Locataire
+              devra à son départ laisser les lieux au même état qu&apos;à l&apos;arrivée.
             </Text>
           </View>
 
-          {/* --- COLONNE DROITE --- */}
           <View style={styles.column}>
             <Text style={[styles.cgSectionTitle, { marginTop: 0 }]}>ASSURANCE</Text>
             <Text style={styles.cgText}>
               Le Locataire est responsable de tous les dommages survenant de son fait. Il{' '}
-              <Text style={styles.bold}>est</Text> tenu d'être assuré par un contrat type
+              <Text style={styles.bold}>est</Text> tenu d&apos;être assuré par un contrat type
               villégiature pour ces différents risques (voir clauses particulières de votre
               assurance incendie responsabilité civile).
             </Text>
             <Text style={styles.cgText}>
-              Le Propriétaire lui soumet systématiquement une proposition d'assurance annulation
-              (type voyage) adaptée aux périodes de cure.
+              Le Propriétaire lui soumet systématiquement une proposition d&apos;assurance
+              annulation (type voyage) adaptée aux périodes de cure.
             </Text>
 
             <Text style={styles.cgSectionTitle}>ANNULATION</Text>
 
             <View style={styles.bulletPoint}>
               <Text style={styles.bullet}>•</Text>
-              <Text style={[styles.bulletText, styles.bold]}>Avant l'arrivée :</Text>
+              <Text style={[styles.bulletText, styles.bold]}>Avant l&apos;arrivée :</Text>
             </View>
             <Text style={styles.cgText}>
               Si le Locataire a souscrit une assurance annulation, son acompte lui sera remboursé
-              par la Compagnie d'Assurance, et le solde ne lui sera pas réclamé ; Dans tous les cas
-              l'acompte reste au Propriétaire.
+              par la Compagnie d&apos;Assurance, et le solde ne lui sera pas réclamé ; Dans tous les
+              cas l&apos;acompte reste au Propriétaire.
             </Text>
             <Text style={styles.cgText}>
               <Text style={styles.bold}>Sans assurance</Text>, le solde de la location est dû au
@@ -506,10 +485,11 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
               ATTENTION : sans assurance annulation, le solde de la location est dû au Propriétaire.
             </Text>
             <Text style={styles.cgText}>
-              En cas d'annulation quel qu'en soit le motif, le Locataire devra aviser impérativement
-              le Propriétaire de son annulation, dans les meilleurs délais et au plus tard dans les
-              CINQ JOURS suivant l'apparition de l'évènement, faute de quoi l'annulation de la
-              location ne pourra être prise en charge par la Compagnie d'Assurance.
+              En cas d&apos;annulation quel qu&apos;en soit le motif, le Locataire devra aviser
+              impérativement le Propriétaire de son annulation, dans les meilleurs délais et au plus
+              tard dans les CINQ JOURS suivant l&apos;apparition de l&apos;évènement, faute de quoi
+              l&apos;annulation de la location ne pourra être prise en charge par la Compagnie
+              d&apos;Assurance.
             </Text>
 
             <Text style={styles.cgSectionTitle}>RESERVATION DEFINITIVE</Text>
@@ -522,7 +502,7 @@ export const ContractPDF = ({ booking, property, client, settings }: ContractPro
               Un reçu lui confirmant la bonne réception du document sera envoyé au Locataire.
             </Text>
             <Text style={styles.cgText}>
-              Le solde de la location est à régler le jour de l'arrivée.
+              Le solde de la location est à régler le jour de l&apos;arrivée.
             </Text>
 
             <Text style={styles.cgSectionTitle}>DEPART ET ARRIVEE</Text>

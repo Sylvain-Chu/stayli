@@ -4,7 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MoreHorizontal, Eye, Download, Trash2 } from 'lucide-react'
+import { MoreHorizontal, Eye, Download, Trash2, Check } from 'lucide-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +64,29 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const handleDeleteClick = (id: string) => {
     setInvoiceToDelete(id)
     setDeleteConfirmOpen(true)
+  }
+
+  // Fonction utilitaire pour changer le statut d'une facture
+  const handleChangeStatus = async (id: string, status: string) => {
+    try {
+      const response = await fetch(`/api/invoices/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status }),
+      })
+      if (!response.ok) throw new Error('Erreur lors du changement de statut')
+      await mutate()
+      toast({
+        title: 'Statut mis à jour',
+        description: `La facture est maintenant marquée comme ${status === 'paid' ? 'payée' : status}.`,
+      })
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de changer le statut.',
+        variant: 'destructive',
+      })
+    }
   }
 
   const handleDeleteConfirm = async () => {
@@ -301,13 +324,17 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                     </td>
                     <td className="h-14 px-4">
                       <div className="flex items-center gap-1">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                        >
-                          <Download className="h-4 w-4" />
-                        </Button>
+                        {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                            title="Marquer comme payée"
+                            onClick={() => handleChangeStatus(invoice.id, 'paid')}
+                          >
+                            <Check className="h-4 w-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"

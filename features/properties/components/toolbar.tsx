@@ -208,8 +208,8 @@ export function PropertiesToolbar() {
                   className="font-mono text-sm"
                 />
                 <p className="text-muted-foreground text-xs">
-                  Ce texte apparaîtra tel quel dans la section "Désignation des lieux" du contrat
-                  PDF généré.
+                  Ce texte apparaîtra tel quel dans la section &quot;Désignation des lieux&quot; du
+                  contrat PDF généré.
                 </p>
               </div>
             </div>

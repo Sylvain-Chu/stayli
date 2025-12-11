@@ -37,6 +37,7 @@ const colors = {
 }
 
 const styles = StyleSheet.create({
+  // ... (copiez les styles existants, ils sont bons)
   page: {
     padding: 40,
     fontSize: 10,
@@ -166,7 +167,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  // Column Widths - SANS QUANTITÉ
   colDesc: { width: '65%' },
   colPrice: { width: '17.5%', textAlign: 'right' },
   colTotal: { width: '17.5%', textAlign: 'right' },
@@ -345,7 +345,6 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
   const currency = settings.currencySymbol || '€'
   const taxRate = settings.touristTaxRatePerPersonPerDay || 1.0
 
-  // Correction : forcer 2 décimales maximum pour éviter les "159,465 €"
   const formatCurrency = (amount: number) => {
     return `${amount.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} ${currency}`
   }
@@ -374,10 +373,8 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
   const discount = booking.discount || 0
   const total = booking.totalPrice
 
-  // Correction : Arrondir l'acompte à 2 décimales pour que le solde soit juste
   const depositAmount = Number((total * 0.25).toFixed(2))
   const balanceAmount = total - depositAmount
-
   const isPaid = invoice.status === 'paid'
 
   return (
@@ -387,7 +384,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         <View style={styles.header}>
           <View style={styles.brandColumn}>
             {settings.companyLogoUrl ? (
-              <Image src={settings.companyLogoUrl} style={styles.logoImage} />
+              <Image src={settings.companyLogoUrl} style={styles.logoImage} alt="Logo" />
             ) : (
               <View style={styles.logoPlaceholder}>
                 <Text style={styles.logoInitial}>
@@ -413,7 +410,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
           </View>
 
           <View style={styles.invoiceMetaColumn}>
-            <Text style={styles.invoiceTitle}>Facture</Text>
+            <Text style={styles.invoiceTitle}>FACTURE</Text>
             <View style={styles.metaRow}>
               <Text style={styles.metaLabel}>Numéro :</Text>
               <Text style={styles.metaValue}>{invoice.invoiceNumber}</Text>
@@ -441,6 +438,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
               {client.zipCode} {client.city}
             </Text>
             <Text style={styles.clientAddress}>{client.email}</Text>
+            {client.phone && <Text style={styles.clientAddress}>{client.phone}</Text>}
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.clientLabel}>Détails Séjour</Text>
@@ -544,7 +542,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
               </Text>
             </View>
             <View style={styles.paymentRow}>
-              <Text style={styles.paymentText}>Solde à l'arrivée</Text>
+              <Text style={styles.paymentText}>Solde à l&apos;arrivée</Text>
               <Text style={[styles.paymentText, { fontWeight: 700 }]}>
                 {formatCurrency(balanceAmount)}
               </Text>
@@ -584,7 +582,6 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
           </View>
         </View>
 
-        {/* --- FOOTER --- */}
         <View style={styles.bottomFooter}>
           <Text style={styles.footerText}>
             Merci de votre confiance. {settings.companyName || 'Stayli'} - {settings.companyEmail}

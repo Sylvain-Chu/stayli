@@ -301,11 +301,6 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                      ></Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
                         className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
                         onClick={() => handleDeleteClick(booking.id)}
                       >
