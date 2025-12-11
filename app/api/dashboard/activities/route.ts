@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
-    const type = searchParams.get('type') || 'current' // current, arrivals, departures
+    const type = searchParams.get('type') || 'current'
 
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
