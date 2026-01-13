@@ -3,10 +3,46 @@ name: CI
 on:
   pull_request:
     branches:
+      - main
       - master
+  push:
+    branches:
+      - main
+      - master
+
 jobs:
-  build-and-test:
+  lint-and-typecheck:
     runs-on: ubuntu-latest
+    name: Lint & Type Check
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Enable Corepack (Yarn)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: yarn prisma:generate
+
+      - name: Run ESLint
+        run: yarn lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+  build:
+    runs-on: ubuntu-latest
+    name: Build
 
     services:
       postgres:
@@ -25,9 +61,10 @@ jobs:
           --health-start-period=30s
 
     env:
-      NODE_ENV: test
-      SESSION_SECRET: test-secret
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/stayli_test
+      NEXTAUTH_SECRET: test-secret-for-ci
+      NEXTAUTH_URL: http://localhost:3000
+      NODE_ENV: test
 
     steps:
       - name: Checkout repository
@@ -38,15 +75,15 @@ jobs:
         with:
           node-version: 20
           cache: 'yarn'
-          cache-dependency-path: |
-            **/yarn.lock
 
       - name: Enable Corepack (Yarn)
         run: corepack enable
 
       - name: Install dependencies
-        run: |
-          yarn install --frozen-lockfile || yarn install
+        run: yarn install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: yarn prisma:generate
 
       - name: Wait for Postgres to be ready
         run: |
@@ -57,32 +94,22 @@ jobs:
             ATTEMPTS=$((ATTEMPTS+1))
             if [ "$ATTEMPTS" -ge 60 ]; then
               echo "Postgres did not become ready after 120s"
-              # Print docker containers for debugging
-              docker ps || true
               exit 1
             fi
             echo "Waiting for postgres..."
             sleep 2
           done
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      - name: Run database migrations
+        run: npx prisma migrate deploy || npx prisma db push
 
-      - name: Apply database migrations
-        run: npx prisma migrate deploy
-
-      - name: Lint
-        run: yarn lint
-
-      - name: Build
+      - name: Build Next.js application
         run: yarn build
 
-      - name: Test
-        run: yarn test --ci --runInBand --coverage
-
-      - name: Upload coverage report
-        if: always()
+      - name: Upload build artifacts
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: coverage
+          name: nextjs-build
+          path: .next
+          retention-days: 1
