@@ -1,3 +1,3 @@
-export { DownloadInvoiceButton } from './generate-invoice-button'
-export { DownloadInvoiceServerButton } from './download-invoice-server-button'
+export { DownloadInvoiceButton } from './GenerateInvoiceButton'
+export { DownloadInvoiceServerButton } from './DownloadInvoiceServerButton'
 export { InvoicePDF } from './InvoicePDF'

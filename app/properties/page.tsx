@@ -3,7 +3,7 @@
 import { useState, lazy, Suspense } from 'react'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { PropertiesToolbar } from '@/features/properties'
-import { PropertiesStats } from '@/features/properties/components/stats'
+import { PropertiesStats } from '@/features/properties/components/PropertiesStats'
 import { useDebounce } from '@/hooks/use-debounce'
 import { PropertiesProvider } from '@/features/properties/context/PropertiesContext'
 import { Skeleton } from '@/components/ui/skeleton'

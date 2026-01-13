@@ -14,7 +14,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Search, Plus, Trash2 } from 'lucide-react'
 import { createClient, deleteClient } from '@/features/clients/hooks/useClients'
-import { ExportClientsButton } from './export-button'
+import { ExportClientsButton } from './ExportButton'
 import { useToast } from '@/hooks/use-toast'
 import { mutate } from 'swr'
 import { clientSchema } from '@/lib/validations/client'
@@ -192,7 +192,6 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
                 </div>
               </div>
 
-              {/* SECTION ADRESSE */}
               <div className="grid gap-2">
                 <Label htmlFor="address">Adresse</Label>
                 <Input

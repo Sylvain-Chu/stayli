@@ -1,16 +1,30 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { LucideIcon } from 'lucide-react'
-import { ReactNode } from 'react'
+import { type LucideIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
+import { cn } from '@/lib/utils'
 
-interface StatsCardProps {
+/**
+ * Props for StatsCard
+ */
+export interface StatsCardProps {
   title: string
   value: string | number
   subtitle?: string | ReactNode
   icon: LucideIcon
   iconColor?: string
   iconBgColor?: string
+  trend?: {
+    value: string | number
+    isPositive: boolean
+  }
+  className?: string
+  isWarning?: boolean
 }
 
+/**
+ * StatsCard Component
+ * Displays a statistical card with title, value, icon, and optional trend indicator
+ */
 export function StatsCard({
   title,
   value,
@@ -18,22 +32,45 @@ export function StatsCard({
   icon: Icon,
   iconColor = 'text-primary',
   iconBgColor = 'bg-primary/10',
+  trend,
+  className,
+  isWarning = false,
 }: StatsCardProps) {
   return (
-    <Card className="border-border bg-card">
+    <Card className={cn('border-border bg-card', className)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm font-medium">{title}</p>
+          <div className="min-w-0 flex-1">
+            <p className="text-muted-foreground truncate text-sm font-medium">{title}</p>
             <div className="mt-2 flex items-baseline gap-2">
-              <p className="text-foreground text-2xl font-bold">{value}</p>
+              <p
+                className={cn(
+                  'text-2xl font-bold',
+                  isWarning ? 'text-destructive' : 'text-foreground',
+                )}
+              >
+                {value}
+              </p>
               {subtitle && <p className="text-muted-foreground text-xs">{subtitle}</p>}
             </div>
+            {trend && (
+              <p
+                className={cn(
+                  'mt-2 text-xs font-medium',
+                  trend.isPositive ? 'text-primary' : 'text-muted-foreground',
+                )}
+              >
+                {trend.value}
+              </p>
+            )}
           </div>
           <div
-            className={`flex h-12 w-12 items-center justify-center rounded-lg ${iconBgColor} ${iconColor}`}
+            className={cn(
+              'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg',
+              isWarning ? 'bg-destructive/10' : iconBgColor,
+            )}
           >
-            <Icon className="h-6 w-6" />
+            <Icon className={cn('h-6 w-6', isWarning ? 'text-destructive' : iconColor)} />
           </div>
         </div>
       </CardContent>

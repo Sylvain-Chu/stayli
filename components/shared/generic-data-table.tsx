@@ -54,7 +54,6 @@ export function GenericDataTable<T extends Record<string, any>>({
   }>({ column: null, direction: null })
   const [filters, setFilters] = React.useState<Record<string, string>>({})
 
-  // Gestion de la sélection
   const handleSelectAll = () => {
     if (selectedItems.size === data.length) {
       setSelectedItems(new Set())
@@ -106,10 +105,8 @@ export function GenericDataTable<T extends Record<string, any>>({
     })
   }
 
-  // Application des filtres et du tri
   let processedData = [...data]
 
-  // Filtrage
   Object.entries(filters).forEach(([columnKey, filterValue]) => {
     if (filterValue) {
       processedData = processedData.filter((item) => {
@@ -119,7 +116,6 @@ export function GenericDataTable<T extends Record<string, any>>({
     }
   })
 
-  // Tri
   if (sortState.column && sortState.direction) {
     processedData.sort((a, b) => {
       const aValue = a[sortState.column!]
@@ -140,11 +136,11 @@ export function GenericDataTable<T extends Record<string, any>>({
       {hasActiveFilters && (
         <ActiveFilters
           filters={Object.entries(filters).map(([key, value]) => ({
-            column: columns.find((c) => c.key === key)?.label || key,
+            key,
+            label: columns.find((c) => c.key === key)?.label || key,
             value,
           }))}
-          onClear={(index) => {
-            const key = Object.keys(filters)[index]
+          onRemove={(key: string) => {
             clearFilter(key)
           }}
           onClearAll={() => setFilters({})}

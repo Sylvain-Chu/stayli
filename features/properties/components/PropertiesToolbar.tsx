@@ -61,7 +61,7 @@ export function PropertiesToolbar() {
 
           await mutate()
           setIsDialogOpen(false)
-          // Reset du formulaire complet
+          // Reset form
           setFormData({ name: '', address: '', description: '', contractDescription: '' })
           toast({
             title: 'Succès',
@@ -151,7 +151,6 @@ export function PropertiesToolbar() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="sm:max-w-[600px]">
           {' '}
-          {/* Élargi un peu pour le confort */}
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>Nouvelle Propriété</DialogTitle>

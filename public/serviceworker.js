@@ -1,2 +1,2 @@
 // Service worker placeholder
-// Fichier vide pour éviter les erreurs 404
+// Empty file to avoid 404 errors

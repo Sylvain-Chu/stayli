@@ -1,8 +1,23 @@
+/**
+ * Settings API Routes
+ * Handles application settings
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { settingsSchema } from '@/lib/validations/settings'
 
+/**
+ * GET /api/settings
+ * Fetch application settings
+ */
 export async function GET() {
   try {
+    await requireAuth()
+
     const settings = await prisma.settings.findFirst()
 
     if (!settings) {
@@ -15,14 +30,20 @@ export async function GET() {
 
     return NextResponse.json(settings)
   } catch (error) {
-    console.error('Error fetching settings:', error)
-    return NextResponse.json({ error: 'Failed to fetch settings' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch settings')
   }
 }
 
+/**
+ * PATCH /api/settings
+ * Update application settings
+ */
 export async function PATCH(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
+    const validatedData = settingsSchema.parse(body)
 
     // Get the first (and only) settings record
     const existingSettings = await prisma.settings.findFirst()
@@ -30,20 +51,21 @@ export async function PATCH(request: NextRequest) {
     if (!existingSettings) {
       // Create if doesn't exist
       const settings = await prisma.settings.create({
-        data: body,
+        data: validatedData,
       })
-      return NextResponse.json(settings)
+      logger.info('Settings created')
+      return successResponse(settings)
     }
 
     // Update existing settings
     const settings = await prisma.settings.update({
       where: { id: existingSettings.id },
-      data: body,
+      data: validatedData,
     })
 
-    return NextResponse.json(settings)
+    logger.info('Settings updated')
+    return successResponse(settings)
   } catch (error) {
-    console.error('Error updating settings:', error)
-    return NextResponse.json({ error: 'Failed to update settings' }, { status: 500 })
+    return handleApiError(error, 'Failed to update settings')
   }
 }

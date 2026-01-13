@@ -1,7 +1,7 @@
-// Barrel export pour composants UI utilisés
-// Optimise les imports et le tree-shaking
+/**
+ * UI Components Barrel Export
+ */
 
-// Core Components
 export * from './button'
 export * from './input'
 export * from './label'
@@ -14,17 +14,19 @@ export * from './avatar'
 export * from './dialog'
 export * from './dropdown-menu'
 export * from './popover'
+export * from './confirm-dialog'
 
-// Data Display
 export * from './data-table'
+export * from './badge'
+export * from './status-badge'
 
-// Forms & Validation
 export * from './textarea'
+export * from './search-input'
 
-// Feedback & Status
+export * from './icon-button'
+
 export * from './toast'
 export * from './toaster'
 export * from './skeleton'
 
-// Utilities
 export * from './use-toast'

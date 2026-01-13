@@ -95,7 +95,6 @@ export function BookingSummary() {
   }
 
   useEffect(() => {
-    // Only calculate if we have the required fields
     if (!formData.startDate || !formData.endDate) {
       setPriceBreakdown(null)
       return
@@ -163,7 +162,6 @@ export function BookingSummary() {
           ) : (
             <>
               <div className="space-y-4">
-                {/* Séjour */}
                 <div>
                   <h3 className="text-muted-foreground mb-2 text-xs font-medium uppercase">
                     Séjour
@@ -188,7 +186,6 @@ export function BookingSummary() {
                   </div>
                 </div>
 
-                {/* Options */}
                 {(priceBreakdown.linensPrice > 0 || priceBreakdown.cleaningPrice > 0) && (
                   <>
                     <Separator />
@@ -218,7 +215,6 @@ export function BookingSummary() {
                   </>
                 )}
 
-                {/* Assurance */}
                 {priceBreakdown.insuranceFee > 0 && (
                   <>
                     <Separator />
@@ -236,7 +232,6 @@ export function BookingSummary() {
                   </>
                 )}
 
-                {/* Taxes */}
                 {priceBreakdown.touristTax > 0 && (
                   <>
                     <Separator />

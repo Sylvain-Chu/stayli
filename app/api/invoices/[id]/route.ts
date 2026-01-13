@@ -1,9 +1,25 @@
+/**
+ * Invoice by ID API Routes
+ * Handles single invoice operations
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { invoiceSchema } from '@/lib/validations/invoice'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { updateInvoiceSchema } from '@/lib/validations/invoice'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+type RouteParams = { params: Promise<{ id: string }> }
+
+/**
+ * GET /api/invoices/[id]
+ * Fetch a single invoice with booking details
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const invoice = await prisma.invoice.findUnique({
       where: { id },
@@ -18,28 +34,34 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!invoice) {
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      throw ApiError.notFound('Invoice not found')
     }
 
     return NextResponse.json(invoice)
   } catch (error) {
-    console.error('Error fetching invoice:', error)
-    return NextResponse.json({ error: 'Failed to fetch invoice' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch invoice')
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+/**
+ * PATCH /api/invoices/[id]
+ * Update an invoice
+ */
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const body = await request.json()
+    const validatedData = updateInvoiceSchema.parse(body)
 
     const invoice = await prisma.invoice.update({
       where: { id },
       data: {
-        status: body.status,
-        issueDate: body.issueDate ? new Date(body.issueDate) : undefined,
-        dueDate: body.dueDate ? new Date(body.dueDate) : undefined,
-        amount: body.amount,
+        status: validatedData.status,
+        issueDate: validatedData.issueDate ? new Date(validatedData.issueDate) : undefined,
+        dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : undefined,
+        amount: validatedData.amount,
       },
       include: {
         booking: {
@@ -51,26 +73,29 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       },
     })
 
-    return NextResponse.json(invoice)
+    logger.info('Invoice updated', { invoiceId: id })
+    return successResponse(invoice)
   } catch (error) {
-    console.error('Error updating invoice:', error)
-    return NextResponse.json({ error: 'Failed to update invoice' }, { status: 500 })
+    return handleApiError(error, 'Failed to update invoice')
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+/**
+ * DELETE /api/invoices/[id]
+ * Delete an invoice
+ */
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     await prisma.invoice.delete({
       where: { id },
     })
 
-    return NextResponse.json({ success: true })
+    logger.info('Invoice deleted', { invoiceId: id })
+    return successResponse({ success: true })
   } catch (error) {
-    console.error('Error deleting invoice:', error)
-    return NextResponse.json({ error: 'Failed to delete invoice' }, { status: 500 })
+    return handleApiError(error, 'Failed to delete invoice')
   }
 }

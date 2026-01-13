@@ -1,9 +1,25 @@
+/**
+ * Property by ID API Routes
+ * Handles single property operations
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { propertySchema } from '@/lib/validations/property'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { updatePropertySchema } from '@/lib/validations/property'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+type RouteParams = { params: Promise<{ id: string }> }
+
+/**
+ * GET /api/properties/[id]
+ * Fetch a single property with its bookings
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const property = await prisma.property.findUnique({
       where: { id },
@@ -18,47 +34,55 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!property) {
-      return NextResponse.json({ error: 'Property not found' }, { status: 404 })
+      throw ApiError.notFound('Property not found')
     }
 
     return NextResponse.json(property)
   } catch (error) {
-    console.error('Error fetching property:', error)
-    return NextResponse.json({ error: 'Failed to fetch property' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch property')
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+/**
+ * PATCH /api/properties/[id]
+ * Update a property
+ */
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const body = await request.json()
-    const validatedData = propertySchema.parse(body)
+    const validatedData = updatePropertySchema.parse(body)
 
     const property = await prisma.property.update({
       where: { id },
       data: validatedData,
     })
 
-    return NextResponse.json(property)
+    logger.info('Property updated', { propertyId: id })
+    return successResponse(property)
   } catch (error) {
-    console.error('Error updating property:', error)
-    return NextResponse.json({ error: 'Failed to update property' }, { status: 500 })
+    return handleApiError(error, 'Failed to update property')
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+/**
+ * DELETE /api/properties/[id]
+ * Delete a property
+ */
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     await prisma.property.delete({
       where: { id },
     })
 
-    return NextResponse.json({ success: true })
+    logger.info('Property deleted', { propertyId: id })
+    return successResponse({ success: true })
   } catch (error) {
-    console.error('Error deleting property:', error)
-    return NextResponse.json({ error: 'Failed to delete property' }, { status: 500 })
+    return handleApiError(error, 'Failed to delete property')
   }
 }
