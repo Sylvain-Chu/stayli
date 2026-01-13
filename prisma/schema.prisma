@@ -17,6 +17,7 @@ model Property {
   name        String
   address     String?
   description String?
+  contractDescription String?
   bookings    Booking[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -28,6 +29,9 @@ model Client {
   lastName  String
   email     String    @unique
   phone     String?
+  address   String?
+  zipCode   String?
+  city      String?
   bookings  Booking[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -39,13 +43,13 @@ model Booking {
   endDate                   DateTime
   totalPrice                Float
   basePrice                 Float    @default(0)
-  cleaningFee               Float    @default(0) // deprecated, use cleaningPrice
+  cleaningFee               Float    @default(0)
   taxes                     Float    @default(0)
   adults                    Int      @default(1)
   children                  Int      @default(0)
   specialRequests           String?
   discount                  Float    @default(0)
-  discountType              String?  // 'amount' or 'percent'
+  discountType              String?
   hasLinens                 Boolean  @default(false)
   linensPrice               Float    @default(0)
   hasCleaning               Boolean  @default(false)
@@ -73,7 +77,7 @@ enum BookingStatus {
 
 model Invoice {
   id            String   @id @default(uuid())
-  invoiceNumber String   @unique @default(dbgenerated("concat('INV-', to_char(now(), 'YYYYMMDD'), '-', lpad(nextval('invoice_seq')::text, 4, '0'))"))
+  invoiceNumber String   @unique
   issueDate     DateTime @default(now())
   dueDate       DateTime
   amount        Float
@@ -108,7 +112,10 @@ model Settings {
   companyAddress                       String?
   companyPhoneNumber                   String?
   companyEmail                         String?
+  companySiret                         String?  
   companyLogoUrl                       String?
+  companyZipCode                       String?  
+  companyCity                          String?
   defaultLanguage                      String   @default("fr")
   currencyCode                         String   @default("EUR")
   currencySymbol                       String   @default("€")
