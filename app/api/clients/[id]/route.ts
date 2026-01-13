@@ -1,8 +1,25 @@
+/**
+ * Client by ID API Routes
+ * Handles single client operations
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { updateClientSchema } from '@/lib/validations/client'
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+type RouteParams = { params: Promise<{ id: string }> }
+
+/**
+ * GET /api/clients/[id]
+ * Fetch a single client with their bookings
+ */
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const client = await prisma.client.findUnique({
       where: { id },
@@ -17,50 +34,55 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!client) {
-      return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+      throw ApiError.notFound('Client not found')
     }
 
     return NextResponse.json(client)
   } catch (error) {
-    console.error('Error fetching client:', error)
-    return NextResponse.json({ error: 'Failed to fetch client' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch client')
   }
 }
 
-export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+/**
+ * PATCH /api/clients/[id]
+ * Update a client
+ */
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const body = await request.json()
+    const validatedData = updateClientSchema.parse(body)
+
     const client = await prisma.client.update({
       where: { id },
-      data: {
-        firstName: body.firstName,
-        lastName: body.lastName,
-        email: body.email,
-        phone: body.phone,
-      },
+      data: validatedData,
     })
 
-    return NextResponse.json(client)
+    logger.info('Client updated', { clientId: id })
+    return successResponse(client)
   } catch (error) {
-    console.error('Error updating client:', error)
-    return NextResponse.json({ error: 'Failed to update client' }, { status: 500 })
+    return handleApiError(error, 'Failed to update client')
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+/**
+ * DELETE /api/clients/[id]
+ * Delete a client
+ */
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    await requireAuth()
+
     const { id } = await params
     await prisma.client.delete({
       where: { id },
     })
 
-    return NextResponse.json({ success: true })
+    logger.info('Client deleted', { clientId: id })
+    return successResponse({ success: true })
   } catch (error) {
-    console.error('Error deleting client:', error)
-    return NextResponse.json({ error: 'Failed to delete client' }, { status: 500 })
+    return handleApiError(error, 'Failed to delete client')
   }
 }

@@ -69,7 +69,6 @@ export function FullCalendar() {
   } | null>(null)
   const [showModal, setShowModal] = useState(false)
 
-  // État de chargement du calcul de prix
   const [isCalculating, setIsCalculating] = useState(false)
 
   const [newBooking, setNewBooking] = useState({
@@ -102,7 +101,6 @@ export function FullCalendar() {
   const containerRef = useRef<HTMLDivElement>(null)
   const { toast } = useToast()
 
-  // Fetch data from API
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth() + 1
   const {
@@ -176,11 +174,9 @@ export function FullCalendar() {
     [isDragging, dragState, isDayOccupied],
   )
 
-  // Fonction pour calculer les prix automatiquement depuis l'API (qui utilise les Settings)
   const calculatePrices = async (startDate: Date, endDate: Date, options = {}) => {
     setIsCalculating(true)
     try {
-      // On combine les options actuelles avec celles passées en paramètre
       const currentOptions = {
         adults: newBooking.adults,
         children: newBooking.children,
@@ -206,16 +202,16 @@ export function FullCalendar() {
           ...prev,
           ...currentOptions,
           basePrice: prices.basePrice,
-          cleaningFee: prices.cleaningPrice, // Attention: cleaningPrice de l'API va dans cleaningFee du modèle Booking (frais ménage)
+          cleaningFee: prices.cleaningPrice,
           taxes: prices.touristTax,
           linensPrice: prices.linensPrice,
-          cleaningPrice: prices.cleaningPrice, // Aussi stocké ici si l'option est active
+          cleaningPrice: prices.cleaningPrice,
           insuranceFee: prices.insuranceFee,
           discount: prices.discount,
         }))
       }
     } catch (error) {
-      console.error('Erreur calcul prix', error)
+      console.error('Price calculation error', error)
     } finally {
       setIsCalculating(false)
     }
@@ -229,7 +225,6 @@ export function FullCalendar() {
       setDragState({ ...dragState, startDay: start, endDay: end })
       setShowModal(true)
 
-      // Déclencher le calcul automatique des prix dès l'ouverture
       const startDate = new Date(displayYear, displayMonth, start)
       const endDate = new Date(displayYear, displayMonth, end)
       calculatePrices(startDate, endDate)
@@ -237,18 +232,15 @@ export function FullCalendar() {
     setIsDragging(false)
   }
 
-  // Recalculer quand on change les options (checkboxes ou nombres)
   const handleOptionChange = (key: string, value: any) => {
     setNewBooking((prev) => {
       const updated = { ...prev, [key]: value }
-      // Si on a un dragState actif, on relance le calcul
       if (dragState) {
         const start = Math.min(dragState.startDay, dragState.endDay)
         const end = Math.max(dragState.startDay, dragState.endDay)
         const startDate = new Date(displayYear, displayMonth, start)
         const endDate = new Date(displayYear, displayMonth, end)
 
-        // On déclenche le calcul en asynchrone
         calculatePrices(startDate, endDate, { [key]: value })
       }
       return updated
@@ -302,7 +294,6 @@ export function FullCalendar() {
 
       let clientId = newBooking.clientId
 
-      // Créer un nouveau client si nécessaire
       if (newBooking.isNewClient && newBooking.clientName.trim()) {
         const [firstName, ...lastNameParts] = newBooking.clientName.trim().split(' ')
         const lastName = lastNameParts.join(' ') || firstName
@@ -320,18 +311,16 @@ export function FullCalendar() {
 
       if (!clientId) {
         toast({
-          title: 'Erreur',
-          description: 'Veuillez sélectionner ou créer un client',
+          title: 'Error',
+          description: 'Please select or create a client',
           variant: 'destructive',
         })
         return
       }
 
-      // Créer les dates
       const startDate = new Date(displayYear, displayMonth, start)
       const endDate = new Date(displayYear, displayMonth, end)
 
-      // Calculer le prix total final
       const totalPrice =
         (newBooking.basePrice || 0) +
         (newBooking.cleaningFee || 0) +
@@ -340,7 +329,6 @@ export function FullCalendar() {
         (newBooking.insuranceFee || 0) -
         (newBooking.discount || 0)
 
-      // Créer la réservation
       await createCalendarBooking({
         propertyId: dragState.propertyId,
         clientId,
@@ -373,7 +361,6 @@ export function FullCalendar() {
 
       setShowModal(false)
       setDragState(null)
-      // Reset form
       setNewBooking({
         clientId: null,
         clientName: '',
@@ -444,7 +431,6 @@ export function FullCalendar() {
     return day >= start && day <= end
   }
 
-  // Loading state
   if (bookingsLoading || propertiesLoading || clientsLoading) {
     return (
       <div className="space-y-4">
@@ -495,7 +481,6 @@ export function FullCalendar() {
         </div>
       </div>
 
-      {/* Calendar Grid */}
       <Card className="border-border flex flex-1 flex-col overflow-hidden border shadow-sm">
         <div
           ref={containerRef}
@@ -504,7 +489,6 @@ export function FullCalendar() {
           onMouseLeave={handleMouseUp}
         >
           <div className="flex h-full min-w-[1200px] flex-col">
-            {/* Days Header */}
             <div className="border-border bg-muted/30 sticky top-0 z-10 flex border-b">
               <div className="border-border bg-muted/30 w-52 flex-shrink-0 border-r p-3">
                 <span className="text-muted-foreground text-sm font-medium">Propriétés</span>
@@ -536,7 +520,6 @@ export function FullCalendar() {
               </div>
             </div>
 
-            {/* Property Rows */}
             <div className="flex-1">
               {properties.map((property) => {
                 const propertyBookings = getBookingsForProperty(property.id)
@@ -546,7 +529,6 @@ export function FullCalendar() {
                     key={property.id}
                     className="border-border hover:bg-muted/20 flex border-b transition-colors last:border-b-0"
                   >
-                    {/* Property Info */}
                     <div className="border-border bg-card sticky left-0 z-10 w-52 flex-shrink-0 border-r p-3">
                       <div>
                         <p className="text-foreground text-sm font-medium">{property.name}</p>
@@ -556,7 +538,6 @@ export function FullCalendar() {
                       </div>
                     </div>
 
-                    {/* Days Grid */}
                     <div className="relative flex flex-1">
                       {days.map((day) => {
                         const isOccupied = isDayOccupied(property.id, day)
@@ -577,7 +558,6 @@ export function FullCalendar() {
                         )
                       })}
 
-                      {/* Booking Bars */}
                       {propertyBookings.map((booking) => {
                         const leftPercent = ((booking.startDay - 1) / daysInMonth) * 100
                         const widthPercent =
@@ -604,7 +584,6 @@ export function FullCalendar() {
                         )
                       })}
 
-                      {/* Selection Preview */}
                       {dragState && dragState.propertyId === property.id && (
                         <div
                           className="border-primary bg-primary/10 absolute top-2 flex h-10 items-center justify-center rounded-lg border-2 border-dashed"
@@ -634,7 +613,6 @@ export function FullCalendar() {
           <div className="flex-1 space-y-5 overflow-y-auto px-6 py-2">
             {dragState && (
               <>
-                {/* Info Résumé Compact */}
                 <div className="bg-primary/5 border-primary/10 grid grid-cols-2 gap-4 rounded-lg border p-3 text-sm">
                   <div>
                     <span className="text-muted-foreground block text-xs">Propriété</span>
@@ -651,7 +629,6 @@ export function FullCalendar() {
                   </div>
                 </div>
 
-                {/* Client Selection */}
                 <div className="space-y-2">
                   <Label>Client</Label>
                   <div className="relative">
@@ -675,7 +652,6 @@ export function FullCalendar() {
                       className="pl-9"
                     />
 
-                    {/* Client Dropdown */}
                     {showClientDropdown && (clientSearch || filteredClients.length > 0) && (
                       <div className="bg-card border-border absolute top-full right-0 left-0 z-50 mt-1 max-h-48 overflow-auto rounded-xl border shadow-lg">
                         {filteredClients.map((client) => (
@@ -725,7 +701,6 @@ export function FullCalendar() {
                     )}
                   </div>
 
-                  {/* Selected Client Badge */}
                   {newBooking.clientId && !newBooking.isNewClient && (
                     <div className="mt-1 flex items-center gap-2">
                       <span className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs">
@@ -735,7 +710,6 @@ export function FullCalendar() {
                     </div>
                   )}
 
-                  {/* New Client Form */}
                   {newBooking.isNewClient && (
                     <div className="border-border bg-muted/30 mt-2 space-y-3 rounded-xl border p-3">
                       <div className="grid grid-cols-2 gap-3">
@@ -767,7 +741,6 @@ export function FullCalendar() {
                   )}
                 </div>
 
-                {/* Status & Guests Row */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Statut</Label>
@@ -822,7 +795,6 @@ export function FullCalendar() {
                   </div>
                 </div>
 
-                {/* Options & Tarification Compacte */}
                 <div className="space-y-3 pt-2">
                   <div className="flex items-center justify-between">
                     <Label className="text-sm font-semibold">
@@ -831,7 +803,6 @@ export function FullCalendar() {
                     </Label>
                   </div>
 
-                  {/* Switches Row */}
                   <div className="flex flex-wrap gap-4 text-sm">
                     <div className="flex items-center gap-2">
                       <Switch
@@ -968,7 +939,6 @@ export function FullCalendar() {
                   </div>
                 </div>
 
-                {/* Special Requests */}
                 <div className="space-y-2">
                   <Label className="text-sm">Notes</Label>
                   <Textarea
@@ -1005,7 +975,6 @@ export function FullCalendar() {
         </DialogContent>
       </Dialog>
 
-      {/* Booking Details Modal */}
       <Dialog open={showDetailsModal} onOpenChange={setShowDetailsModal}>
         <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-2xl">
           <DialogHeader>
@@ -1014,7 +983,6 @@ export function FullCalendar() {
 
           {selectedBooking && (
             <div className="space-y-6">
-              {/* Client & Property Info */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="text-muted-foreground text-xs font-medium uppercase">
@@ -1056,7 +1024,6 @@ export function FullCalendar() {
                 </div>
               </div>
 
-              {/* Dates & Status */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-1">
                   <Label className="text-muted-foreground text-xs font-medium uppercase">
@@ -1106,7 +1073,6 @@ export function FullCalendar() {
                 </div>
               </div>
 
-              {/* Guests */}
               <div className="space-y-2">
                 <Label className="text-muted-foreground text-xs font-medium uppercase">
                   Invités
@@ -1118,7 +1084,6 @@ export function FullCalendar() {
                 </p>
               </div>
 
-              {/* Pricing Breakdown */}
               <div className="space-y-3">
                 <Label className="text-muted-foreground text-xs font-medium uppercase">
                   Tarification
@@ -1186,7 +1151,6 @@ export function FullCalendar() {
                 </div>
               </div>
 
-              {/* Special Requests */}
               {selectedBooking.specialRequests && (
                 <div className="space-y-2">
                   <Label className="text-muted-foreground text-xs font-medium uppercase">

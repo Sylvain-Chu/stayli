@@ -11,10 +11,8 @@ export function ExportClientsButton({ clients, filename = 'clients.csv' }: Expor
   const exportToCSV = () => {
     if (!clients || clients.length === 0) return
 
-    // CSV Headers
     const headers = ['Prénom', 'Nom', 'Email', 'Téléphone', 'Date de création']
 
-    // CSV Rows
     const rows = clients.map((client) => [
       client.firstName,
       client.lastName,
@@ -23,17 +21,14 @@ export function ExportClientsButton({ clients, filename = 'clients.csv' }: Expor
       new Date(client.createdAt).toLocaleDateString('fr-FR'),
     ])
 
-    // Create CSV content
     const csvContent = [
       headers.join(';'),
       ...rows.map((row) => row.map((cell) => `"${cell}"`).join(';')),
     ].join('\n')
 
-    // Add BOM for UTF-8 encoding (Excel compatibility)
     const BOM = '\uFEFF'
     const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' })
 
-    // Create download link
     const link = document.createElement('a')
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob)

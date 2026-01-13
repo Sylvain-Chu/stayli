@@ -44,7 +44,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
   const [propertyToDelete, setPropertyToDelete] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
 
-  // État du formulaire d'édition mis à jour avec le nouveau champ
   const [editFormData, setEditFormData] = useState({
     name: '',
     address: '',
@@ -89,12 +88,10 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
   const handleEditProperty = (property: Property) => {
     setEditProperty(property)
-    // Pré-remplissage du formulaire avec les données existantes
     setEditFormData({
       name: property.name,
       address: property.address || '',
       description: property.description || '',
-      // @ts-ignore - Le type Property doit être mis à jour dans types.ts
       contractDescription: property.contractDescription || '',
     })
     setErrors({})
@@ -380,7 +377,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
       <Dialog open={!!editProperty} onOpenChange={() => setEditProperty(null)}>
         <DialogContent className="sm:max-w-[600px]">
           <form onSubmit={handleSubmitEdit}>

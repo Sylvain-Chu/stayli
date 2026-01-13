@@ -3,7 +3,6 @@ import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-// Enregistrement des polices
 Font.register({
   family: 'Roboto',
   fonts: [
@@ -26,10 +25,9 @@ Font.register({
   ],
 })
 
-// Design System : Couleurs du site
 const colors = {
-  primary: '#2d5a47', // Vert forêt
-  secondary: '#f5f3f0', // Fond chaud clair
+  primary: '#2d5a47', // Forest green
+  secondary: '#f5f3f0', // Warm light background
   text: '#1a1a1a',
   textMuted: '#737373',
   border: '#e8e6e3',
@@ -37,7 +35,6 @@ const colors = {
 }
 
 const styles = StyleSheet.create({
-  // ... (copiez les styles existants, ils sont bons)
   page: {
     padding: 40,
     fontSize: 10,
@@ -258,7 +255,7 @@ const styles = StyleSheet.create({
     color: colors.textMuted,
   },
 
-  // Badge Acquittée
+  // Paid stamp badge
   paidStamp: {
     marginTop: 20,
     borderWidth: 2,
@@ -384,7 +381,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         <View style={styles.header}>
           <View style={styles.brandColumn}>
             {settings.companyLogoUrl ? (
-              <Image src={settings.companyLogoUrl} style={styles.logoImage} alt="Logo" />
+              <Image src={settings.companyLogoUrl} style={styles.logoImage} />
             ) : (
               <View style={styles.logoPlaceholder}>
                 <Text style={styles.logoInitial}>

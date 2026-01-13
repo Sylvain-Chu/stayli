@@ -58,7 +58,7 @@ export interface Client {
   phone: string | null
 }
 
-// Hook pour récupérer les bookings d'un mois pour le calendrier
+// Hook to fetch bookings for a month in the calendar
 export function useCalendarBookings(year: number, month: number) {
   const { data, error, isLoading, mutate } = useSWR<{ bookings: CalendarBooking[] }>(
     `/api/bookings/calendar?year=${year}&month=${month}`,
@@ -76,7 +76,7 @@ export function useCalendarBookings(year: number, month: number) {
   }
 }
 
-// Hook pour récupérer toutes les propriétés
+// Hook to fetch all properties
 export function useProperties() {
   const { data, error, isLoading } = useSWR<{ properties: Property[] }>(
     '/api/properties',
@@ -93,7 +93,7 @@ export function useProperties() {
   }
 }
 
-// Hook pour récupérer tous les clients
+// Hook to fetch all clients
 export function useClients() {
   const { data, error, isLoading, mutate } = useSWR<{ clients: Client[] }>(
     '/api/clients',
@@ -111,7 +111,7 @@ export function useClients() {
   }
 }
 
-// Fonction pour créer une nouvelle réservation
+// Function to create a new booking
 export async function createCalendarBooking(bookingData: {
   propertyId: string
   clientId: string
@@ -150,7 +150,7 @@ export async function createCalendarBooking(bookingData: {
   return response.json()
 }
 
-// Fonction pour créer un nouveau client
+// Function to create a new client
 export async function createClient(clientData: {
   firstName: string
   lastName: string

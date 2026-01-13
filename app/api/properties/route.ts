@@ -1,9 +1,23 @@
+/**
+ * Properties API Routes
+ * Handles CRUD operations for rental properties
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
 import { propertySchema } from '@/lib/validations/property'
 
+/**
+ * GET /api/properties
+ * Fetch paginated list of properties with revenue calculation
+ */
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
     const page = parseInt(searchParams.get('page') || '1')
     const perPage = parseInt(searchParams.get('perPage') || '10')
@@ -56,13 +70,18 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / perPage),
     })
   } catch (error) {
-    console.error('Error fetching properties:', error)
-    return NextResponse.json({ error: 'Failed to fetch properties' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch properties')
   }
 }
 
+/**
+ * POST /api/properties
+ * Create a new property
+ */
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
     const validatedData = propertySchema.parse(body)
 
@@ -70,9 +89,9 @@ export async function POST(request: NextRequest) {
       data: validatedData,
     })
 
-    return NextResponse.json(property, { status: 201 })
+    logger.info('Property created', { propertyId: property.id })
+    return successResponse(property, 201)
   } catch (error) {
-    console.error('Error creating property:', error)
-    return NextResponse.json({ error: 'Failed to create property' }, { status: 500 })
+    return handleApiError(error, 'Failed to create property')
   }
 }

@@ -1,9 +1,12 @@
-// Barrel export pour feature bookings
-export * from './components/table'
-export * from './components/toolbar'
-export * from './components/stats'
-export * from './components/form'
-export * from './components/summary'
+/**
+ * Bookings Feature Barrel Export
+ */
+
+export * from './components/BookingsTable'
+export * from './components/BookingsToolbar'
+export * from './components/BookingsStats'
+export * from './components/BookingForm'
+export * from './components/BookingSummary'
 export * from './types'
 export * from './hooks/useBookings'
 export * from './hooks/useBookingStats'

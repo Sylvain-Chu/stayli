@@ -3,13 +3,12 @@
 import { useState, lazy, Suspense } from 'react'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { ClientsToolbar } from '@/features/clients'
-import { ClientsStats } from '@/features/clients/components/stats'
+import { ClientsStats } from '@/features/clients/components/ClientsStats'
 import { useDebounce } from '@/hooks/use-debounce'
 import { useClients } from '@/features/clients/hooks/useClients'
 import { ClientsProvider } from '@/features/clients/context/ClientsContext'
 import { Skeleton } from '@/components/ui/skeleton'
 
-// Lazy load the table component
 const ClientsTable = lazy(() =>
   import('@/features/clients').then((mod) => ({ default: mod.ClientsTable })),
 )

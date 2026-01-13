@@ -66,7 +66,6 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
     setDeleteConfirmOpen(true)
   }
 
-  // Fonction utilitaire pour changer le statut d'une facture
   const handleChangeStatus = async (id: string, status: string) => {
     try {
       const response = await fetch(`/api/invoices/${id}`, {
@@ -368,7 +367,6 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
         )}
       </div>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         open={deleteConfirmOpen}
         onOpenChange={setDeleteConfirmOpen}

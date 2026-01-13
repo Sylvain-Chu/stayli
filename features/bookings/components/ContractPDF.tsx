@@ -4,9 +4,7 @@ import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
-// --- STYLES ---
 const styles = StyleSheet.create({
-  // ... (styles inchangés)
   page: {
     padding: 35,
     fontSize: 9,
@@ -157,7 +155,6 @@ const styles = StyleSheet.create({
   },
 })
 
-// Types
 interface ContractProps {
   booking: {
     id: string

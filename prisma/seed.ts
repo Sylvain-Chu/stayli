@@ -4,17 +4,17 @@ import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 
 async function main() {
-  console.log('Début du seeding...')
+  console.log('Starting seeding...')
 
-  // Nettoyer les données existantes
+  // Clean existing data
   await prisma.invoice.deleteMany()
   await prisma.booking.deleteMany()
   await prisma.client.deleteMany()
   await prisma.property.deleteMany()
 
-  console.log('Données existantes supprimées')
+  console.log('Existing data deleted')
 
-  // Créer les propriétés
+  // Create properties
   const properties = await Promise.all([
     prisma.property.create({
       data: {
@@ -53,9 +53,9 @@ async function main() {
     }),
   ])
 
-  console.log(`${properties.length} propriétés créées`)
+  console.log(`${properties.length} properties created`)
 
-  // Créer les clients
+  // Create clients
   const clients = await Promise.all([
     prisma.client.create({
       data: {
@@ -123,13 +123,13 @@ async function main() {
     }),
   ])
 
-  console.log(`${clients.length} clients créés`)
+  console.log(`${clients.length} clients created`)
 
-  // Créer les réservations avec dates variées
+  // Create bookings with varied dates
   const now = new Date()
   const bookings = []
 
-  // Réservations passées (avec factures payées)
+  // Past bookings (with paid invoices)
   for (let i = 0; i < 5; i++) {
     const startDate = new Date(now)
     startDate.setMonth(now.getMonth() - 3 + i)
@@ -161,7 +161,7 @@ async function main() {
 
     bookings.push(booking)
 
-    // Créer une facture payée
+    // Create a paid invoice
     const issueDate = new Date(startDate)
     issueDate.setDate(startDate.getDate() - 30)
 
@@ -182,7 +182,7 @@ async function main() {
     })
   }
 
-  // Réservations en cours (avec factures envoyées)
+  // Current bookings (with sent invoices)
   for (let i = 0; i < 3; i++) {
     const startDate = new Date(now)
     startDate.setDate(now.getDate() - 5 + i * 3)
@@ -216,7 +216,7 @@ async function main() {
 
     bookings.push(booking)
 
-    // Créer une facture envoyée
+    // Create a sent invoice
     const issueDate = new Date(startDate)
     issueDate.setDate(startDate.getDate() - 20)
 
@@ -237,7 +237,7 @@ async function main() {
     })
   }
 
-  // Réservations futures (avec factures en retard)
+  // Past bookings (with overdue invoices)
   for (let i = 0; i < 2; i++) {
     const startDate = new Date(now)
     startDate.setMonth(now.getMonth() - 1)
@@ -269,7 +269,7 @@ async function main() {
 
     bookings.push(booking)
 
-    // Créer une facture en retard
+    // Create an overdue invoice
     const issueDate = new Date(startDate)
     issueDate.setDate(startDate.getDate() - 25)
 
@@ -290,7 +290,7 @@ async function main() {
     })
   }
 
-  // Réservations futures (à venir)
+  // Future bookings (upcoming)
   for (let i = 0; i < 4; i++) {
     const startDate = new Date(now)
     startDate.setMonth(now.getMonth() + 1 + Math.floor(i / 2))
@@ -325,7 +325,7 @@ async function main() {
 
     bookings.push(booking)
 
-    // Créer une facture brouillon ou envoyée
+    // Create a draft or sent invoice
     const issueDate = new Date(now)
 
     const dueDate = new Date(startDate)
@@ -345,17 +345,17 @@ async function main() {
     })
   }
 
-  console.log(`${bookings.length} réservations créées`)
+  console.log(`${bookings.length} bookings created`)
 
   const totalInvoices = await prisma.invoice.count()
-  console.log(`${totalInvoices} factures créées`)
+  console.log(`${totalInvoices} invoices created`)
 
-  console.log('Seeding terminé avec succès!')
+  console.log('Seeding completed successfully!')
 }
 
 main()
   .catch((e) => {
-    console.error('Erreur lors du seeding:', e)
+    console.error('Error during seeding:', e)
     process.exit(1)
   })
   .finally(async () => {

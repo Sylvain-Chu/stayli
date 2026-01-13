@@ -1,18 +1,17 @@
-export type Client = {
-  id: string
+/**
+ * Clients Feature Types
+ * Re-exports centralized types for backwards compatibility
+ */
+
+export type { Client, ClientStats } from '@/types/entities'
+
+// Form data type for creating/editing clients
+export type ClientFormData = {
   firstName: string
   lastName: string
   email: string
   phone?: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-export type ClientFormData = Pick<Client, 'firstName' | 'lastName' | 'email' | 'phone'>
-
-export type ClientStats = {
-  total: number
-  newThisMonth: number
-  growthPercentage: number
-  activeThisMonth: number
+  address?: string | null
+  zipCode?: string | null
+  city?: string | null
 }

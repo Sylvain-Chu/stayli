@@ -3,12 +3,11 @@
 import { useState, lazy, Suspense } from 'react'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { InvoicesToolbar } from '@/features/invoices'
-import { InvoicesStats } from '@/features/invoices/components/stats'
+import { InvoicesStats } from '@/features/invoices/components/InvoicesStats'
 import { useDebounce } from '@/hooks/use-debounce'
 import { InvoicesProvider } from '@/features/invoices/context/InvoicesContext'
 import { Skeleton } from '@/components/ui/skeleton'
 
-// Lazy load the table component
 const InvoicesTable = lazy(() =>
   import('@/features/invoices').then((mod) => ({ default: mod.InvoicesTable })),
 )

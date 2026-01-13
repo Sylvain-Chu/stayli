@@ -1,7 +1,10 @@
-// Barrel export pour feature invoices
-export * from './components/table'
-export * from './components/toolbar'
-export * from './components/stats'
+/**
+ * Invoices Feature Barrel Export
+ */
+
+export * from './components/InvoicesTable'
+export * from './components/InvoicesToolbar'
+export * from './components/InvoicesStats'
 export * from './hooks/useInvoices'
 export * from './hooks/useInvoiceStats'
 export * from './context/InvoicesContext'

@@ -1,8 +1,23 @@
+/**
+ * Clients API Routes
+ * Handles CRUD operations for clients
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { clientSchema } from '@/lib/validations/client'
 
+/**
+ * GET /api/clients
+ * Fetch paginated list of clients with optional search and stats
+ */
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
     const q = searchParams.get('q')
     const page = parseInt(searchParams.get('page') || '1')
@@ -29,7 +44,7 @@ export async function GET(request: NextRequest) {
       prisma.client.count({ where }),
     ])
 
-    const response: any = {
+    const response: Record<string, unknown> = {
       clients,
       total,
       page,
@@ -37,7 +52,6 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / perPage),
     }
 
-    // Ajouter les stats si demandé
     if (includeStats) {
       const now = new Date()
       const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -98,29 +112,28 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response)
   } catch (error) {
-    console.error('Error fetching clients:', error)
-    return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch clients')
   }
 }
 
+/**
+ * POST /api/clients
+ * Create a new client
+ */
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
+    const validatedData = clientSchema.parse(body)
+
     const client = await prisma.client.create({
-      data: {
-        firstName: body.firstName,
-        lastName: body.lastName,
-        email: body.email,
-        phone: body.phone,
-        address: body.address,
-        zipCode: body.zipCode,
-        city: body.city,
-      },
+      data: validatedData,
     })
 
-    return NextResponse.json(client, { status: 201 })
+    logger.info('Client created', { clientId: client.id })
+    return successResponse(client, 201)
   } catch (error) {
-    console.error('Error creating client:', error)
-    return NextResponse.json({ error: 'Failed to create client' }, { status: 500 })
+    return handleApiError(error, 'Failed to create client')
   }
 }

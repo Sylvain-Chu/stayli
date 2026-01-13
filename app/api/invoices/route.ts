@@ -1,9 +1,23 @@
+/**
+ * Invoices API Routes
+ * Handles CRUD operations for invoices
+ */
+
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
 import { invoiceSchema } from '@/lib/validations/invoice'
 
+/**
+ * GET /api/invoices
+ * Fetch paginated list of invoices with search
+ */
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get('search') || ''
     const page = parseInt(searchParams.get('page') || '1')
@@ -54,17 +68,22 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / perPage),
     })
   } catch (error) {
-    console.error('Error fetching invoices:', error)
-    return NextResponse.json({ error: 'Failed to fetch invoices' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch invoices')
   }
 }
 
+/**
+ * POST /api/invoices
+ * Create a new invoice
+ */
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
     const validatedData = invoiceSchema.parse(body)
 
-    // Générer le numéro de facture
+    // Generate invoice number
     const today = new Date()
     const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '')
     const count = await prisma.invoice.count({
@@ -96,9 +115,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(invoice, { status: 201 })
+    logger.info('Invoice created', { invoiceId: invoice.id, invoiceNumber })
+    return successResponse(invoice, 201)
   } catch (error) {
-    console.error('Error creating invoice:', error)
-    return NextResponse.json({ error: 'Failed to create invoice' }, { status: 500 })
+    return handleApiError(error, 'Failed to create invoice')
   }
 }

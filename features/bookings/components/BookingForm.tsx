@@ -48,7 +48,6 @@ export function BookingForm() {
   const [availabilityError, setAvailabilityError] = useState<string | null>(null)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
 
-  // Nouveau client form
   const [newClientData, setNewClientData] = useState({
     firstName: '',
     lastName: '',
@@ -57,13 +56,11 @@ export function BookingForm() {
   })
 
   useEffect(() => {
-    // Fetch properties
     fetch('/api/properties/list')
       .then((res) => res.json())
       .then((data) => setProperties(data))
       .catch((err) => console.error('Error fetching properties:', err))
 
-    // Fetch clients
     fetch('/api/clients/list')
       .then((res) => res.json())
       .then((data) => setClients(data))
@@ -123,7 +120,6 @@ export function BookingForm() {
         })
     }, 0)
 
-    // Cleanup function
     return () => {
       isMounted = false
       clearTimeout(timer)
@@ -133,7 +129,6 @@ export function BookingForm() {
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        {/* Property Selection */}
         <Card className="border-border bg-card border">
           <CardHeader>
             <CardTitle className="text-base">Propriété</CardTitle>
@@ -160,7 +155,6 @@ export function BookingForm() {
           </CardContent>
         </Card>
 
-        {/* Client Selection */}
         <Card className="border-border bg-card border">
           <CardHeader>
             <CardTitle className="text-base">Client</CardTitle>
@@ -251,7 +245,6 @@ export function BookingForm() {
           </CardContent>
         </Card>
       </div>
-      {/* Dates */}
       <Card className="border-border bg-card border">
         <CardHeader>
           <CardTitle className="text-base">Dates du séjour</CardTitle>
@@ -308,7 +301,6 @@ export function BookingForm() {
         </CardContent>
       </Card>
 
-      {/* Guests */}
       <Card className="border-border bg-card border">
         <CardHeader>
           <CardTitle className="text-base">Voyageurs</CardTitle>
@@ -339,7 +331,6 @@ export function BookingForm() {
         </CardContent>
       </Card>
 
-      {/* Options */}
       <Card className="border-border bg-card border">
         <CardHeader>
           <CardTitle className="text-base">Options</CardTitle>
