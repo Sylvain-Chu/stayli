@@ -9,6 +9,8 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, Home, CheckCircle, AlertCircle, Building } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { PhoneInput } from '@/components/ui/phone-input'
+import { SiretInput } from '@/components/ui/siret-input'
 
 export default function SetupPage() {
   const router = useRouter()
@@ -54,12 +56,12 @@ export default function SetupPage() {
     setError(null)
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError('Les mots de passe ne correspondent pas')
       return
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError('Le mot de passe doit contenir au moins 8 caractères')
       return
     }
 
@@ -91,7 +93,7 @@ export default function SetupPage() {
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Setup failed')
+        throw new Error(data.error || "L'installation a échoué")
       }
 
       setStep('complete')
@@ -104,7 +106,7 @@ export default function SetupPage() {
         })
       }, 2000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Setup failed')
+      setError(err instanceof Error ? err.message : "L'installation a échoué")
     } finally {
       setIsLoading(false)
     }
@@ -120,13 +122,13 @@ export default function SetupPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           user: { name, email, password },
-          settings: { companyName: 'My Company' },
+          settings: { companyName: 'Mon Entreprise' },
         }),
       })
 
       if (!response.ok) {
         const data = await response.json()
-        throw new Error(data.error || 'Setup failed')
+        throw new Error(data.error || "L'installation a échoué")
       }
 
       setStep('complete')
@@ -139,7 +141,7 @@ export default function SetupPage() {
         })
       }, 2000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Setup failed')
+      setError(err instanceof Error ? err.message : "L'installation a échoué")
     } finally {
       setIsLoading(false)
     }
@@ -163,9 +165,9 @@ export default function SetupPage() {
                 <CheckCircle className="h-8 w-8" />
               </div>
             </div>
-            <h2 className="mb-2 text-2xl font-bold">Setup Complete!</h2>
+            <h2 className="mb-2 text-2xl font-bold">Configuration terminée !</h2>
             <p className="text-muted-foreground mb-4">
-              Your account has been created successfully. Redirecting to dashboard...
+              Votre compte a été créé avec succès. Redirection vers le tableau de bord...
             </p>
             <Loader2 className="text-primary mx-auto h-5 w-5 animate-spin" />
           </CardContent>
@@ -184,12 +186,12 @@ export default function SetupPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">
-            {step === 'user' ? 'Welcome to Stayli' : 'Company Information'}
+            {step === 'user' ? 'Bienvenue sur Stayli' : 'Informations de l’entreprise'}
           </CardTitle>
           <CardDescription>
             {step === 'user'
-              ? 'Create your admin account to get started'
-              : 'Set up your company details (optional)'}
+              ? 'Créez votre compte administrateur pour commencer'
+              : 'Configurez les détails de votre entreprise (optionnel)'}
           </CardDescription>
 
           <div className="flex items-center justify-center gap-2 pt-4">
@@ -213,10 +215,10 @@ export default function SetupPage() {
           {step === 'user' && (
             <form onSubmit={handleUserSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Nom complet</Label>
                 <Input
                   id="name"
-                  placeholder="John Doe"
+                  placeholder="Jean Dupont"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
@@ -224,11 +226,11 @@ export default function SetupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">E-mail</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="votre@exemple.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -236,7 +238,7 @@ export default function SetupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mot de passe</Label>
                 <Input
                   id="password"
                   type="password"
@@ -246,11 +248,11 @@ export default function SetupPage() {
                   required
                   minLength={8}
                 />
-                <p className="text-muted-foreground text-xs">Minimum 8 characters</p>
+                <p className="text-muted-foreground text-xs">8 caractères minimum</p>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -262,7 +264,7 @@ export default function SetupPage() {
               </div>
 
               <Button type="submit" className="w-full">
-                Continue
+                Continuer
               </Button>
             </form>
           )}
@@ -270,10 +272,10 @@ export default function SetupPage() {
           {step === 'company' && (
             <form onSubmit={handleCompanySubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="companyName">Company Name *</Label>
+                <Label htmlFor="companyName">Nom de l&apos;entreprise *</Label>
                 <Input
                   id="companyName"
-                  placeholder="My Vacation Rentals"
+                  placeholder="Mes Locations Vacances"
                   value={companyName}
                   onChange={(e) => setCompanyName(e.target.value)}
                   required
@@ -282,31 +284,26 @@ export default function SetupPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyEmail">Email</Label>
+                  <Label htmlFor="companyEmail">E-mail</Label>
                   <Input
                     id="companyEmail"
                     type="email"
-                    placeholder="contact@company.com"
+                    placeholder="contact@entreprise.com"
                     value={companyEmail}
                     onChange={(e) => setCompanyEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="companyPhone">Phone</Label>
-                  <Input
-                    id="companyPhone"
-                    placeholder="+33 1 23 45 67 89"
-                    value={companyPhone}
-                    onChange={(e) => setCompanyPhone(e.target.value)}
-                  />
+                  <Label htmlFor="companyPhone">Téléphone</Label>
+                  <PhoneInput id="companyPhone" value={companyPhone} onChange={setCompanyPhone} />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="companyAddress">Address</Label>
+                <Label htmlFor="companyAddress">Adresse</Label>
                 <Input
                   id="companyAddress"
-                  placeholder="123 Main Street"
+                  placeholder="123 Rue de la Paix"
                   value={companyAddress}
                   onChange={(e) => setCompanyAddress(e.target.value)}
                 />
@@ -314,7 +311,7 @@ export default function SetupPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="companyZipCode">Zip Code</Label>
+                  <Label htmlFor="companyZipCode">Code postal</Label>
                   <Input
                     id="companyZipCode"
                     placeholder="75001"
@@ -323,7 +320,7 @@ export default function SetupPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="companyCity">City</Label>
+                  <Label htmlFor="companyCity">Ville</Label>
                   <Input
                     id="companyCity"
                     placeholder="Paris"
@@ -334,13 +331,8 @@ export default function SetupPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="companySiret">SIRET (optional)</Label>
-                <Input
-                  id="companySiret"
-                  placeholder="123 456 789 00012"
-                  value={companySiret}
-                  onChange={(e) => setCompanySiret(e.target.value)}
-                />
+                <Label htmlFor="companySiret">SIRET (optionnel)</Label>
+                <SiretInput id="companySiret" value={companySiret} onChange={setCompanySiret} />
               </div>
 
               <Separator className="my-4" />
@@ -353,16 +345,16 @@ export default function SetupPage() {
                   onClick={handleSkipCompany}
                   disabled={isLoading}
                 >
-                  Skip for now
+                  Passer pour le moment
                 </Button>
                 <Button type="submit" className="flex-1" disabled={isLoading}>
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
+                      Création...
                     </>
                   ) : (
-                    'Complete Setup'
+                    'Terminer la configuration'
                   )}
                 </Button>
               </div>

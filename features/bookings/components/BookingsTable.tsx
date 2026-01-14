@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Eye, Pencil, Trash2 } from 'lucide-react'
 import { ColumnHeader } from '@/components/ui/data-table'
-import { cn } from '@/lib/utils'
+import { cn, getInitials } from '@/lib/utils'
 import { useBookingsContext } from '../context/BookingsContext'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
@@ -107,11 +107,6 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
     const end = new Date(endDate)
     const diffTime = Math.abs(end.getTime() - start.getTime())
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  }
-
-  const getInitials = (firstName?: string, lastName?: string) => {
-    if (!firstName || !lastName) return 'NA'
-    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase()
   }
 
   if (isLoading) {

@@ -1,7 +1,6 @@
 'use client'
 
-import { Bell, Search, Menu, LogOut, User } from 'lucide-react'
-import { Input } from '@/components/ui/input'
+import { Bell, Menu, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -14,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
+import { getInitials } from '@/lib/utils'
 
 interface HeaderProps {
   title: string
@@ -28,15 +28,6 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
   const handleSignOut = async () => {
     await signOut({ redirect: false })
     router.push('/auth/signin')
-  }
-
-  const getInitials = (name?: string | null) => {
-    if (!name) return 'U'
-    const parts = name.split(' ')
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
-    }
-    return name.slice(0, 2).toUpperCase()
   }
 
   return (
@@ -54,13 +45,13 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
         <h1 className="text-foreground text-lg font-semibold tracking-tight md:text-xl">{title}</h1>
       </div>
       <div className="flex items-center gap-2 md:gap-3">
-        <div className="relative hidden sm:block">
+        {/* <div className="relative hidden sm:block">
           <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Search..."
+            placeholder="Rechercher..."
             className="bg-secondary/50 focus:border-primary focus:bg-card w-40 border-transparent pl-9 md:w-64"
           />
-        </div>
+        </div> */}
         <Button variant="ghost" size="icon" className="relative">
           <Bell className="text-muted-foreground h-5 w-5" />
           <span className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
@@ -79,19 +70,21 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
           <DropdownMenuContent className="w-56" align="end" forceMount>
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm leading-none font-medium">{session?.user?.name || 'User'}</p>
+                <p className="text-sm leading-none font-medium">
+                  {session?.user?.name || 'Utilisateur'}
+                </p>
                 <p className="text-muted-foreground text-xs leading-none">{session?.user?.email}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => router.push('/account')}>
               <User className="mr-2 h-4 w-4" />
-              Account
+              Mon compte
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleSignOut} className="text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
-              Sign out
+              Se déconnecter
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
