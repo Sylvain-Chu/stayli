@@ -320,7 +320,7 @@ export default function AccountPage() {
                   !passwordData.newPassword ||
                   !passwordData.confirmPassword
                 }
-                className="min-w-[160px] transition-all duration-300"
+                className="min-w-40 transition-all duration-300"
               >
                 {savingPassword ? (
                   <>
