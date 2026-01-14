@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn, getInitials } from '@/lib/utils'
 import {
   LayoutDashboard,
   CalendarDays,
@@ -15,6 +15,7 @@ import {
   X,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { useSession } from 'next-auth/react'
 
 const mainNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -38,6 +39,7 @@ interface SidebarProps {
 
 export function Sidebar({ isMobile, isOpen, onClose }: SidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   const handleLinkClick = () => {
     if (isMobile && onClose) {
@@ -132,11 +134,10 @@ export function Sidebar({ isMobile, isOpen, onClose }: SidebarProps) {
         <div className="border-sidebar-border border-t p-4">
           <div className="bg-sidebar-accent/50 flex items-center gap-3 rounded-xl p-3">
             <div className="bg-sidebar-primary text-sidebar-primary-foreground flex h-9 w-9 items-center justify-center rounded-full font-medium">
-              JD
+              {getInitials(session?.user?.name)}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-medium">Jean Dupont</p>
-              <p className="text-sidebar-muted truncate text-xs">Admin</p>
+              <p className="truncate text-sm font-medium">{session?.user?.name}</p>
             </div>
           </div>
         </div>

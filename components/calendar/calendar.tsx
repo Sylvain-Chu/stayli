@@ -490,7 +490,7 @@ export function FullCalendar() {
         >
           <div className="flex h-full min-w-[1200px] flex-col">
             <div className="border-border bg-muted/30 sticky top-0 z-10 flex border-b">
-              <div className="border-border bg-muted/30 w-52 flex-shrink-0 border-r p-3">
+              <div className="border-border bg-muted/30 w-52 shrink-0 border-r p-3">
                 <span className="text-muted-foreground text-sm font-medium">Propriétés</span>
               </div>
               <div className="flex flex-1">
@@ -498,7 +498,7 @@ export function FullCalendar() {
                   <div
                     key={day}
                     className={cn(
-                      'border-border bg-muted/30 min-w-[36px] flex-1 border-r p-2 text-center last:border-r-0',
+                      'border-border bg-muted/30 min-w-9 flex-1 border-r p-2 text-center last:border-r-0',
                       isWeekend(day) && 'bg-muted/50',
                       todayDay === day && 'bg-primary/10',
                     )}
@@ -529,7 +529,7 @@ export function FullCalendar() {
                     key={property.id}
                     className="border-border hover:bg-muted/20 flex border-b transition-colors last:border-b-0"
                   >
-                    <div className="border-border bg-card sticky left-0 z-10 w-52 flex-shrink-0 border-r p-3">
+                    <div className="border-border bg-card sticky left-0 z-10 w-52 shrink-0 border-r p-3">
                       <div>
                         <p className="text-foreground text-sm font-medium">{property.name}</p>
                         <p className="text-muted-foreground truncate text-xs">
@@ -547,7 +547,7 @@ export function FullCalendar() {
                           <div
                             key={day}
                             className={cn(
-                              'border-border h-14 min-w-[36px] flex-1 cursor-pointer border-r transition-colors last:border-r-0',
+                              'border-border h-14 min-w-9 flex-1 cursor-pointer border-r transition-colors last:border-r-0',
                               isWeekend(day) && 'bg-muted/30',
                               !isOccupied && !isSelecting && 'hover:bg-accent/50',
                               isSelecting && 'bg-primary/20',
@@ -691,7 +691,7 @@ export function FullCalendar() {
                                 <UserPlus className="text-primary-foreground h-4 w-4" />
                               </div>
                               <div className="flex-1">
-                                <p className="text-sm font-medium">Créer "{clientSearch}"</p>
+                                <p className="text-sm font-medium">Créer &quot;{clientSearch}&quot;</p>
                                 <p className="text-muted-foreground text-xs">Nouveau client</p>
                               </div>
                             </button>
