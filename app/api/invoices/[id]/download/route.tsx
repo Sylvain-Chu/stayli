@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
 import ReactPDF from '@react-pdf/renderer'
 import { InvoicePDF } from '@/features/invoices/components/InvoicePDF'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    await requireAuth()
+
     const { id } = await params
 
     if (!id) {
