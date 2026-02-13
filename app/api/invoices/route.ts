@@ -23,6 +23,16 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const page = parseInt(searchParams.get('page') || '1')
     const perPage = parseInt(searchParams.get('perPage') || '10')
+    const sortBy = searchParams.get('sortBy')
+    const sortDir = searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc'
+
+    const allowedSortFields: Record<string, any> = {
+      client: { booking: { client: { lastName: sortDir } } },
+      amount: { amount: sortDir },
+      issueDate: { issueDate: sortDir },
+      status: { status: sortDir },
+    }
+    const orderBy = (sortBy && allowedSortFields[sortBy]) || { issueDate: 'desc' }
 
     const where = search
       ? {
@@ -56,7 +66,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { issueDate: 'desc' },
+        orderBy,
       }),
       prisma.invoice.count({ where }),
     ])

@@ -23,6 +23,16 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const perPage = parseInt(searchParams.get('perPage') || '10')
     const includeStats = searchParams.get('includeStats') === 'true'
+    const sortBy = searchParams.get('sortBy')
+    const sortDir = searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc'
+
+    const allowedSortFields: Record<string, any> = {
+      name: { lastName: sortDir },
+      firstName: { firstName: sortDir },
+      email: { email: sortDir },
+      createdAt: { createdAt: sortDir },
+    }
+    const orderBy = (sortBy && allowedSortFields[sortBy]) || { createdAt: 'desc' }
 
     const where = q
       ? {
@@ -39,7 +49,7 @@ export async function GET(request: NextRequest) {
         where,
         skip: (page - 1) * perPage,
         take: perPage,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
       }),
       prisma.client.count({ where }),
     ])

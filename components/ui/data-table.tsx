@@ -22,7 +22,7 @@ interface ColumnHeaderProps {
   className?: string
 }
 
-export function ColumnHeader({
+export const ColumnHeader = React.memo(function ColumnHeader({
   label,
   sortable = false,
   filterable = false,
@@ -70,6 +70,7 @@ export function ColumnHeader({
               <Button
                 variant="ghost"
                 size="icon"
+                aria-label={`Filtrer ${label.toLowerCase()}`}
                 className={cn('h-6 w-6', filterValue && 'text-primary')}
               >
                 <Filter className="h-3 w-3" />
@@ -88,6 +89,7 @@ export function ColumnHeader({
                     <Button
                       variant="ghost"
                       size="icon"
+                      aria-label="Effacer le filtre"
                       className="h-8 w-8 shrink-0"
                       onClick={() => onFilterChange?.('')}
                     >
@@ -119,7 +121,7 @@ export function ColumnHeader({
       </div>
     </th>
   )
-}
+})
 
 interface ActiveFiltersProps {
   filters: { key: string; label: string; value: string }[]

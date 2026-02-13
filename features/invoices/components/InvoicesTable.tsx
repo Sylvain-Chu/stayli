@@ -27,6 +27,38 @@ interface InvoicesTableProps {
   searchQuery?: string
 }
 
+function getStatusLabel(invoice: Invoice) {
+  const now = new Date()
+  const dueDate = new Date(invoice.dueDate)
+
+  if (invoice.status === 'paid') return { label: 'Payée', color: 'bg-green-100 text-green-700' }
+  if (invoice.status === 'cancelled')
+    return { label: 'Annulée', color: 'bg-gray-100 text-gray-700' }
+  if (
+    invoice.status === 'overdue' ||
+    (dueDate < now && (invoice.status === 'sent' || invoice.status === 'draft'))
+  ) {
+    return { label: 'En retard', color: 'bg-red-100 text-red-700' }
+  }
+  if (invoice.status === 'sent') return { label: 'Envoyée', color: 'bg-blue-100 text-blue-700' }
+  return { label: 'Brouillon', color: 'bg-orange-100 text-orange-700' }
+}
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
+function isOverdue(invoice: Invoice) {
+  const now = new Date()
+  const dueDate = new Date(invoice.dueDate)
+  return dueDate < now && invoice.status !== 'paid'
+}
+
 export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const { selectedIds, toggleSelection, selectAll, clearSelection } = useInvoicesContext()
   const [sortColumn, setSortColumn] = useState<string | null>(null)
@@ -44,7 +76,13 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const { toast } = useToast()
   const { updateInvoice, deleteInvoice } = useInvoiceMutations()
 
-  const { invoices, isLoading, isError, total, mutate } = useInvoices(searchQuery, page, perPage)
+  const { invoices, isLoading, isError, total, mutate } = useInvoices(
+    searchQuery,
+    page,
+    perPage,
+    sortColumn,
+    sortDirection,
+  )
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -107,38 +145,6 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
     })
   }
 
-  const getStatusLabel = (invoice: Invoice) => {
-    const now = new Date()
-    const dueDate = new Date(invoice.dueDate)
-
-    if (invoice.status === 'paid') return { label: 'Payée', color: 'bg-green-100 text-green-700' }
-    if (invoice.status === 'cancelled')
-      return { label: 'Annulée', color: 'bg-gray-100 text-gray-700' }
-    if (
-      invoice.status === 'overdue' ||
-      (dueDate < now && (invoice.status === 'sent' || invoice.status === 'draft'))
-    ) {
-      return { label: 'En retard', color: 'bg-red-100 text-red-700' }
-    }
-    if (invoice.status === 'sent') return { label: 'Envoyée', color: 'bg-blue-100 text-blue-700' }
-    return { label: 'Brouillon', color: 'bg-orange-100 text-orange-700' }
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(date)
-  }
-
-  const isOverdue = (invoice: Invoice) => {
-    const now = new Date()
-    const dueDate = new Date(invoice.dueDate)
-    return dueDate < now && invoice.status !== 'paid'
-  }
-
   if (isLoading) {
     return (
       <div className="border-border bg-card overflow-hidden rounded-xl border">
@@ -158,29 +164,6 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
       </div>
     )
   }
-
-  const sortedInvoices = [...(invoices || [])].sort((a, b) => {
-    if (!sortColumn || !sortDirection) return 0
-    let aVal: string | number = ''
-    let bVal: string | number = ''
-
-    if (sortColumn === 'client') {
-      aVal = `${a.booking?.client?.firstName} ${a.booking?.client?.lastName}`
-      bVal = `${b.booking?.client?.firstName} ${b.booking?.client?.lastName}`
-    } else if (sortColumn === 'amount') {
-      aVal = a.amount
-      bVal = b.amount
-    }
-
-    if (typeof aVal === 'string') {
-      return sortDirection === 'asc'
-        ? aVal.localeCompare(bVal as string)
-        : (bVal as string).localeCompare(aVal)
-    }
-    return sortDirection === 'asc'
-      ? (aVal as unknown as number) - (bVal as unknown as number)
-      : (bVal as unknown as number) - (aVal as unknown as number)
-  })
 
   return (
     <>
@@ -238,7 +221,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
               </tr>
             </thead>
             <tbody>
-              {sortedInvoices.map((invoice, idx) => {
+              {(invoices || []).map((invoice, idx) => {
                 const status = getStatusLabel(invoice)
                 const overdue = isOverdue(invoice)
 
@@ -248,7 +231,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                     className={cn(
                       'group border-border hover:bg-muted/50 border-b transition-colors',
                       selectedIds.includes(invoice.id) && 'bg-primary/5',
-                      idx === sortedInvoices.length - 1 && 'border-b-0',
+                      idx === (invoices?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
                     <td className="h-14 px-4">
@@ -316,8 +299,8 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
-                            title="Marquer comme payée"
+                            aria-label="Marquer comme payée"
+                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                             onClick={() => handleChangeStatus(invoice.id, 'paid')}
                           >
                             <Check className="h-4 w-4" />
@@ -326,7 +309,8 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                          aria-label="Voir la facture"
+                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                           asChild
                         >
                           <Link href={`/invoices/${invoice.id}`}>
@@ -336,7 +320,8 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                          aria-label="Supprimer la facture"
+                          className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                           onClick={() => handleDeleteClick(invoice.id)}
                         >
                           <Trash2 className="h-4 w-4" />
@@ -349,7 +334,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
             </tbody>
           </table>
         </div>
-        {sortedInvoices.length === 0 && (
+        {(invoices?.length || 0) === 0 && (
           <div className="text-muted-foreground flex items-center justify-center py-12 text-sm">
             Aucune facture trouvée
           </div>

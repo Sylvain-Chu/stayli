@@ -25,6 +25,17 @@ export async function GET(request: NextRequest) {
       ? queryResult.data
       : { page: 1, perPage: 10, from: undefined, to: undefined, q: undefined, status: undefined }
 
+    const sortBy = searchParams.get('sortBy')
+    const sortDir = searchParams.get('sortDir') === 'asc' ? ('asc' as const) : ('desc' as const)
+
+    const allowedSortFields: Record<string, any> = {
+      client: { client: { lastName: sortDir } },
+      property: { property: { name: sortDir } },
+      price: { totalPrice: sortDir },
+      startDate: { startDate: sortDir },
+    }
+    const orderBy = (sortBy && allowedSortFields[sortBy]) || { startDate: 'desc' }
+
     const where: Prisma.BookingWhereInput = {}
 
     if (from || to) {
@@ -59,7 +70,7 @@ export async function GET(request: NextRequest) {
           property: true,
           invoice: true,
         },
-        orderBy: { startDate: 'desc' },
+        orderBy,
       }),
       prisma.booking.count({ where }),
     ])

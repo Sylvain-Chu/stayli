@@ -21,7 +21,7 @@ import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
-import { FormEvent, useState } from 'react'
+import { FormEvent, useMemo, useState } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 
 type SortDirection = 'asc' | 'desc' | null
@@ -76,7 +76,13 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
 
   const searchTerm = searchQuery || filters.name || filters.email
 
-  const { clients, isLoading, isError, total, mutate } = useClients(searchTerm, page, perPage)
+  const { clients, isLoading, isError, total, mutate } = useClients(
+    searchTerm,
+    page,
+    perPage,
+    sortColumn,
+    sortDirection,
+  )
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
@@ -199,13 +205,17 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     }
   }
 
-  const activeFilters = Object.entries(filters)
-    .filter(([, value]) => value)
-    .map(([key, value]) => ({
-      key,
-      label: key === 'name' ? 'Client' : 'Email',
-      value,
-    }))
+  const activeFilters = useMemo(
+    () =>
+      Object.entries(filters)
+        .filter(([, value]) => value)
+        .map(([key, value]) => ({
+          key,
+          label: key === 'name' ? 'Client' : 'Email',
+          value,
+        })),
+    [filters],
+  )
 
   if (isLoading) {
     return <ClientsTableSkeleton />
@@ -329,7 +339,8 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Voir le client"
+                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleViewProfile(client)}
                     >
                       <Eye className="h-4 w-4" />
@@ -337,7 +348,8 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Modifier le client"
+                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleEditClient(client)}
                     >
                       <Pencil className="h-4 w-4" />
@@ -345,7 +357,8 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Supprimer le client"
+                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleDeleteClick(client.id)}
                     >
                       <Trash2 className="h-4 w-4" />
