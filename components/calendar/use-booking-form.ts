@@ -38,7 +38,7 @@ export function useBookingForm({ clients }: UseBookingFormOptions) {
       })
 
       if (response.ok) {
-        const prices = await response.json()
+        const { data: prices } = await response.json()
         setNewBooking((prev) => ({
           ...prev,
           ...currentOptions,

@@ -19,7 +19,7 @@ export interface NewBookingState {
   cleaningFee: number
   taxes: number
   discount: number
-  discountType: string
+  discountType: string | null
   hasLinens: boolean
   linensPrice: number
   hasCleaning: boolean

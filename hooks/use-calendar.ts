@@ -112,7 +112,7 @@ export async function createCalendarBooking(bookingData: {
   children?: number
   specialRequests?: string
   discount?: number
-  discountType?: string
+  discountType?: string | null
   hasLinens?: boolean
   linensPrice?: number
   hasCleaning?: boolean

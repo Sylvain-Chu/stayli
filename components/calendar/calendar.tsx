@@ -151,7 +151,7 @@ export function FullCalendar() {
         children: nb.children,
         specialRequests: nb.specialRequests,
         discount: nb.discount,
-        discountType: nb.discountType,
+        discountType: nb.discountType || null,
         hasLinens: nb.hasLinens,
         linensPrice: nb.linensPrice,
         hasCleaning: nb.hasCleaning,
