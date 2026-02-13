@@ -91,65 +91,6 @@ export function usePagination(initialState: Partial<PaginationState> = {}) {
 }
 
 /**
- * Multi-selection state
- */
-export interface UseSelectionOptions<T> {
-  /** Key used to identify items */
-  idKey?: keyof T
-}
-
-/**
- * Hook to manage multi-item selection
- *
- * SOLID Principle: Single Responsibility
- * This hook exclusively handles selection logic
- *
- * @example
- * const { selectedIds, toggleSelection, selectAll, clearSelection } = useSelection<Booking>()
- */
-export function useSelection<T extends { id: string }>(options: UseSelectionOptions<T> = {}) {
-  const { idKey = 'id' } = options
-  const [selectedIds, setSelectedIds] = useState<string[]>([])
-
-  const toggleSelection = useCallback((id: string) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]))
-  }, [])
-
-  const selectAll = useCallback((ids: string[]) => {
-    setSelectedIds(ids)
-  }, [])
-
-  const clearSelection = useCallback(() => {
-    setSelectedIds([])
-  }, [])
-
-  const isSelected = useCallback((id: string) => selectedIds.includes(id), [selectedIds])
-
-  const toggleAll = useCallback(
-    (items: T[]) => {
-      const allIds = items.map((item) => String(item[idKey]))
-      if (selectedIds.length === items.length) {
-        clearSelection()
-      } else {
-        selectAll(allIds)
-      }
-    },
-    [selectedIds.length, idKey, clearSelection, selectAll],
-  )
-
-  return {
-    selectedIds,
-    selectedCount: selectedIds.length,
-    toggleSelection,
-    selectAll,
-    clearSelection,
-    isSelected,
-    toggleAll,
-    hasSelection: selectedIds.length > 0,
-  }
-}
-
-/**
  * Type for sorting direction
  */
 export type SortDirection = 'asc' | 'desc' | null

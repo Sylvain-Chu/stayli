@@ -1,18 +1,6 @@
-import useSWR from 'swr'
+import { useStats } from '@/hooks/use-stats'
 import { PropertyStats } from '../types'
 
 export function usePropertyStats() {
-  const { data, error, isLoading, mutate } = useSWR<PropertyStats>(
-    '/api/properties/stats',
-    {
-      revalidateOnReconnect: false,
-    },
-  )
-
-  return {
-    stats: data,
-    isLoading,
-    isError: error,
-    mutate,
-  }
+  return useStats<PropertyStats>('/api/properties/stats', { revalidateOnReconnect: false })
 }

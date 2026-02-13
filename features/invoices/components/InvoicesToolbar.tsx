@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Search, Trash2 } from 'lucide-react'
 import { useInvoices } from '../hooks/useInvoices'
+import { useInvoiceMutations } from '../hooks/useInvoiceMutations'
 import { useInvoicesContext } from '../context/InvoicesContext'
 import { useToast } from '@/hooks/use-toast'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
@@ -19,6 +20,7 @@ export function InvoicesToolbar({ onSearchChange }: InvoicesToolbarProps) {
   const [isPending, startTransition] = useTransition()
 
   const { mutate } = useInvoices(search)
+  const { deleteInvoices } = useInvoiceMutations()
   const { selectedIds, clearSelection } = useInvoicesContext()
   const { toast } = useToast()
 
@@ -30,11 +32,7 @@ export function InvoicesToolbar({ onSearchChange }: InvoicesToolbarProps) {
   const handleDeleteSelected = async () => {
     startTransition(async () => {
       try {
-        await Promise.all(
-          selectedIds.map((id: string) => fetch(`/api/invoices/${id}`, { method: 'DELETE' })),
-        )
-
-        await mutate()
+        await deleteInvoices(selectedIds)
         clearSelection()
         setIsDeleteDialogOpen(false)
         toast({

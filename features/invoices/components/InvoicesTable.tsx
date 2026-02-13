@@ -14,6 +14,7 @@ import {
 import { ColumnHeader } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
 import { useInvoices } from '@/features/invoices/hooks/useInvoices'
+import { useInvoiceMutations } from '@/features/invoices/hooks/useInvoiceMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
 import { useEffect, useState, useTransition } from 'react'
@@ -36,6 +37,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
+  const { updateInvoice, deleteInvoice } = useInvoiceMutations()
 
   const { invoices, isLoading, isError, total, mutate } = useInvoices(searchQuery, page, perPage)
 
@@ -68,13 +70,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
 
   const handleChangeStatus = async (id: string, status: string) => {
     try {
-      const response = await fetch(`/api/invoices/${id}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status }),
-      })
-      if (!response.ok) throw new Error('Erreur lors du changement de statut')
-      await mutate()
+      await updateInvoice(id, { status })
       toast({
         title: 'Statut mis à jour',
         description: `La facture est maintenant marquée comme ${status === 'paid' ? 'payée' : status}.`,
@@ -93,15 +89,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/invoices/${invoiceToDelete}`, {
-          method: 'DELETE',
-        })
-
-        if (!response.ok) {
-          throw new Error('Erreur lors de la suppression')
-        }
-
-        await mutate()
+        await deleteInvoice(invoiceToDelete)
         setDeleteConfirmOpen(false)
         setInvoiceToDelete(null)
         toast({

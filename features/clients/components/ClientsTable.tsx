@@ -16,7 +16,8 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { ColumnHeader, ActiveFilters } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
-import { useClients, updateClient, deleteClient } from '@/features/clients/hooks/useClients'
+import { useClients } from '@/features/clients/hooks/useClients'
+import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
@@ -66,6 +67,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     city: '',
   })
   const { toast } = useToast()
+  const { updateClient, deleteClient } = useClientMutations()
 
   const searchTerm = searchQuery || filters.name || filters.email
 
