@@ -9,12 +9,22 @@ interface PropertiesResponse {
   perPage: number
 }
 
-export function useProperties(q?: string, page = 1, perPage = 10) {
+export function useProperties(
+  q?: string,
+  page = 1,
+  perPage = 10,
+  sortBy?: string | null,
+  sortDir?: string | null,
+) {
   const params = new URLSearchParams({
     page: page.toString(),
     perPage: perPage.toString(),
   })
   if (q) params.set('q', q)
+  if (sortBy && sortDir) {
+    params.set('sortBy', sortBy)
+    params.set('sortDir', sortDir)
+  }
 
   const { data, error, mutate } = useSWR<PropertiesResponse>(`/api/properties?${params.toString()}`)
 

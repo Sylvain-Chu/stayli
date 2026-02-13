@@ -1,12 +1,22 @@
 import useSWR from 'swr'
 import { Invoice, InvoiceFormData } from '../types'
 
-export function useInvoices(searchQuery = '', page = 1, perPage = 10) {
+export function useInvoices(
+  searchQuery = '',
+  page = 1,
+  perPage = 10,
+  sortBy?: string | null,
+  sortDir?: string | null,
+) {
   const params = new URLSearchParams({
     page: page.toString(),
     perPage: perPage.toString(),
   })
   if (searchQuery) params.set('search', searchQuery)
+  if (sortBy && sortDir) {
+    params.set('sortBy', sortBy)
+    params.set('sortDir', sortDir)
+  }
 
   const { data, error, mutate, isLoading } = useSWR(`/api/invoices?${params.toString()}`, {
     revalidateOnReconnect: false,

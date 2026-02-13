@@ -38,7 +38,13 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
     >
       <div className="flex items-center gap-3">
         {isMobile && (
-          <Button variant="ghost" size="icon" onClick={onMenuClick} className="md:hidden">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Ouvrir le menu"
+            onClick={onMenuClick}
+            className="md:hidden"
+          >
             <Menu className="h-5 w-5" />
           </Button>
         )}
@@ -52,7 +58,7 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
             className="bg-secondary/50 focus:border-primary focus:bg-card w-40 border-transparent pl-9 md:w-64"
           />
         </div> */}
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
           <Bell className="text-muted-foreground h-5 w-5" />
           <span className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
         </Button>

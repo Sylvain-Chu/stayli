@@ -69,6 +69,7 @@ export function Sidebar({ isMobile, isOpen, onClose }: SidebarProps) {
             <Button
               variant="ghost"
               size="icon"
+              aria-label="Fermer le menu"
               onClick={onClose}
               className="text-sidebar-foreground hover:bg-sidebar-accent"
             >

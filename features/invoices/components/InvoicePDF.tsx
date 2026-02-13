@@ -381,11 +381,8 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         <View style={styles.header}>
           <View style={styles.brandColumn}>
             {settings.companyLogoUrl ? (
-              <Image
-                src={settings.companyLogoUrl}
-                style={styles.logoImage}
-                alt={`Logo ${settings.companyName || 'entreprise'}`}
-              />
+              // eslint-disable-next-line jsx-a11y/alt-text -- react-pdf Image is a PDF element, not HTML
+              <Image src={settings.companyLogoUrl} style={styles.logoImage} />
             ) : (
               <View style={styles.logoPlaceholder}>
                 <Text style={styles.logoInitial}>

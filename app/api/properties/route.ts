@@ -21,7 +21,15 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const page = parseInt(searchParams.get('page') || '1')
     const perPage = parseInt(searchParams.get('perPage') || '10')
-    const search = searchParams.get('search') || ''
+    const search = searchParams.get('search') || searchParams.get('q') || ''
+    const sortBy = searchParams.get('sortBy')
+    const sortDir = searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc'
+
+    const allowedSortFields: Record<string, any> = {
+      name: { name: sortDir },
+      createdAt: { createdAt: sortDir },
+    }
+    const orderBy = (sortBy && allowedSortFields[sortBy]) || { createdAt: 'desc' }
 
     const where = search
       ? {
@@ -37,7 +45,7 @@ export async function GET(request: NextRequest) {
         where,
         skip: (page - 1) * perPage,
         take: perPage,
-        orderBy: { createdAt: 'desc' },
+        orderBy,
         include: {
           _count: {
             select: { bookings: true },
