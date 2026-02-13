@@ -3,11 +3,17 @@ import { notFound } from 'next/navigation'
 import { AppLayout } from '@/components/layouts/app-shell'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { ChevronLeft, Calendar, Mail, Phone, MapPin, Clock, Users } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
-// import { GenerateInvoiceButton } from '@/features/bookings/components/GenerateInvoiceButton'
 import { DownloadContractButton } from '@/features/bookings/components/DownloadContractButton'
+import { GenerateInvoiceButton } from '@/features/bookings/components/GenerateInvoiceButton'
+import {
+  BookingStatusSelect,
+  CancelBookingButton,
+} from '@/features/bookings/components/BookingActions'
+import { DownloadInvoiceButton } from '@/features/invoices/components/GenerateInvoiceButton'
+import type { BookingStatus } from '@/types/entities'
 
 export default async function BookingDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -41,23 +47,6 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
     const end = new Date(endDate)
     const diffTime = Math.abs(end.getTime() - start.getTime())
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  }
-
-  const getStatusBadge = (status: string) => {
-    const statusConfig: Record<string, { label: string; color: string }> = {
-      confirmed: { label: 'Confirmée', color: 'bg-green-100 text-green-700' },
-      pending: { label: 'En attente', color: 'bg-orange-100 text-orange-700' },
-      cancelled: { label: 'Annulée', color: 'bg-red-100 text-red-700' },
-      blocked: { label: 'Bloquée', color: 'bg-gray-100 text-gray-700' },
-    }
-    const config = statusConfig[status] || statusConfig.confirmed
-    return (
-      <span
-        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${config.color}`}
-      >
-        {config.label}
-      </span>
-    )
   }
 
   const nights = calculateNights(booking.startDate.toISOString(), booking.endDate.toISOString())
@@ -112,10 +101,64 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
               Retour
             </Link>
             <h2 className="text-foreground text-xl font-semibold">Réservation #{id.slice(0, 8)}</h2>
-            {getStatusBadge(booking.status)}
+            <BookingStatusSelect bookingId={id} currentStatus={booking.status as BookingStatus} />
           </div>
           <div className="flex items-center gap-2">
-            {/* <GenerateInvoiceButton bookingId={id} hasInvoice={!!booking.invoice} /> */}
+            <GenerateInvoiceButton bookingId={id} hasInvoice={!!booking.invoice} />
+
+            {booking.invoice && settings && booking.client && booking.property && (
+              <DownloadInvoiceButton
+                invoice={{
+                  invoiceNumber: booking.invoice.invoiceNumber,
+                  issueDate: booking.invoice.issueDate.toISOString(),
+                  dueDate: booking.invoice.dueDate.toISOString(),
+                  amount: booking.invoice.amount,
+                  status: booking.invoice.status,
+                }}
+                booking={{
+                  id: booking.id,
+                  startDate: booking.startDate.toISOString(),
+                  endDate: booking.endDate.toISOString(),
+                  totalPrice: booking.totalPrice,
+                  basePrice: booking.basePrice,
+                  cleaningFee: booking.cleaningFee,
+                  taxes: booking.taxes,
+                  adults: booking.adults,
+                  children: booking.children,
+                  discount: booking.discount,
+                  discountType: booking.discountType ?? undefined,
+                  hasLinens: booking.hasLinens,
+                  linensPrice: booking.linensPrice,
+                  hasCleaning: booking.hasCleaning,
+                  cleaningPrice: booking.cleaningPrice,
+                  hasCancellationInsurance: booking.hasCancellationInsurance,
+                  insuranceFee: booking.insuranceFee,
+                }}
+                property={{
+                  name: booking.property.name,
+                  address: booking.property.address ?? undefined,
+                }}
+                client={{
+                  firstName: booking.client.firstName,
+                  lastName: booking.client.lastName,
+                  email: booking.client.email,
+                  phone: booking.client.phone ?? undefined,
+                  address: booking.client.address ?? undefined,
+                  zipCode: booking.client.zipCode ?? undefined,
+                  city: booking.client.city ?? undefined,
+                }}
+                settings={{
+                  companyName: settings.companyName ?? undefined,
+                  companyAddress: settings.companyAddress ?? undefined,
+                  companyPhoneNumber: settings.companyPhoneNumber ?? undefined,
+                  companyEmail: settings.companyEmail ?? undefined,
+                  currencySymbol: settings.currencySymbol ?? undefined,
+                  invoicePaymentInstructions: settings.invoicePaymentInstructions ?? undefined,
+                  cancellationInsuranceProviderName:
+                    settings.cancellationInsuranceProviderName ?? undefined,
+                }}
+              />
+            )}
 
             {settings && booking.client && booking.property && (
               <DownloadContractButton
@@ -126,12 +169,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
               />
             )}
 
-            <Button
-              variant="ghost"
-              className="text-destructive hover:text-destructive hover:bg-destructive/10"
-            >
-              Annuler
-            </Button>
+            <CancelBookingButton bookingId={id} currentStatus={booking.status as BookingStatus} />
           </div>
         </div>
 
