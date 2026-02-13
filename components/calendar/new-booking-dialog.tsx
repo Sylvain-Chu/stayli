@@ -134,9 +134,7 @@ export function NewBookingDialog({
                             <p className="truncate text-sm font-medium">
                               {client.firstName} {client.lastName}
                             </p>
-                            <p className="text-muted-foreground truncate text-xs">
-                              {client.email}
-                            </p>
+                            <p className="text-muted-foreground truncate text-xs">{client.email}</p>
                           </div>
                           {newBooking.clientId === client.id && (
                             <Check className="text-primary h-4 w-4" />
@@ -236,9 +234,7 @@ export function NewBookingDialog({
                         type="number"
                         min="1"
                         value={newBooking.adults}
-                        onChange={(e) =>
-                          onOptionChange('adults', parseInt(e.target.value) || 1)
-                        }
+                        onChange={(e) => onOptionChange('adults', parseInt(e.target.value) || 1)}
                         className="h-9 pr-8"
                       />
                       <span className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-xs">
@@ -250,9 +246,7 @@ export function NewBookingDialog({
                         type="number"
                         min="0"
                         value={newBooking.children}
-                        onChange={(e) =>
-                          onOptionChange('children', parseInt(e.target.value) || 0)
-                        }
+                        onChange={(e) => onOptionChange('children', parseInt(e.target.value) || 0)}
                         className="h-9 pr-8"
                       />
                       <span className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-xs">

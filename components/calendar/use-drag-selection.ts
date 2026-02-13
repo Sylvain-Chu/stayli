@@ -1,9 +1,7 @@
 import { useState, useCallback } from 'react'
 import type { DragState } from './types'
 
-export function useDragSelection(
-  isDayOccupied: (propertyId: string, day: number) => boolean,
-) {
+export function useDragSelection(isDayOccupied: (propertyId: string, day: number) => boolean) {
   const [isDragging, setIsDragging] = useState(false)
   const [dragState, setDragState] = useState<DragState | null>(null)
 

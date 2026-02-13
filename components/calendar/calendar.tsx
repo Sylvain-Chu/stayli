@@ -39,14 +39,20 @@ export function FullCalendar() {
   // Data fetching
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth() + 1
-  const { bookings, isLoading: bookingsLoading, mutate: mutateBookings } = useCalendarBookings(year, month)
+  const {
+    bookings,
+    isLoading: bookingsLoading,
+    mutate: mutateBookings,
+  } = useCalendarBookings(year, month)
   const { properties, isLoading: propertiesLoading } = useProperties()
   const { clients, isLoading: clientsLoading, mutate: mutateClients } = useClients()
 
   // Day helpers
   const isDayOccupied = useCallback(
     (propertyId: string, day: number) => {
-      return bookings.some((b) => b.propertyId === propertyId && day >= b.startDay && day <= b.endDay)
+      return bookings.some(
+        (b) => b.propertyId === propertyId && day >= b.startDay && day <= b.endDay,
+      )
     },
     [bookings],
   )
@@ -113,15 +119,23 @@ export function FullCalendar() {
       }
 
       if (!clientId) {
-        toast({ title: 'Error', description: 'Please select or create a client', variant: 'destructive' })
+        toast({
+          title: 'Error',
+          description: 'Please select or create a client',
+          variant: 'destructive',
+        })
         return
       }
 
       const startDate = new Date(displayYear, displayMonth, start)
       const endDate = new Date(displayYear, displayMonth, end)
       const totalPrice =
-        (nb.basePrice || 0) + (nb.cleaningFee || 0) + (nb.taxes || 0) +
-        (nb.linensPrice || 0) + (nb.insuranceFee || 0) - (nb.discount || 0)
+        (nb.basePrice || 0) +
+        (nb.cleaningFee || 0) +
+        (nb.taxes || 0) +
+        (nb.linensPrice || 0) +
+        (nb.insuranceFee || 0) -
+        (nb.discount || 0)
 
       await createCalendarBooking({
         propertyId: drag.dragState.propertyId,
@@ -153,7 +167,11 @@ export function FullCalendar() {
       bookingForm.resetForm()
     } catch (error) {
       console.error('Error creating booking:', error)
-      toast({ title: 'Erreur', description: 'Impossible de créer la réservation', variant: 'destructive' })
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de créer la réservation',
+        variant: 'destructive',
+      })
     } finally {
       bookingForm.setIsSubmitting(false)
     }
