@@ -1,6 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
 import { generateInvoiceNumber } from '@/lib/invoice-number'
 
 export async function POST(request: NextRequest) {
@@ -10,7 +12,7 @@ export async function POST(request: NextRequest) {
     const { bookingId } = await request.json()
 
     if (!bookingId) {
-      return NextResponse.json({ error: 'Booking ID is required' }, { status: 400 })
+      throw ApiError.badRequest('Booking ID is required')
     }
 
     // Get booking with relations
@@ -24,21 +26,18 @@ export async function POST(request: NextRequest) {
     })
 
     if (!booking) {
-      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+      throw ApiError.notFound('Booking')
     }
 
     // Check if invoice already exists
     if (booking.invoice) {
-      return NextResponse.json(
-        { error: 'Invoice already exists for this booking' },
-        { status: 400 },
-      )
+      throw ApiError.conflict('Invoice already exists for this booking')
     }
 
     // Get settings for invoice configuration
     const settings = await prisma.settings.findFirst()
     if (!settings) {
-      return NextResponse.json({ error: 'Settings not found' }, { status: 500 })
+      throw ApiError.internal('Settings not found')
     }
 
     // Calculate due date
@@ -70,9 +69,9 @@ export async function POST(request: NextRequest) {
       })
     })
 
-    return NextResponse.json(invoice, { status: 201 })
+    logger.info('Invoice generated', { invoiceId: invoice.id, invoiceNumber: invoice.invoiceNumber })
+    return successResponse(invoice, 201)
   } catch (error) {
-    console.error('Error generating invoice:', error)
-    return NextResponse.json({ error: 'Failed to generate invoice' }, { status: 500 })
+    return handleApiError(error, 'Failed to generate invoice')
   }
 }

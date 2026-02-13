@@ -69,19 +69,6 @@ export interface UseBookingsReturn {
   ) => Promise<BookingsResponse | undefined>
 }
 
-// ============ Fetcher ============
-
-const fetcher = async (url: string): Promise<BookingsResponse> => {
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(error.message || 'Error while fetching bookings')
-  }
-
-  return response.json()
-}
-
 // ============ Hook ============
 
 /**
@@ -114,7 +101,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     status: filters.status,
   })
 
-  const { data, error, mutate, isValidating } = useSWR<BookingsResponse>(url, fetcher, {
+  const { data, error, mutate, isValidating } = useSWR<BookingsResponse>(url, {
     refreshInterval,
     revalidateOnFocus,
     keepPreviousData: true,
@@ -147,24 +134,12 @@ export interface UseBookingReturn {
   ) => Promise<BookingWithRelations | undefined>
 }
 
-const singleBookingFetcher = async (url: string): Promise<BookingWithRelations> => {
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(error.message || 'Error while fetching the booking')
-  }
-
-  return response.json()
-}
-
 /**
  * Hook to fetch a single booking by ID
  */
 export function useBooking(id: string | null | undefined): UseBookingReturn {
   const { data, error, mutate, isValidating } = useSWR<BookingWithRelations>(
     id ? `/api/bookings/${id}` : null,
-    singleBookingFetcher,
   )
 
   return {

@@ -3,20 +3,7 @@
 import useSWR, { type SWRConfiguration } from 'swr'
 import { useCallback, useState } from 'react'
 
-/**
- * Generic fetcher for SWR
- * Automatically handles HTTP errors
- */
-export async function fetcher<T>(url: string): Promise<T> {
-  const res = await fetch(url)
-
-  if (!res.ok) {
-    const error = new Error('An error occurred while loading data')
-    throw error
-  }
-
-  return res.json()
-}
+export { swrFetcher as fetcher } from '@/lib/swr-fetcher'
 
 /**
  * Options for useApiQuery
@@ -40,9 +27,7 @@ export function useApiQuery<T>(url: string | null, options: UseApiQueryOptions<T
 
   const { data, error, isLoading, isValidating, mutate } = useSWR<T>(
     enabled ? url : null,
-    fetcher<T>,
     {
-      revalidateOnFocus: false,
       ...swrOptions,
     },
   )

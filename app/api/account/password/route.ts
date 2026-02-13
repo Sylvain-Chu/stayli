@@ -3,10 +3,10 @@
  * Handles password updates
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { handleApiError, successResponse } from '@/lib/api-error'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
@@ -42,14 +42,14 @@ export async function POST(request: NextRequest) {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
+      throw ApiError.notFound('Utilisateur')
     }
 
     // Verify current password
     const isPasswordValid = await bcrypt.compare(validatedData.currentPassword, user.passwordHash)
 
     if (!isPasswordValid) {
-      return NextResponse.json({ error: 'Le mot de passe actuel est incorrect' }, { status: 400 })
+      throw ApiError.badRequest('Le mot de passe actuel est incorrect')
     }
 
     // Hash new password

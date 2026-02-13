@@ -48,15 +48,25 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         ...(validatedData.taxes !== undefined && { taxes: validatedData.taxes }),
         ...(validatedData.adults !== undefined && { adults: validatedData.adults }),
         ...(validatedData.children !== undefined && { children: validatedData.children }),
-        ...(validatedData.specialRequests !== undefined && { specialRequests: validatedData.specialRequests }),
+        ...(validatedData.specialRequests !== undefined && {
+          specialRequests: validatedData.specialRequests,
+        }),
         ...(validatedData.discount !== undefined && { discount: validatedData.discount }),
-        ...(validatedData.discountType !== undefined && { discountType: validatedData.discountType }),
+        ...(validatedData.discountType !== undefined && {
+          discountType: validatedData.discountType,
+        }),
         ...(validatedData.hasLinens !== undefined && { hasLinens: validatedData.hasLinens }),
         ...(validatedData.linensPrice !== undefined && { linensPrice: validatedData.linensPrice }),
         ...(validatedData.hasCleaning !== undefined && { hasCleaning: validatedData.hasCleaning }),
-        ...(validatedData.cleaningPrice !== undefined && { cleaningPrice: validatedData.cleaningPrice }),
-        ...(validatedData.hasCancellationInsurance !== undefined && { hasCancellationInsurance: validatedData.hasCancellationInsurance }),
-        ...(validatedData.insuranceFee !== undefined && { insuranceFee: validatedData.insuranceFee }),
+        ...(validatedData.cleaningPrice !== undefined && {
+          cleaningPrice: validatedData.cleaningPrice,
+        }),
+        ...(validatedData.hasCancellationInsurance !== undefined && {
+          hasCancellationInsurance: validatedData.hasCancellationInsurance,
+        }),
+        ...(validatedData.insuranceFee !== undefined && {
+          insuranceFee: validatedData.insuranceFee,
+        }),
         ...(validatedData.status !== undefined && { status: validatedData.status }),
       },
       include: {

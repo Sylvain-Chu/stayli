@@ -3,7 +3,7 @@
  * Handles single property operations
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       throw ApiError.notFound('Property not found')
     }
 
-    return NextResponse.json(property)
+    return successResponse(property)
   } catch (error) {
     return handleApiError(error, 'Failed to fetch property')
   }

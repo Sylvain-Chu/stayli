@@ -3,7 +3,7 @@
  * Handles CRUD operations for invoices
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
       prisma.invoice.count({ where }),
     ])
 
-    return NextResponse.json({
+    return successResponse({
       invoices,
       total,
       page,

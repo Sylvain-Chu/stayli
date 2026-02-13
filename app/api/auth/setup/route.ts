@@ -1,5 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
 import bcrypt from 'bcrypt'
 import { z } from 'zod'
 
@@ -28,13 +30,12 @@ export async function GET() {
   try {
     const userCount = await prisma.user.count()
 
-    return NextResponse.json({
+    return successResponse({
       hasUser: userCount > 0,
       needsSetup: userCount === 0,
     })
   } catch (error) {
-    console.error('Setup check error:', error)
-    return NextResponse.json({ error: 'Failed to check setup status' }, { status: 500 })
+    return handleApiError(error, 'Failed to check setup status')
   }
 }
 
@@ -48,10 +49,7 @@ export async function POST(request: NextRequest) {
     const existingUserCount = await prisma.user.count()
 
     if (existingUserCount > 0) {
-      return NextResponse.json(
-        { error: 'Setup already completed. Please sign in.' },
-        { status: 400 },
-      )
+      throw ApiError.badRequest('Setup already completed. Please sign in.')
     }
 
     // Parse and validate request body
@@ -107,8 +105,8 @@ export async function POST(request: NextRequest) {
       return { user, settings }
     })
 
-    return NextResponse.json({
-      success: true,
+    logger.info('Setup completed', { userId: result.user.id })
+    return successResponse({
       user: {
         id: result.user.id,
         name: result.user.name,
@@ -116,20 +114,14 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Setup error:', error)
-
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: error.errors[0]?.message || 'Validation error' },
-        { status: 400 },
+    // Check for unique constraint violation
+    if (error instanceof Error && error.message.includes('Unique constraint')) {
+      return handleApiError(
+        ApiError.conflict('A user with this email already exists'),
+        'Setup error',
       )
     }
 
-    // Check for unique constraint violation
-    if (error instanceof Error && error.message.includes('Unique constraint')) {
-      return NextResponse.json({ error: 'A user with this email already exists' }, { status: 400 })
-    }
-
-    return NextResponse.json({ error: 'Failed to complete setup' }, { status: 500 })
+    return handleApiError(error, 'Failed to complete setup')
   }
 }

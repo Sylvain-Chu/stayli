@@ -3,7 +3,7 @@
  * Handles application settings
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
@@ -25,10 +25,10 @@ export async function GET() {
       const newSettings = await prisma.settings.create({
         data: {},
       })
-      return NextResponse.json(newSettings)
+      return successResponse(newSettings)
     }
 
-    return NextResponse.json(settings)
+    return successResponse(settings)
   } catch (error) {
     return handleApiError(error, 'Failed to fetch settings')
   }

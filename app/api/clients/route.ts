@@ -3,7 +3,7 @@
  * Handles CRUD operations for clients
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
@@ -110,7 +110,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(response)
+    return successResponse(response)
   } catch (error) {
     return handleApiError(error, 'Failed to fetch clients')
   }
