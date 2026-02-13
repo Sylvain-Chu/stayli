@@ -13,10 +13,9 @@ import {
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Search, Plus, Trash2 } from 'lucide-react'
-import { createClient, deleteClient } from '@/features/clients/hooks/useClients'
 import { ExportClientsButton } from './ExportButton'
+import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { useToast } from '@/hooks/use-toast'
-import { mutate } from 'swr'
 import { clientSchema } from '@/lib/validations/client'
 import type { Client } from '@/features/clients/types'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
@@ -41,6 +40,7 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
   })
   const { toast } = useToast()
   const { selectedIds, clearSelection } = useClientsContext()
+  const { createClient, deleteClients, isMutating } = useClientMutations()
 
   const handleSearchChange = (value: string) => {
     setSearch(value)
@@ -51,8 +51,7 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
     if (selectedIds.length === 0) return
 
     try {
-      await Promise.all(selectedIds.map((id) => deleteClient(id)))
-      await mutate((key) => typeof key === 'string' && key.startsWith('/api/clients'))
+      await deleteClients(selectedIds)
       clearSelection()
       toast({
         title: `${selectedIds.length} client${selectedIds.length > 1 ? 's' : ''} supprimé${selectedIds.length > 1 ? 's' : ''}`,
@@ -75,8 +74,6 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
       const validatedData = clientSchema.parse(formData)
 
       await createClient(validatedData)
-
-      await mutate((key) => typeof key === 'string' && key.startsWith('/api/clients'))
 
       setOpen(false)
       setFormData({

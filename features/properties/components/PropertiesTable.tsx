@@ -18,6 +18,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { ColumnHeader } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
 import { useProperties } from '@/features/properties/hooks/useProperties'
+import { usePropertyMutations } from '@/features/properties/hooks/usePropertyMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
 import { FormEvent, useEffect, useState, useTransition } from 'react'
@@ -53,6 +54,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
   const [errors, setErrors] = useState<Record<string, string>>({})
   const { toast } = useToast()
+  const { updateProperty, deleteProperty } = usePropertyMutations()
 
   const { properties, isLoading, isError, total, mutate } = useProperties(
     searchQuery,
@@ -107,17 +109,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
       startTransition(async () => {
         try {
-          const response = await fetch(`/api/properties/${editProperty.id}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(validatedData),
-          })
-
-          if (!response.ok) {
-            throw new Error('Erreur lors de la modification')
-          }
-
-          await mutate()
+          await updateProperty(editProperty.id, validatedData)
           setEditProperty(null)
           toast({
             title: 'Propriété modifiée',
@@ -154,15 +146,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/properties/${propertyToDelete}`, {
-          method: 'DELETE',
-        })
-
-        if (!response.ok) {
-          throw new Error('Erreur lors de la suppression')
-        }
-
-        await mutate()
+        await deleteProperty(propertyToDelete)
         setDeleteConfirmOpen(false)
         setPropertyToDelete(null)
         toast({

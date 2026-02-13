@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Save } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { updateSettings } from '../hooks/useSettings'
+import { useSettingsMutations } from '../hooks/useSettingsMutations'
 import { useToast } from '@/hooks/use-toast'
 
 const MONTHS = [
@@ -37,6 +37,7 @@ interface Settings {
 
 export function SeasonSettings({ settings }: { settings: Settings }) {
   const { toast } = useToast()
+  const { updateSettings } = useSettingsMutations()
   const [formData, setFormData] = useState({
     lowSeasonMonths: settings.lowSeasonMonths,
     lowSeasonRate: settings.lowSeasonRate,

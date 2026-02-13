@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 import { logger } from './logger'
+import type { ApiSuccessResponse, ApiErrorResponse, ApiResponse } from '@/types/api'
+
+export type { ApiSuccessResponse, ApiErrorResponse, ApiResponse }
 
 /**
  * Standard API error codes
@@ -59,25 +62,6 @@ export class ApiError extends Error {
     return new ApiError(ApiErrorCode.INTERNAL_ERROR, message, 500)
   }
 }
-
-/**
- * API response interface
- */
-interface ApiErrorResponse {
-  success: false
-  error: {
-    code: ApiErrorCode
-    message: string
-    details?: unknown
-  }
-}
-
-interface ApiSuccessResponse<T> {
-  success: true
-  data: T
-}
-
-export type ApiResponse<T> = ApiSuccessResponse<T> | ApiErrorResponse
 
 /**
  * Create a success response
