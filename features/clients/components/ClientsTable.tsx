@@ -16,11 +16,12 @@ import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { ColumnHeader, ActiveFilters } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
-import { useClients, updateClient, deleteClient } from '@/features/clients/hooks/useClients'
+import { useClients } from '@/features/clients/hooks/useClients'
+import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
-import { FormEvent, useEffect, useState } from 'react'
+import { FormEvent, useState } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 
 type SortDirection = 'asc' | 'desc' | null
@@ -51,6 +52,11 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
   })
   const [page, setPage] = useState(1)
   const perPage = 10
+  const [prevSearch, setPrevSearch] = useState(searchQuery)
+  if (prevSearch !== searchQuery) {
+    setPrevSearch(searchQuery)
+    setPage(1)
+  }
   const [viewClient, setViewClient] = useState<ClientRow | null>(null)
   const [editClient, setEditClient] = useState<ClientRow | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -66,14 +72,11 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     city: '',
   })
   const { toast } = useToast()
+  const { updateClient, deleteClient } = useClientMutations()
 
   const searchTerm = searchQuery || filters.name || filters.email
 
   const { clients, isLoading, isError, total, mutate } = useClients(searchTerm, page, perPage)
-
-  useEffect(() => {
-    setPage(1)
-  }, [searchQuery])
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
