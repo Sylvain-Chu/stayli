@@ -19,6 +19,8 @@ function BookingsContent() {
   const [dateTo, setDateTo] = useState('')
   const [status, setStatus] = useState<BookingStatus | 'all'>('all')
   const [page, setPage] = useState(1)
+  const [sortColumn, setSortColumn] = useState<string | null>(null)
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null)
 
   const debouncedSearch = useDebounce(searchQuery, 300)
 
@@ -33,6 +35,8 @@ function BookingsContent() {
     filters,
     page,
     perPage: 10,
+    sortBy: sortColumn,
+    sortDir: sortDirection,
   })
 
   const handleSearchChange = (value: string) => {
@@ -75,6 +79,12 @@ function BookingsContent() {
           isLoading={isLoading}
           isError={!!error}
           onDataChange={refresh}
+          sortColumn={sortColumn}
+          sortDirection={sortDirection}
+          onSortChange={(col, dir) => {
+            setSortColumn(col)
+            setSortDirection(dir)
+          }}
         />
       </Suspense>
     </>

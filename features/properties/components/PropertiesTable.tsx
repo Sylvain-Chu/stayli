@@ -65,6 +65,8 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
     searchQuery,
     page,
     perPage,
+    sortColumn,
+    sortDirection,
   )
 
   const handleSort = (column: string) => {
@@ -184,32 +186,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
     )
   }
 
-  const sortedProperties = [...(properties || [])].sort((a, b) => {
-    if (!sortColumn || !sortDirection) return 0
-    let aVal: string | number = ''
-    let bVal: string | number = ''
-
-    if (sortColumn === 'name') {
-      aVal = a.name
-      bVal = b.name
-    } else if (sortColumn === 'bookings') {
-      aVal = a._count?.bookings || 0
-      bVal = b._count?.bookings || 0
-    } else if (sortColumn === 'revenue') {
-      aVal = a.revenue || 0
-      bVal = b.revenue || 0
-    }
-
-    if (typeof aVal === 'string') {
-      return sortDirection === 'asc'
-        ? aVal.localeCompare(bVal as string)
-        : (bVal as string).localeCompare(aVal)
-    }
-    return sortDirection === 'asc'
-      ? (aVal as unknown as number) - (bVal as unknown as number)
-      : (bVal as unknown as number) - (aVal as unknown as number)
-  })
-
   return (
     <>
       <div className="border-border bg-card overflow-hidden rounded-xl border">
@@ -251,13 +227,13 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
               </tr>
             </thead>
             <tbody>
-              {sortedProperties.map((property, idx) => (
+              {(properties || []).map((property, idx) => (
                 <tr
                   key={property.id}
                   className={cn(
                     'group border-border hover:bg-muted/50 border-b transition-colors',
                     selectedIds.includes(property.id) && 'bg-primary/5',
-                    idx === sortedProperties.length - 1 && 'border-b-0',
+                    idx === (properties?.length || 0) - 1 && 'border-b-0',
                   )}
                 >
                   <td className="h-16 px-4">
@@ -294,7 +270,8 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Voir le bien"
+                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleViewProperty(property)}
                     >
                       <Eye className="h-4 w-4" />
@@ -302,7 +279,8 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Modifier le bien"
+                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleEditProperty(property)}
                     >
                       <Pencil className="h-4 w-4" />
@@ -310,7 +288,8 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                      aria-label="Supprimer le bien"
+                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                       onClick={() => handleDeleteClick(property.id)}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -321,7 +300,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
             </tbody>
           </table>
         </div>
-        {sortedProperties.length === 0 && (
+        {(properties?.length || 0) === 0 && (
           <div className="text-muted-foreground flex items-center justify-center py-12 text-sm">
             Aucune propriété trouvée
           </div>
