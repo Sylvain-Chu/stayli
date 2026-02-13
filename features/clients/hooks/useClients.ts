@@ -16,9 +16,7 @@ export function useClients(q?: string, page = 1, perPage = 10) {
   })
   if (q) params.set('q', q)
 
-  const { data, error, mutate } = useSWR<ClientsResponse>(
-    `/api/clients?${params.toString()}`,
-  )
+  const { data, error, mutate } = useSWR<ClientsResponse>(`/api/clients?${params.toString()}`)
 
   return {
     clients: data?.clients,
@@ -30,4 +28,3 @@ export function useClients(q?: string, page = 1, perPage = 10) {
     mutate,
   }
 }
-

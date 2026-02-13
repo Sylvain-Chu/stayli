@@ -35,10 +35,7 @@ export async function createInvoice<T = unknown>(data: CreateInvoiceData): Promi
   return apiPost<T, CreateInvoiceData>('/api/invoices', data)
 }
 
-export async function updateInvoice<T = unknown>(
-  id: string,
-  data: UpdateInvoiceData,
-): Promise<T> {
+export async function updateInvoice<T = unknown>(id: string, data: UpdateInvoiceData): Promise<T> {
   return apiPatch<T, UpdateInvoiceData>(`/api/invoices/${id}`, data)
 }
 

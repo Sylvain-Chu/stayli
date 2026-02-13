@@ -10,4 +10,3 @@ export function useSettings() {
     mutate,
   }
 }
-

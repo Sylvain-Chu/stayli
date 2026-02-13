@@ -26,7 +26,8 @@ export function usePropertyMutations() {
   )
 
   const deleteProperties = useCallback(
-    (ids: string[]) => mutateAsync(() => Promise.all(ids.map((id) => propertiesService.deleteProperty(id)))),
+    (ids: string[]) =>
+      mutateAsync(() => Promise.all(ids.map((id) => propertiesService.deleteProperty(id)))),
     [mutateAsync],
   )
 
