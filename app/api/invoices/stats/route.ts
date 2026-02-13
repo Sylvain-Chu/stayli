@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -40,7 +40,7 @@ export async function GET() {
     const paidAmount = paidInvoices.reduce((sum, inv) => sum + inv.amount, 0)
     const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0)
 
-    return NextResponse.json({
+    return successResponse({
       total,
       paid,
       overdue,
@@ -49,7 +49,6 @@ export async function GET() {
       overdueAmount,
     })
   } catch (error) {
-    console.error('Error fetching invoice stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch invoice stats' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch invoice stats')
   }
 }

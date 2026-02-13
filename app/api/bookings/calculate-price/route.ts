@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { priceCalculator } from '@/lib/booking-price-calculator'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest) {
     const settings = await prisma.settings.findFirst()
 
     if (!settings) {
-      return NextResponse.json({ error: 'Settings not found' }, { status: 404 })
+      throw ApiError.notFound('Settings')
     }
 
     const priceBreakdown = priceCalculator.calculate({
@@ -35,9 +36,8 @@ export async function POST(request: NextRequest) {
       touristTaxRate: settings.touristTaxRatePerPersonPerDay,
     })
 
-    return NextResponse.json(priceBreakdown)
+    return successResponse(priceBreakdown)
   } catch (error) {
-    console.error('Error calculating price:', error)
-    return NextResponse.json({ error: 'Failed to calculate price' }, { status: 500 })
+    return handleApiError(error, 'Failed to calculate price')
   }
 }

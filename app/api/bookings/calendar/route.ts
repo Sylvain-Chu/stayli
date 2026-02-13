@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest) {
     const month = parseInt(searchParams.get('month') || (new Date().getMonth() + 1).toString())
 
     if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
-      return NextResponse.json({ error: 'Invalid year or month parameter' }, { status: 400 })
+      throw ApiError.badRequest('Invalid year or month parameter')
     }
 
     // Créer les dates de début et fin du mois (month est 1-indexed)
@@ -96,9 +97,8 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({ bookings: calendarBookings })
+    return successResponse({ bookings: calendarBookings })
   } catch (error) {
-    console.error('Error fetching calendar bookings:', error)
-    return NextResponse.json({ error: 'Failed to fetch calendar bookings' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch calendar bookings')
   }
 }

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET(request: NextRequest) {
   try {
@@ -76,9 +77,8 @@ export async function GET(request: NextRequest) {
             }).format(type === 'arrivals' ? booking.startDate : booking.endDate),
     }))
 
-    return NextResponse.json({ activities })
+    return successResponse({ activities })
   } catch (error) {
-    console.error('Error fetching activities:', error)
-    return NextResponse.json({ error: 'Failed to fetch activities' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch activities')
   }
 }

@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -66,14 +66,13 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json({
+    return successResponse({
       total,
       newThisMonth,
       growthPercentage: Math.round(growthPercentage * 10) / 10,
       activeThisMonth,
     })
   } catch (error) {
-    console.error('Error fetching client stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch client statistics' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch client statistics')
   }
 }

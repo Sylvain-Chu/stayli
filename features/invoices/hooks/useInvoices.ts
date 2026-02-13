@@ -1,8 +1,6 @@
 import useSWR from 'swr'
 import { Invoice, InvoiceFormData } from '../types'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 export function useInvoices(searchQuery = '', page = 1, perPage = 10) {
   const params = new URLSearchParams({
     page: page.toString(),
@@ -10,8 +8,7 @@ export function useInvoices(searchQuery = '', page = 1, perPage = 10) {
   })
   if (searchQuery) params.set('search', searchQuery)
 
-  const { data, error, mutate, isLoading } = useSWR(`/api/invoices?${params.toString()}`, fetcher, {
-    revalidateOnFocus: false,
+  const { data, error, mutate, isLoading } = useSWR(`/api/invoices?${params.toString()}`, {
     revalidateOnReconnect: false,
   })
 
@@ -26,7 +23,7 @@ export function useInvoices(searchQuery = '', page = 1, perPage = 10) {
 }
 
 export function useInvoice(id: string) {
-  const { data, error, mutate } = useSWR(id ? `/api/invoices/${id}` : null, fetcher)
+  const { data, error, mutate } = useSWR(id ? `/api/invoices/${id}` : null)
 
   return {
     invoice: data,

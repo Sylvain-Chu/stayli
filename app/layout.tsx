@@ -2,6 +2,7 @@ import type React from 'react'
 import type { Metadata } from 'next'
 import { Analytics } from '@vercel/analytics/next'
 import { SessionProvider } from '@/components/providers/SessionProvider'
+import { SWRProvider } from '@/components/providers/SWRProvider'
 import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
@@ -19,8 +20,10 @@ export default function RootLayout({
     <html lang="fr">
       <body className={`font-sans antialiased`}>
         <SessionProvider>
-          {children}
-          <Toaster />
+          <SWRProvider>
+            {children}
+            <Toaster />
+          </SWRProvider>
         </SessionProvider>
         <Analytics />
       </body>

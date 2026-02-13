@@ -1,7 +1,5 @@
 import useSWR from 'swr'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 export interface CalendarBooking {
   id: string
   propertyId: string
@@ -62,10 +60,6 @@ export interface Client {
 export function useCalendarBookings(year: number, month: number) {
   const { data, error, isLoading, mutate } = useSWR<{ bookings: CalendarBooking[] }>(
     `/api/bookings/calendar?year=${year}&month=${month}`,
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    },
   )
 
   return {
@@ -80,10 +74,6 @@ export function useCalendarBookings(year: number, month: number) {
 export function useProperties() {
   const { data, error, isLoading } = useSWR<{ properties: Property[] }>(
     '/api/properties',
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    },
   )
 
   return {
@@ -97,10 +87,6 @@ export function useProperties() {
 export function useClients() {
   const { data, error, isLoading, mutate } = useSWR<{ clients: Client[] }>(
     '/api/clients',
-    fetcher,
-    {
-      revalidateOnFocus: false,
-    },
   )
 
   return {

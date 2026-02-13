@@ -3,7 +3,7 @@
  * Handles CRUD operations for rental properties
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
@@ -62,7 +62,7 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json({
+    return successResponse({
       properties,
       total,
       page,
