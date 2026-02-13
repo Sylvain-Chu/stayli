@@ -16,9 +16,7 @@ export function useProperties(q?: string, page = 1, perPage = 10) {
   })
   if (q) params.set('q', q)
 
-  const { data, error, mutate } = useSWR<PropertiesResponse>(
-    `/api/properties?${params.toString()}`,
-  )
+  const { data, error, mutate } = useSWR<PropertiesResponse>(`/api/properties?${params.toString()}`)
 
   return {
     properties: data?.properties,
@@ -29,59 +27,4 @@ export function useProperties(q?: string, page = 1, perPage = 10) {
     error: error?.message,
     mutate,
   }
-}
-
-export async function createProperty(propertyData: {
-  name: string
-  address?: string
-  description?: string
-}) {
-  const response = await fetch('/api/properties', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(propertyData),
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to create property')
-  }
-
-  return response.json()
-}
-
-export async function updateProperty(
-  id: string,
-  propertyData: Partial<{
-    name: string
-    address: string
-    description: string
-  }>,
-) {
-  const response = await fetch(`/api/properties/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(propertyData),
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to update property')
-  }
-
-  return response.json()
-}
-
-export async function deleteProperty(id: string) {
-  const response = await fetch(`/api/properties/${id}`, {
-    method: 'DELETE',
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to delete property')
-  }
-
-  return response.json()
 }

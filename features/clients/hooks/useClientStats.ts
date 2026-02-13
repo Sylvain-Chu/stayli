@@ -1,12 +1,6 @@
-import useSWR from 'swr'
+import { useStats } from '@/hooks/use-stats'
 import type { ClientStats } from '@/features/clients/types'
 
 export function useClientStats() {
-  const { data, error } = useSWR<ClientStats>('/api/clients/stats')
-
-  return {
-    stats: data,
-    isLoading: !error && !data,
-    error: error?.message,
-  }
+  return useStats<ClientStats>('/api/clients/stats')
 }

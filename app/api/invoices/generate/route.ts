@@ -69,7 +69,10 @@ export async function POST(request: NextRequest) {
       })
     })
 
-    logger.info('Invoice generated', { invoiceId: invoice.id, invoiceNumber: invoice.invoiceNumber })
+    logger.info('Invoice generated', {
+      invoiceId: invoice.id,
+      invoiceNumber: invoice.invoiceNumber,
+    })
     return successResponse(invoice, 201)
   } catch (error) {
     return handleApiError(error, 'Failed to generate invoice')

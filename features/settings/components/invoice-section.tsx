@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Save } from 'lucide-react'
-import { updateSettings } from '../hooks/useSettings'
+import { useSettingsMutations } from '../hooks/useSettingsMutations'
 import { useToast } from '@/hooks/use-toast'
 
 interface Settings {
@@ -18,6 +18,7 @@ interface Settings {
 
 export function InvoiceSettings({ settings }: { settings: Settings }) {
   const { toast } = useToast()
+  const { updateSettings } = useSettingsMutations()
   const [formData, setFormData] = useState({
     invoicePrefix: settings.invoicePrefix,
     invoiceDueDays: settings.invoiceDueDays,

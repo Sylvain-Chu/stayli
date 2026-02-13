@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Search, Plus, Trash2 } from 'lucide-react'
 import { useProperties } from '../hooks/useProperties'
+import { usePropertyMutations } from '../hooks/usePropertyMutations'
 import { usePropertiesContext } from '../context/PropertiesContext'
 import { useToast } from '@/hooks/use-toast'
 import { propertySchema } from '@/lib/validations/property'
@@ -37,6 +38,7 @@ export function PropertiesToolbar() {
   const [isPending, startTransition] = useTransition()
 
   const { mutate } = useProperties(search)
+  const { createProperty, deleteProperties } = usePropertyMutations()
   const { selectedIds, clearSelection } = usePropertiesContext()
   const { toast } = useToast()
 
@@ -49,17 +51,7 @@ export function PropertiesToolbar() {
 
       startTransition(async () => {
         try {
-          const response = await fetch('/api/properties', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(validatedData),
-          })
-
-          if (!response.ok) {
-            throw new Error('Erreur lors de la création')
-          }
-
-          await mutate()
+          await createProperty(validatedData)
           setIsDialogOpen(false)
           // Reset form
           setFormData({ name: '', address: '', description: '', contractDescription: '' })
@@ -91,11 +83,7 @@ export function PropertiesToolbar() {
   const handleDeleteSelected = async () => {
     startTransition(async () => {
       try {
-        await Promise.all(
-          selectedIds.map((id: string) => fetch(`/api/properties/${id}`, { method: 'DELETE' })),
-        )
-
-        await mutate()
+        await deleteProperties(selectedIds)
         clearSelection()
         setIsDeleteDialogOpen(false)
         toast({

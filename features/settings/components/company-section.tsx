@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { SiretInput } from '@/components/ui/siret-input'
 import { Upload, Save, Loader2, Check } from 'lucide-react'
-import { updateSettings } from '../hooks/useSettings'
+import { useSettingsMutations } from '../hooks/useSettingsMutations'
 import { useToast } from '@/hooks/use-toast'
 import { isValidFrenchPhone, isValidSiret } from '@/lib/utils'
 
@@ -25,6 +25,7 @@ interface Settings {
 
 export function CompanySettings({ settings }: { settings: Settings }) {
   const { toast } = useToast()
+  const { updateSettings } = useSettingsMutations()
   const [formData, setFormData] = useState({
     companyName: settings.companyName,
     companyAddress: settings.companyAddress || '',
