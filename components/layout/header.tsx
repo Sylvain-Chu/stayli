@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, Menu, LogOut, User } from 'lucide-react'
+import { Menu, LogOut, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -14,6 +14,7 @@ import {
 import { useSession, signOut } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { getInitials } from '@/lib/utils'
+import { NotificationsPopover } from './notifications-popover'
 
 interface HeaderProps {
   title: string
@@ -58,10 +59,7 @@ export function Header({ title, isMobile, onMenuClick }: HeaderProps) {
             className="bg-secondary/50 focus:border-primary focus:bg-card w-40 border-transparent pl-9 md:w-64"
           />
         </div> */}
-        <Button variant="ghost" size="icon" aria-label="Notifications" className="relative">
-          <Bell className="text-muted-foreground h-5 w-5" />
-          <span className="bg-primary absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full" />
-        </Button>
+        <NotificationsPopover />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

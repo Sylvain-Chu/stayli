@@ -3,11 +3,17 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Eye, Pencil, Trash2 } from 'lucide-react'
+import { Eye, Trash2 } from 'lucide-react'
 import { ColumnHeader } from '@/components/ui/data-table'
 import { cn, getInitials } from '@/lib/utils'
 import { useBookingsContext } from '../context/BookingsContext'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
 import { Booking, BookingStatus } from '../types'
@@ -69,6 +75,8 @@ export function BookingsTable({
     externalSortDirection !== undefined ? externalSortDirection : localSortDirection
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [bookingToDelete, setBookingToDelete] = useState<string | null>(null)
+  const [cancelConfirmOpen, setCancelConfirmOpen] = useState(false)
+  const [bookingToCancel, setBookingToCancel] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
 
@@ -134,6 +142,49 @@ export function BookingsTable({
         })
       }
     })
+  }
+
+  const handleStatusChange = (bookingId: string, newStatus: BookingStatus) => {
+    if (newStatus === 'cancelled') {
+      setBookingToCancel(bookingId)
+      setCancelConfirmOpen(true)
+      return
+    }
+    applyStatusChange(bookingId, newStatus)
+  }
+
+  const applyStatusChange = (bookingId: string, newStatus: BookingStatus) => {
+    startTransition(async () => {
+      try {
+        const response = await fetch(`/api/bookings/${bookingId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: newStatus }),
+        })
+
+        if (!response.ok) throw new Error('Erreur')
+
+        onDataChange()
+        const label = statusConfig[newStatus]?.label ?? newStatus
+        toast({
+          title: 'Statut mis à jour',
+          description: `Réservation passée en "${label}".`,
+        })
+      } catch {
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de modifier le statut.',
+          variant: 'destructive',
+        })
+      }
+    })
+  }
+
+  const handleCancelConfirm = () => {
+    if (bookingToCancel) {
+      applyStatusChange(bookingToCancel, 'cancelled')
+      setBookingToCancel(null)
+    }
   }
 
   if (isLoading) {
@@ -272,14 +323,34 @@ export function BookingsTable({
                       </span>
                     </td>
                     <td className="h-14 px-4">
-                      <span
-                        className={cn(
-                          'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                          status.color,
-                        )}
-                      >
-                        {status.label}
-                      </span>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            className={cn(
+                              'inline-flex cursor-pointer items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-opacity hover:opacity-80',
+                              status.color,
+                            )}
+                          >
+                            {status.label}
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          {(Object.entries(statusConfig) as [BookingStatus, typeof status][]).map(
+                            ([key, cfg]) => (
+                              <DropdownMenuItem
+                                key={key}
+                                disabled={key === booking.status}
+                                onClick={() => handleStatusChange(booking.id, key)}
+                              >
+                                <span
+                                  className={`mr-2 h-2 w-2 rounded-full ${key === 'pending' ? 'bg-orange-500' : key === 'confirmed' ? 'bg-green-500' : key === 'cancelled' ? 'bg-red-500' : 'bg-gray-500'}`}
+                                />
+                                {cfg.label}
+                              </DropdownMenuItem>
+                            ),
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </td>
                     <td className="flex h-14 flex-row items-center justify-center px-4">
                       <Button
@@ -322,6 +393,16 @@ export function BookingsTable({
         onConfirm={handleDeleteConfirm}
         title="Supprimer la réservation"
         description="Êtes-vous sûr de vouloir supprimer cette réservation ? La facture associée sera également supprimée. Cette action est irréversible."
+      />
+
+      <ConfirmDialog
+        open={cancelConfirmOpen}
+        onOpenChange={setCancelConfirmOpen}
+        onConfirm={handleCancelConfirm}
+        title="Annuler la réservation"
+        description="Êtes-vous sûr de vouloir annuler cette réservation ? Le statut passera en « Annulée »."
+        confirmText="Annuler la réservation"
+        variant="destructive"
       />
     </>
   )
