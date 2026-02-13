@@ -381,7 +381,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         <View style={styles.header}>
           <View style={styles.brandColumn}>
             {settings.companyLogoUrl ? (
-              <Image src={settings.companyLogoUrl} style={styles.logoImage} />
+              <Image src={settings.companyLogoUrl} style={styles.logoImage} alt={`Logo ${settings.companyName || 'entreprise'}`} />
             ) : (
               <View style={styles.logoPlaceholder}>
                 <Text style={styles.logoInitial}>
