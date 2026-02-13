@@ -39,6 +39,10 @@ export interface UseBookingsOptions {
   page?: number
   /** Items per page (default: 10) */
   perPage?: number
+  /** Sort column */
+  sortBy?: string | null
+  /** Sort direction */
+  sortDir?: string | null
   /** Revalidation interval in ms (default: 0 = disabled) */
   refreshInterval?: number
   /** Revalidate when the window gains focus */
@@ -88,6 +92,8 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     filters = {},
     page = 1,
     perPage = 10,
+    sortBy,
+    sortDir,
     refreshInterval = 0,
     revalidateOnFocus = true,
   } = options
@@ -99,6 +105,8 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     to: filters.to,
     q: filters.q,
     status: filters.status,
+    sortBy: sortBy || undefined,
+    sortDir: sortDir || undefined,
   })
 
   const { data, error, mutate, isValidating } = useSWR<BookingsResponse>(url, {

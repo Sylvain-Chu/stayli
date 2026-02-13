@@ -14,29 +14,82 @@ import { Booking, BookingStatus } from '../types'
 
 type SortDirection = 'asc' | 'desc' | null
 
+const statusConfig = {
+  confirmed: { label: 'Confirmée', color: 'bg-green-100 text-green-700' },
+  pending: { label: 'En attente', color: 'bg-orange-100 text-orange-700' },
+  cancelled: { label: 'Annulée', color: 'bg-red-100 text-red-700' },
+  blocked: { label: 'Bloquée', color: 'bg-gray-100 text-gray-700' },
+}
+
+function getStatusBadge(status: BookingStatus) {
+  return statusConfig[status] || statusConfig.confirmed
+}
+
+function formatDate(dateString: string) {
+  const date = new Date(dateString)
+  return new Intl.DateTimeFormat('fr-FR', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
+function calculateNights(startDate: string, endDate: string) {
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+  const diffTime = Math.abs(end.getTime() - start.getTime())
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+}
+
 interface BookingsTableProps {
   bookings: Booking[]
   isLoading: boolean
   isError: boolean
   onDataChange: () => void
+  sortColumn?: string | null
+  sortDirection?: SortDirection
+  onSortChange?: (column: string | null, direction: SortDirection) => void
 }
 
-export function BookingsTable({ bookings, isLoading, isError, onDataChange }: BookingsTableProps) {
+export function BookingsTable({
+  bookings,
+  isLoading,
+  isError,
+  onDataChange,
+  sortColumn: externalSortColumn,
+  sortDirection: externalSortDirection,
+  onSortChange,
+}: BookingsTableProps) {
   const { selectedIds, toggleSelection, selectAll, clearSelection } = useBookingsContext()
-  const [sortColumn, setSortColumn] = useState<string | null>(null)
-  const [sortDirection, setSortDirection] = useState<SortDirection>(null)
+  const [localSortColumn, setLocalSortColumn] = useState<string | null>(null)
+  const [localSortDirection, setLocalSortDirection] = useState<SortDirection>(null)
+
+  const sortColumn = externalSortColumn !== undefined ? externalSortColumn : localSortColumn
+  const sortDirection =
+    externalSortDirection !== undefined ? externalSortDirection : localSortDirection
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [bookingToDelete, setBookingToDelete] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const { toast } = useToast()
 
   const handleSort = (column: string) => {
+    let newColumn: string | null = column
+    let newDirection: SortDirection = 'asc'
+
     if (sortColumn === column) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : sortDirection === 'desc' ? null : 'asc')
-      if (sortDirection === 'desc') setSortColumn(null)
+      if (sortDirection === 'asc') {
+        newDirection = 'desc'
+      } else {
+        newColumn = null
+        newDirection = null
+      }
+    }
+
+    if (onSortChange) {
+      onSortChange(newColumn, newDirection)
     } else {
-      setSortColumn(column)
-      setSortDirection('asc')
+      setLocalSortColumn(newColumn)
+      setLocalSortDirection(newDirection)
     }
   }
 
@@ -83,32 +136,6 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
     })
   }
 
-  const getStatusBadge = (status: BookingStatus) => {
-    const statusConfig = {
-      confirmed: { label: 'Confirmée', color: 'bg-green-100 text-green-700' },
-      pending: { label: 'En attente', color: 'bg-orange-100 text-orange-700' },
-      cancelled: { label: 'Annulée', color: 'bg-red-100 text-red-700' },
-      blocked: { label: 'Bloquée', color: 'bg-gray-100 text-gray-700' },
-    }
-    return statusConfig[status] || statusConfig.confirmed
-  }
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString)
-    return new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-    }).format(date)
-  }
-
-  const calculateNights = (startDate: string, endDate: string) => {
-    const start = new Date(startDate)
-    const end = new Date(endDate)
-    const diffTime = Math.abs(end.getTime() - start.getTime())
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  }
-
   if (isLoading) {
     return (
       <div className="border-border bg-card overflow-hidden rounded-xl border">
@@ -128,35 +155,6 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
       </div>
     )
   }
-
-  const sortedBookings = [...(bookings || [])].sort((a, b) => {
-    if (!sortColumn || !sortDirection) return 0
-    let aVal: string | number = ''
-    let bVal: string | number = ''
-
-    if (sortColumn === 'client') {
-      aVal = `${a.client?.firstName} ${a.client?.lastName}`
-      bVal = `${b.client?.firstName} ${b.client?.lastName}`
-    } else if (sortColumn === 'property') {
-      aVal = a.property?.name || ''
-      bVal = b.property?.name || ''
-    } else if (sortColumn === 'price') {
-      aVal = a.totalPrice
-      bVal = b.totalPrice
-    } else if (sortColumn === 'startDate') {
-      aVal = new Date(a.startDate).getTime()
-      bVal = new Date(b.startDate).getTime()
-    }
-
-    if (typeof aVal === 'string') {
-      return sortDirection === 'asc'
-        ? aVal.localeCompare(bVal as string)
-        : (bVal as string).localeCompare(aVal)
-    }
-    return sortDirection === 'asc'
-      ? (aVal as number) - (bVal as number)
-      : (bVal as number) - (aVal as number)
-  })
 
   return (
     <>
@@ -217,7 +215,7 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
               </tr>
             </thead>
             <tbody>
-              {sortedBookings.map((booking, idx) => {
+              {(bookings || []).map((booking, idx) => {
                 const status = getStatusBadge(booking.status)
                 const nights = calculateNights(booking.startDate, booking.endDate)
                 const initials = getInitials(booking.client?.firstName, booking.client?.lastName)
@@ -228,7 +226,7 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
                     className={cn(
                       'group border-border hover:bg-muted/50 border-b transition-colors',
                       selectedIds.includes(booking.id) && 'bg-primary/5',
-                      idx === sortedBookings.length - 1 && 'border-b-0',
+                      idx === (bookings?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
                     <td className="h-14 px-4">
@@ -287,7 +285,9 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="Voir la réservation"
+                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                        asChild
                       >
                         <Link href={`/bookings/${booking.id}`}>
                           <Eye className="h-4 w-4" />
@@ -296,7 +296,8 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100"
+                        aria-label="Supprimer la réservation"
+                        className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                         onClick={() => handleDeleteClick(booking.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -308,7 +309,7 @@ export function BookingsTable({ bookings, isLoading, isError, onDataChange }: Bo
             </tbody>
           </table>
         </div>
-        {sortedBookings.length === 0 && (
+        {(bookings?.length || 0) === 0 && (
           <div className="text-muted-foreground flex items-center justify-center py-12 text-sm">
             Aucune réservation trouvée
           </div>

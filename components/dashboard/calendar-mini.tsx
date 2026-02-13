@@ -60,10 +60,22 @@ export function MiniCalendar() {
             {formatMonth(currentDate)}
           </CardTitle>
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="icon" className="h-7 w-7" onClick={handlePrevMonth}>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Mois précédent"
+              className="h-7 w-7"
+              onClick={handlePrevMonth}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button variant="outline" size="icon" className="h-7 w-7" onClick={handleNextMonth}>
+            <Button
+              variant="outline"
+              size="icon"
+              aria-label="Mois suivant"
+              className="h-7 w-7"
+              onClick={handleNextMonth}
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>

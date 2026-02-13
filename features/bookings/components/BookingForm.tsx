@@ -118,7 +118,7 @@ export function BookingForm() {
         .finally(() => {
           if (isMounted) setCheckingAvailability(false)
         })
-    }, 0)
+    }, 400)
 
     return () => {
       isMounted = false
@@ -180,7 +180,12 @@ export function BookingForm() {
                 </Select>
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="icon" className="shrink-0">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      aria-label="Ajouter un client"
+                      className="shrink-0"
+                    >
                       <UserPlus className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
@@ -312,6 +317,7 @@ export function BookingForm() {
               <Button
                 variant="outline"
                 size="icon"
+                aria-label="Retirer un voyageur"
                 className="h-8 w-8 bg-transparent"
                 onClick={() => updateFormData({ adults: Math.max(1, formData.adults - 1) })}
               >
@@ -321,6 +327,7 @@ export function BookingForm() {
               <Button
                 variant="outline"
                 size="icon"
+                aria-label="Ajouter un voyageur"
                 className="h-8 w-8 bg-transparent"
                 onClick={() => updateFormData({ adults: Math.min(10, formData.adults + 1) })}
               >
