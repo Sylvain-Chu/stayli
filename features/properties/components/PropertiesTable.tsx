@@ -21,7 +21,7 @@ import { useProperties } from '@/features/properties/hooks/useProperties'
 import { usePropertyMutations } from '@/features/properties/hooks/usePropertyMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
-import { FormEvent, useEffect, useState, useTransition } from 'react'
+import { FormEvent, useState, useTransition } from 'react'
 import { usePropertiesContext } from '@/features/properties/context/PropertiesContext'
 import { Property } from '../types'
 import { propertySchema } from '@/lib/validations/property'
@@ -39,6 +39,11 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
   const perPage = 10
+  const [prevSearch, setPrevSearch] = useState(searchQuery)
+  if (prevSearch !== searchQuery) {
+    setPrevSearch(searchQuery)
+    setPage(1)
+  }
   const [viewProperty, setViewProperty] = useState<Property | null>(null)
   const [editProperty, setEditProperty] = useState<Property | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
@@ -61,10 +66,6 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
     page,
     perPage,
   )
-
-  useEffect(() => {
-    setPage(1)
-  }, [searchQuery])
 
   const handleSort = (column: string) => {
     if (sortColumn === column) {
