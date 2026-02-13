@@ -72,9 +72,7 @@ export function useCalendarBookings(year: number, month: number) {
 
 // Hook to fetch all properties
 export function useProperties() {
-  const { data, error, isLoading } = useSWR<{ properties: Property[] }>(
-    '/api/properties',
-  )
+  const { data, error, isLoading } = useSWR<{ properties: Property[] }>('/api/properties')
 
   return {
     properties: data?.properties || [],
@@ -85,9 +83,7 @@ export function useProperties() {
 
 // Hook to fetch all clients
 export function useClients() {
-  const { data, error, isLoading, mutate } = useSWR<{ clients: Client[] }>(
-    '/api/clients',
-  )
+  const { data, error, isLoading, mutate } = useSWR<{ clients: Client[] }>('/api/clients')
 
   return {
     clients: data?.clients || [],

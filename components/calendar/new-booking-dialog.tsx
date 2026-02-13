@@ -17,7 +17,7 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
-import { Search, UserPlus, Check, Loader2 } from 'lucide-react'
+import { Search, UserPlus, Loader2, X } from 'lucide-react'
 import type { Property, Client } from '@/hooks/use-calendar'
 import type { DragState, NewBookingState, BookingStatus } from './types'
 import { MONTHS } from './constants'
@@ -96,87 +96,136 @@ export function NewBookingDialog({
               {/* Client search */}
               <div className="space-y-2">
                 <Label>Client</Label>
-                <div className="relative">
-                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                  <Input
-                    placeholder="Rechercher ou créer un client..."
-                    value={clientSearch}
-                    onChange={(e) => {
-                      setClientSearch(e.target.value)
-                      setShowClientDropdown(true)
-                      if (newBooking.clientId) {
+
+                {/* Selected client display */}
+                {newBooking.clientId && !newBooking.isNewClient ? (
+                  <div className="border-border bg-muted/30 flex items-center gap-3 rounded-xl border p-3">
+                    <div className="bg-primary/10 text-primary flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-sm font-medium">
+                      {newBooking.clientName
+                        .split(' ')
+                        .map((n) => n.charAt(0))
+                        .join('')
+                        .slice(0, 2)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-medium">{newBooking.clientName}</p>
+                      {newBooking.clientEmail && (
+                        <p className="text-muted-foreground truncate text-xs">
+                          {newBooking.clientEmail}
+                        </p>
+                      )}
+                    </div>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      aria-label="Changer de client"
+                      className="text-muted-foreground hover:text-foreground h-7 w-7 shrink-0"
+                      onClick={() => {
                         setNewBooking((prev) => ({
                           ...prev,
                           clientId: null,
                           clientName: '',
+                          clientEmail: '',
+                          clientPhone: '',
                           isNewClient: false,
                         }))
-                      }
-                    }}
-                    onFocus={() => setShowClientDropdown(true)}
-                    className="pl-9"
-                  />
+                        setClientSearch('')
+                        setShowClientDropdown(false)
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ) : newBooking.isNewClient ? null : (
+                  /* Search input */
+                  <div className="relative">
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                      placeholder="Rechercher ou créer un client..."
+                      value={clientSearch}
+                      onChange={(e) => {
+                        setClientSearch(e.target.value)
+                        setShowClientDropdown(true)
+                      }}
+                      onFocus={() => setShowClientDropdown(true)}
+                      className="pl-9"
+                    />
 
-                  {showClientDropdown && (clientSearch || filteredClients.length > 0) && (
-                    <div className="bg-card border-border absolute top-full right-0 left-0 z-50 mt-1 max-h-48 overflow-auto rounded-xl border shadow-lg">
-                      {filteredClients.map((client) => (
-                        <button
-                          key={client.id}
-                          type="button"
-                          className="hover:bg-accent/50 flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors"
-                          onClick={() => onSelectClient(client)}
-                        >
-                          <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium">
-                            {client.firstName.charAt(0)}
-                            {client.lastName.charAt(0)}
-                          </div>
-                          <div className="min-w-0 flex-1">
-                            <p className="truncate text-sm font-medium">
-                              {client.firstName} {client.lastName}
-                            </p>
-                            <p className="text-muted-foreground truncate text-xs">{client.email}</p>
-                          </div>
-                          {newBooking.clientId === client.id && (
-                            <Check className="text-primary h-4 w-4" />
-                          )}
-                        </button>
-                      ))}
-
-                      {showCreateClientOption && (
-                        <>
-                          <div className="border-border border-t" />
+                    {showClientDropdown && (clientSearch || filteredClients.length > 0) && (
+                      <div className="bg-card border-border absolute top-full right-0 left-0 z-50 mt-1 max-h-48 overflow-auto rounded-xl border shadow-lg">
+                        {filteredClients.map((client) => (
                           <button
+                            key={client.id}
                             type="button"
                             className="hover:bg-accent/50 flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors"
-                            onClick={onCreateNewClient}
+                            onClick={() => onSelectClient(client)}
                           >
-                            <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full">
-                              <UserPlus className="text-primary-foreground h-4 w-4" />
+                            <div className="bg-primary/10 text-primary flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-medium">
+                              {client.firstName.charAt(0)}
+                              {client.lastName.charAt(0)}
                             </div>
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">
-                                Créer &quot;{clientSearch}&quot;
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium">
+                                {client.firstName} {client.lastName}
                               </p>
-                              <p className="text-muted-foreground text-xs">Nouveau client</p>
+                              <p className="text-muted-foreground truncate text-xs">
+                                {client.email}
+                              </p>
                             </div>
                           </button>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </div>
+                        ))}
 
-                {newBooking.clientId && !newBooking.isNewClient && (
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="bg-primary/10 text-primary inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs">
-                      <Check className="h-3 w-3" />
-                      {newBooking.clientName}
-                    </span>
+                        {showCreateClientOption && (
+                          <>
+                            <div className="border-border border-t" />
+                            <button
+                              type="button"
+                              className="hover:bg-accent/50 flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors"
+                              onClick={onCreateNewClient}
+                            >
+                              <div className="bg-primary flex h-8 w-8 items-center justify-center rounded-full">
+                                <UserPlus className="text-primary-foreground h-4 w-4" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="text-sm font-medium">
+                                  Créer &quot;{clientSearch}&quot;
+                                </p>
+                                <p className="text-muted-foreground text-xs">Nouveau client</p>
+                              </div>
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
 
                 {newBooking.isNewClient && (
-                  <div className="border-border bg-muted/30 mt-2 space-y-3 rounded-xl border p-3">
+                  <div className="border-border bg-muted/30 space-y-3 rounded-xl border p-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium">{newBooking.clientName}</p>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Annuler la création du client"
+                        className="text-muted-foreground hover:text-foreground h-7 w-7 shrink-0"
+                        onClick={() => {
+                          setNewBooking((prev) => ({
+                            ...prev,
+                            clientId: null,
+                            clientName: '',
+                            clientEmail: '',
+                            clientPhone: '',
+                            isNewClient: false,
+                          }))
+                          setClientSearch('')
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
                         <Label className="text-xs">Email</Label>
@@ -318,21 +367,6 @@ export function NewBookingDialog({
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-muted-foreground text-xs">Ménage (€)</Label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      value={newBooking.cleaningFee}
-                      onChange={(e) =>
-                        setNewBooking((prev) => ({
-                          ...prev,
-                          cleaningFee: parseFloat(e.target.value) || 0,
-                        }))
-                      }
-                      className="bg-background h-8 text-sm"
-                    />
-                  </div>
-                  <div className="space-y-1">
                     <Label className="text-muted-foreground text-xs">Taxes (€)</Label>
                     <Input
                       type="number"
@@ -348,7 +382,25 @@ export function NewBookingDialog({
                     />
                   </div>
 
-                  {(newBooking.hasLinens || newBooking.linensPrice > 0) && (
+                  {newBooking.hasCleaning && (
+                    <div className="space-y-1">
+                      <Label className="text-muted-foreground text-xs">Ménage (€)</Label>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        value={newBooking.cleaningFee}
+                        onChange={(e) =>
+                          setNewBooking((prev) => ({
+                            ...prev,
+                            cleaningFee: parseFloat(e.target.value) || 0,
+                          }))
+                        }
+                        className="bg-background h-8 text-sm"
+                      />
+                    </div>
+                  )}
+
+                  {newBooking.hasLinens && (
                     <div className="space-y-1">
                       <Label className="text-muted-foreground text-xs">Linge (€)</Label>
                       <Input
@@ -366,7 +418,7 @@ export function NewBookingDialog({
                     </div>
                   )}
 
-                  {(newBooking.hasCancellationInsurance || newBooking.insuranceFee > 0) && (
+                  {newBooking.hasCancellationInsurance && (
                     <div className="space-y-1">
                       <Label className="text-muted-foreground text-xs">Assurance (€)</Label>
                       <Input
