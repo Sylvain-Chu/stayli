@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const { propertyId, startDate, endDate, excludeBookingId, clientId } = await request.json()
 
     if (!propertyId || !startDate || !endDate) {

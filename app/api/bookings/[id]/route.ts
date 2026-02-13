@@ -1,8 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { logger } from '@/lib/logger'
+import { updateBookingSchema } from '@/lib/validations/booking'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const booking = await prisma.booking.findUnique({
       where: { id },
@@ -14,41 +20,44 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!booking) {
-      return NextResponse.json({ error: 'Booking not found' }, { status: 404 })
+      throw ApiError.notFound('Booking')
     }
 
-    return NextResponse.json(booking)
+    return successResponse(booking)
   } catch (error) {
-    console.error('Error fetching booking:', error)
-    return NextResponse.json({ error: 'Failed to fetch booking' }, { status: 500 })
+    return handleApiError(error, 'Error fetching booking')
   }
 }
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    await requireAuth()
+
     const { id } = await params
     const body = await request.json()
+    const validatedData = updateBookingSchema.parse(body)
+
     const booking = await prisma.booking.update({
       where: { id },
       data: {
-        startDate: body.startDate ? new Date(body.startDate) : undefined,
-        endDate: body.endDate ? new Date(body.endDate) : undefined,
-        totalPrice: body.totalPrice,
-        basePrice: body.basePrice,
-        cleaningFee: body.cleaningFee,
-        taxes: body.taxes,
-        adults: body.adults,
-        children: body.children,
-        specialRequests: body.specialRequests,
-        discount: body.discount,
-        discountType: body.discountType,
-        hasLinens: body.hasLinens,
-        linensPrice: body.linensPrice,
-        hasCleaning: body.hasCleaning,
-        cleaningPrice: body.cleaningPrice,
-        hasCancellationInsurance: body.hasCancellationInsurance,
-        insuranceFee: body.insuranceFee,
-        status: body.status,
+        ...(validatedData.startDate && { startDate: new Date(validatedData.startDate) }),
+        ...(validatedData.endDate && { endDate: new Date(validatedData.endDate) }),
+        ...(validatedData.totalPrice !== undefined && { totalPrice: validatedData.totalPrice }),
+        ...(validatedData.basePrice !== undefined && { basePrice: validatedData.basePrice }),
+        ...(validatedData.cleaningFee !== undefined && { cleaningFee: validatedData.cleaningFee }),
+        ...(validatedData.taxes !== undefined && { taxes: validatedData.taxes }),
+        ...(validatedData.adults !== undefined && { adults: validatedData.adults }),
+        ...(validatedData.children !== undefined && { children: validatedData.children }),
+        ...(validatedData.specialRequests !== undefined && { specialRequests: validatedData.specialRequests }),
+        ...(validatedData.discount !== undefined && { discount: validatedData.discount }),
+        ...(validatedData.discountType !== undefined && { discountType: validatedData.discountType }),
+        ...(validatedData.hasLinens !== undefined && { hasLinens: validatedData.hasLinens }),
+        ...(validatedData.linensPrice !== undefined && { linensPrice: validatedData.linensPrice }),
+        ...(validatedData.hasCleaning !== undefined && { hasCleaning: validatedData.hasCleaning }),
+        ...(validatedData.cleaningPrice !== undefined && { cleaningPrice: validatedData.cleaningPrice }),
+        ...(validatedData.hasCancellationInsurance !== undefined && { hasCancellationInsurance: validatedData.hasCancellationInsurance }),
+        ...(validatedData.insuranceFee !== undefined && { insuranceFee: validatedData.insuranceFee }),
+        ...(validatedData.status !== undefined && { status: validatedData.status }),
       },
       include: {
         client: true,
@@ -57,10 +66,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       },
     })
 
-    return NextResponse.json(booking)
+    logger.info('Booking updated', { bookingId: id })
+    return successResponse(booking)
   } catch (error) {
-    console.error('Error updating booking:', error)
-    return NextResponse.json({ error: 'Failed to update booking' }, { status: 500 })
+    return handleApiError(error, 'Error updating booking')
   }
 }
 
@@ -69,21 +78,23 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    await requireAuth()
+
     const { id } = await params
 
-    // Delete associated invoice first if it exists
-    await prisma.invoice.deleteMany({
-      where: { bookingId: id },
+    // Delete booking and associated invoice in a transaction
+    await prisma.$transaction(async (tx) => {
+      await tx.invoice.deleteMany({
+        where: { bookingId: id },
+      })
+      await tx.booking.delete({
+        where: { id },
+      })
     })
 
-    // Then delete the booking
-    await prisma.booking.delete({
-      where: { id },
-    })
-
-    return NextResponse.json({ success: true })
+    logger.info('Booking deleted', { bookingId: id })
+    return successResponse({ success: true })
   } catch (error) {
-    console.error('Error deleting booking:', error)
-    return NextResponse.json({ error: 'Failed to delete booking' }, { status: 500 })
+    return handleApiError(error, 'Error deleting booking')
   }
 }

@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { priceCalculator } from '@/lib/booking-price-calculator'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
 
     // Get settings for calculation
