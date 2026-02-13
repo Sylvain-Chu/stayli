@@ -1,8 +1,6 @@
 import useSWR from 'swr'
 import type { Property } from '@/features/properties/types'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 interface PropertiesResponse {
   properties: Property[]
   total: number
@@ -20,7 +18,6 @@ export function useProperties(q?: string, page = 1, perPage = 10) {
 
   const { data, error, mutate } = useSWR<PropertiesResponse>(
     `/api/properties?${params.toString()}`,
-    fetcher,
   )
 
   return {

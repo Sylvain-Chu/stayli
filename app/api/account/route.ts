@@ -3,10 +3,10 @@
  * Handles user profile and account management
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { handleApiError, successResponse } from '@/lib/api-error'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { z } from 'zod'
 
@@ -52,10 +52,10 @@ export async function GET() {
     })
 
     if (!user) {
-      return NextResponse.json({ error: 'Utilisateur non trouvé' }, { status: 404 })
+      throw ApiError.notFound('Utilisateur')
     }
 
-    return NextResponse.json(user)
+    return successResponse(user)
   } catch (error) {
     return handleApiError(error, 'Failed to fetch user profile')
   }
@@ -79,10 +79,7 @@ export async function PATCH(request: NextRequest) {
       })
 
       if (existingUser) {
-        return NextResponse.json(
-          { error: 'Cette adresse e-mail est déjà utilisée' },
-          { status: 400 },
-        )
+        throw ApiError.badRequest('Cette adresse e-mail est déjà utilisée')
       }
     }
 

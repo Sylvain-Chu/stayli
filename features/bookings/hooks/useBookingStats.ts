@@ -14,23 +14,10 @@ export interface UseBookingStatsReturn {
   refresh: () => Promise<BookingStats | undefined>
 }
 
-const fetcher = async (url: string): Promise<BookingStats> => {
-  const response = await fetch(url)
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}))
-    throw new Error(error.message || 'Erreur lors de la récupération des statistiques')
-  }
-
-  return response.json()
-}
-
 export function useBookingStats(): UseBookingStatsReturn {
   const { data, error, mutate, isValidating } = useSWR<BookingStats>(
     '/api/bookings/stats',
-    fetcher,
     {
-      revalidateOnFocus: false,
       dedupingInterval: 60000,
     },
   )

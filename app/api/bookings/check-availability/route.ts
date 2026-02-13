@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,7 +10,7 @@ export async function POST(request: NextRequest) {
     const { propertyId, startDate, endDate, excludeBookingId, clientId } = await request.json()
 
     if (!propertyId || !startDate || !endDate) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+      throw ApiError.badRequest('Missing required fields')
     }
 
     // Check for overlapping bookings
@@ -51,7 +52,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json({
+    return successResponse({
       available: conflicts.length === 0,
       conflicts: conflicts.map((booking) => ({
         id: booking.id,
@@ -63,7 +64,6 @@ export async function POST(request: NextRequest) {
       })),
     })
   } catch (error) {
-    console.error('Error checking availability:', error)
-    return NextResponse.json({ error: 'Failed to check availability' }, { status: 500 })
+    return handleApiError(error, 'Failed to check availability')
   }
 }

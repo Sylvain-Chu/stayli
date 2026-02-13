@@ -1,8 +1,6 @@
 import useSWR from 'swr'
 import type { Client } from '@/features/clients/types'
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json())
-
 interface ClientsResponse {
   clients: Client[]
   total: number
@@ -20,7 +18,6 @@ export function useClients(q?: string, page = 1, perPage = 10) {
 
   const { data, error, mutate } = useSWR<ClientsResponse>(
     `/api/clients?${params.toString()}`,
-    fetcher,
   )
 
   return {

@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,8 +12,16 @@ export async function GET(request: NextRequest) {
     const month = parseInt(searchParams.get('month') || (new Date().getMonth() + 1).toString())
     const day = parseInt(searchParams.get('day') || '1')
 
-    if (isNaN(year) || isNaN(month) || isNaN(day) || month < 1 || month > 12 || day < 1 || day > 31) {
-      return NextResponse.json({ error: 'Invalid date parameters' }, { status: 400 })
+    if (
+      isNaN(year) ||
+      isNaN(month) ||
+      isNaN(day) ||
+      month < 1 ||
+      month > 12 ||
+      day < 1 ||
+      day > 31
+    ) {
+      throw ApiError.badRequest('Invalid date parameters')
     }
 
     // Créer la date du jour sélectionné
@@ -50,9 +59,8 @@ export async function GET(request: NextRequest) {
       status: booking.status,
     }))
 
-    return NextResponse.json({ bookings: bookingsForDay })
+    return successResponse({ bookings: bookingsForDay })
   } catch (error) {
-    console.error('Error fetching calendar bookings:', error)
-    return NextResponse.json({ error: 'Failed to fetch calendar bookings' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch calendar bookings')
   }
 }

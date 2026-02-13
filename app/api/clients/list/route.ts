@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -17,9 +17,8 @@ export async function GET() {
       orderBy: [{ lastName: 'asc' }, { firstName: 'asc' }],
     })
 
-    return NextResponse.json(clients)
+    return successResponse(clients)
   } catch (error) {
-    console.error('Error fetching clients:', error)
-    return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch clients')
   }
 }
