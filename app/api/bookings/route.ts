@@ -3,10 +3,13 @@ import { prisma } from '@/lib/prisma'
 import { BookingStatus, Prisma } from '@prisma/client'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
+import { requireAuth } from '@/lib/auth'
 import { createBookingSchema, bookingQuerySchema } from '@/lib/validations/booking'
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
 
     const queryResult = bookingQuerySchema.safeParse({
@@ -77,6 +80,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    await requireAuth()
+
     const body = await request.json()
 
     const validatedData = createBookingSchema.parse(body)
