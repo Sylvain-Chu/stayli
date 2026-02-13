@@ -8,8 +8,7 @@ export function useClientMutations() {
   const { mutateAsync, ...state } = useMutations('/api/clients')
 
   const createClient = useCallback(
-    (data: clientsService.CreateClientData) =>
-      mutateAsync(() => clientsService.createClient(data)),
+    (data: clientsService.CreateClientData) => mutateAsync(() => clientsService.createClient(data)),
     [mutateAsync],
   )
 

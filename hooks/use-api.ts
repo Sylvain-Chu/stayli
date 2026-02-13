@@ -25,12 +25,9 @@ export interface UseApiQueryOptions<T> extends SWRConfiguration<T> {
 export function useApiQuery<T>(url: string | null, options: UseApiQueryOptions<T> = {}) {
   const { enabled = true, ...swrOptions } = options
 
-  const { data, error, isLoading, isValidating, mutate } = useSWR<T>(
-    enabled ? url : null,
-    {
-      ...swrOptions,
-    },
-  )
+  const { data, error, isLoading, isValidating, mutate } = useSWR<T>(enabled ? url : null, {
+    ...swrOptions,
+  })
 
   return {
     data,

@@ -33,11 +33,9 @@ export function useMutations(cachePrefix: string): UseMutationsReturn {
   const [error, setError] = useState<Error | null>(null)
 
   const invalidateCache = useCallback(() => {
-    globalMutate(
-      (key) => typeof key === 'string' && key.startsWith(cachePrefix),
-      undefined,
-      { revalidate: true },
-    )
+    globalMutate((key) => typeof key === 'string' && key.startsWith(cachePrefix), undefined, {
+      revalidate: true,
+    })
   }, [globalMutate, cachePrefix])
 
   const mutateAsync = useCallback(

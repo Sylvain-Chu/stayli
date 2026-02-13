@@ -16,9 +16,7 @@ export function useProperties(q?: string, page = 1, perPage = 10) {
   })
   if (q) params.set('q', q)
 
-  const { data, error, mutate } = useSWR<PropertiesResponse>(
-    `/api/properties?${params.toString()}`,
-  )
+  const { data, error, mutate } = useSWR<PropertiesResponse>(`/api/properties?${params.toString()}`)
 
   return {
     properties: data?.properties,
@@ -30,4 +28,3 @@ export function useProperties(q?: string, page = 1, perPage = 10) {
     mutate,
   }
 }
-
