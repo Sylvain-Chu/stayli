@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { invoiceSchema } from '@/lib/validations/invoice'
+import { generateInvoiceNumber } from '@/lib/invoice-number'
 
 /**
  * GET /api/invoices
@@ -83,39 +84,31 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = invoiceSchema.parse(body)
 
-    // Generate invoice number
-    const today = new Date()
-    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, '')
-    const count = await prisma.invoice.count({
-      where: {
-        issueDate: {
-          gte: new Date(today.getFullYear(), today.getMonth(), today.getDate()),
-          lt: new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1),
-        },
-      },
-    })
-    const invoiceNumber = `INV-${dateStr}-${String(count + 1).padStart(4, '0')}`
+    // Generate invoice number and create invoice in a transaction
+    const invoice = await prisma.$transaction(async (tx) => {
+      const invoiceNumber = await generateInvoiceNumber(tx)
 
-    const invoice = await prisma.invoice.create({
-      data: {
-        invoiceNumber,
-        issueDate: validatedData.issueDate ? new Date(validatedData.issueDate) : new Date(),
-        dueDate: new Date(validatedData.dueDate),
-        amount: validatedData.amount,
-        status: validatedData.status || 'draft',
-        bookingId: validatedData.bookingId,
-      },
-      include: {
-        booking: {
-          include: {
-            client: true,
-            property: true,
+      return tx.invoice.create({
+        data: {
+          invoiceNumber,
+          issueDate: validatedData.issueDate ? new Date(validatedData.issueDate) : new Date(),
+          dueDate: new Date(validatedData.dueDate),
+          amount: validatedData.amount,
+          status: validatedData.status || 'draft',
+          bookingId: validatedData.bookingId,
+        },
+        include: {
+          booking: {
+            include: {
+              client: true,
+              property: true,
+            },
           },
         },
-      },
+      })
     })
 
-    logger.info('Invoice created', { invoiceId: invoice.id, invoiceNumber })
+    logger.info('Invoice created', { invoiceId: invoice.id, invoiceNumber: invoice.invoiceNumber })
     return successResponse(invoice, 201)
   } catch (error) {
     return handleApiError(error, 'Failed to create invoice')

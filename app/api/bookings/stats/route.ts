@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { BookingStatus } from '@prisma/client'
+import { requireAuth } from '@/lib/auth'
 
 export async function GET() {
   try {
+    await requireAuth()
+
     const [total, confirmed, pending, cancelled, revenueData] = await Promise.all([
       prisma.booking.count(),
       prisma.booking.count({ where: { status: BookingStatus.confirmed } }),

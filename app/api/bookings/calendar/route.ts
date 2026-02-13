@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
     const year = parseInt(searchParams.get('year') || new Date().getFullYear().toString())
     const month = parseInt(searchParams.get('month') || (new Date().getMonth() + 1).toString())
+
+    if (isNaN(year) || isNaN(month) || month < 1 || month > 12) {
+      return NextResponse.json({ error: 'Invalid year or month parameter' }, { status: 400 })
+    }
 
     // Créer les dates de début et fin du mois (month est 1-indexed)
     const startOfMonth = new Date(year, month - 1, 1)

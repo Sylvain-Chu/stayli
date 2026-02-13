@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth } from '@/lib/auth'
 
 export async function GET(request: NextRequest) {
   try {
+    await requireAuth()
+
     const searchParams = request.nextUrl.searchParams
     const type = searchParams.get('type') || 'current'
 
