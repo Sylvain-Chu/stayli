@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { BookingStatus } from '@prisma/client'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -19,7 +19,7 @@ export async function GET() {
       }),
     ])
 
-    return NextResponse.json({
+    return successResponse({
       total,
       confirmed,
       pending,
@@ -28,7 +28,6 @@ export async function GET() {
       averagePrice: revenueData._avg.totalPrice || 0,
     })
   } catch (error) {
-    console.error('Error fetching booking stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch booking stats' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch booking stats')
   }
 }

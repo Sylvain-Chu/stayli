@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, ApiError } from '@/lib/api-error'
 import ReactPDF from '@react-pdf/renderer'
 import { InvoicePDF } from '@/features/invoices/components/InvoicePDF'
 
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const { id } = await params
 
     if (!id) {
-      return NextResponse.json({ error: 'Missing invoice id' }, { status: 400 })
+      throw ApiError.badRequest('Missing invoice id')
     }
 
     const invoice = await prisma.invoice.findUnique({
@@ -27,12 +28,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     })
 
     if (!invoice) {
-      return NextResponse.json({ error: 'Invoice not found' }, { status: 404 })
+      throw ApiError.notFound('Invoice')
     }
 
     const settings = await prisma.settings.findFirst()
     if (!settings) {
-      return NextResponse.json({ error: 'Settings not found' }, { status: 500 })
+      throw ApiError.internal('Settings not found')
     }
 
     // Le JSX ci-dessous nécessite l'extension .tsx
@@ -111,7 +112,6 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       },
     })
   } catch (error) {
-    console.error('Error generating PDF:', error)
-    return NextResponse.json({ error: 'Failed to generate PDF' }, { status: 500 })
+    return handleApiError(error, 'Failed to generate PDF')
   }
 }

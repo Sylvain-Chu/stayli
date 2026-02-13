@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -37,14 +37,13 @@ export async function GET() {
 
     const occupancyRate = total > 0 ? Math.round((withBookings / total) * 100) : 0
 
-    return NextResponse.json({
+    return successResponse({
       total,
       withBookings,
       availableThisMonth: available,
       occupancyRate,
     })
   } catch (error) {
-    console.error('Error fetching property stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch property stats' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch property stats')
   }
 }

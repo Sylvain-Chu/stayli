@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -129,7 +129,7 @@ export async function GET() {
     const bookingsTrend = activeBookings - lastMonthActiveBookings
     const occupancyTrend = occupancyRate - lastMonthOccupancyRate
 
-    return NextResponse.json({
+    return successResponse({
       occupancyRate: Math.round(occupancyRate),
       occupancyTrend: Math.round(occupancyTrend),
       monthlyRevenue: revenue,
@@ -139,7 +139,6 @@ export async function GET() {
       pendingInvoices,
     })
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
-    return NextResponse.json({ error: 'Failed to fetch dashboard stats' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch dashboard stats')
   }
 }

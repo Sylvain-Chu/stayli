@@ -1,6 +1,6 @@
-import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
+import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
@@ -17,9 +17,8 @@ export async function GET() {
       },
     })
 
-    return NextResponse.json(properties)
+    return successResponse(properties)
   } catch (error) {
-    console.error('Error fetching properties:', error)
-    return NextResponse.json({ error: 'Failed to fetch properties' }, { status: 500 })
+    return handleApiError(error, 'Failed to fetch properties')
   }
 }
