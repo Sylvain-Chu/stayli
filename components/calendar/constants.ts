@@ -35,7 +35,7 @@ export const DEFAULT_NEW_BOOKING: NewBookingState = {
   cleaningFee: 0,
   taxes: 0,
   discount: 0,
-  discountType: '',
+  discountType: null,
   hasLinens: false,
   linensPrice: 0,
   hasCleaning: false,
