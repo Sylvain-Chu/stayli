@@ -116,9 +116,7 @@ export function BookingDetailsDialog({
             </div>
 
             <div className="space-y-2">
-              <Label className="text-muted-foreground text-xs font-medium uppercase">
-                Invités
-              </Label>
+              <Label className="text-muted-foreground text-xs font-medium uppercase">Invités</Label>
               <p className="text-sm">
                 {booking.adults} adulte{booking.adults > 1 ? 's' : ''}
                 {booking.children > 0 &&
@@ -167,19 +165,14 @@ export function BookingDetailsDialog({
                 )}
                 {booking.discount > 0 && (
                   <div className="flex justify-between text-sm text-green-600">
-                    <span>
-                      Réduction{' '}
-                      {booking.discountType ? `(${booking.discountType})` : ''}
-                    </span>
+                    <span>Réduction {booking.discountType ? `(${booking.discountType})` : ''}</span>
                     <span className="font-medium">-{booking.discount.toFixed(2)} €</span>
                   </div>
                 )}
                 <div className="border-border border-t pt-2">
                   <div className="flex justify-between">
                     <span className="font-semibold">Total</span>
-                    <span className="text-lg font-bold">
-                      {booking.totalPrice.toFixed(2)} €
-                    </span>
+                    <span className="text-lg font-bold">{booking.totalPrice.toFixed(2)} €</span>
                   </div>
                 </div>
               </div>
@@ -190,9 +183,7 @@ export function BookingDetailsDialog({
                 <Label className="text-muted-foreground text-xs font-medium uppercase">
                   Demandes spéciales
                 </Label>
-                <p className="bg-muted/30 rounded-xl p-3 text-sm">
-                  {booking.specialRequests}
-                </p>
+                <p className="bg-muted/30 rounded-xl p-3 text-sm">{booking.specialRequests}</p>
               </div>
             )}
           </div>
