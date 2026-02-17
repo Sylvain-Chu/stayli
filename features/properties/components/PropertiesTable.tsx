@@ -266,34 +266,36 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                       {property.revenue ? `${property.revenue.toLocaleString('fr-FR')} €` : '0 €'}
                     </span>
                   </td>
-                  <td className="flex h-14 flex-row items-center justify-center px-4">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Voir le bien"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleViewProperty(property)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Modifier le bien"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleEditProperty(property)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Supprimer le bien"
-                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleDeleteClick(property.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <td className="h-14 px-4">
+                    <div className="flex flex-row items-center justify-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Voir le bien"
+                        className="h-8 w-8"
+                        onClick={() => handleViewProperty(property)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Modifier le bien"
+                        className="h-8 w-8"
+                        onClick={() => handleEditProperty(property)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Supprimer le bien"
+                        className="text-destructive h-8 w-8"
+                        onClick={() => handleDeleteClick(property.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}

@@ -1,7 +1,12 @@
 'use client'
 
 import { AppLayout } from '@/components/layouts/app-shell'
-import { CompanySettings, SeasonSettings, InvoiceSettings } from '@/features/settings'
+import {
+  CompanySettings,
+  SeasonSettings,
+  InvoiceSettings,
+  ContractSettings,
+} from '@/features/settings'
 import { useSettings } from '@/features/settings/hooks/useSettings'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -39,6 +44,7 @@ export default function SettingsPage() {
       <div className="space-y-6 pb-24">
         <CompanySettings settings={settings} />
         <SeasonSettings settings={settings} />
+        <ContractSettings settings={settings} />
         <InvoiceSettings settings={settings} />
       </div>
     </AppLayout>

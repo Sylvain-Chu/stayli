@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -130,6 +129,10 @@ model Settings {
   invoicePaymentInstructions           String?
   cancellationInsurancePercentage      Float    @default(6)
   cancellationInsuranceProviderName    String   @default("Holiday Peace of Mind Insurance")
+  depositPercentage                    Float    @default(25)
+  securityDepositAmount                Float    @default(0)
+  checkInTime                          String   @default("14:00")
+  checkOutTime                         String   @default("10:00")
   createdAt                            DateTime @default(now())
   updatedAt                            DateTime @updatedAt
 }

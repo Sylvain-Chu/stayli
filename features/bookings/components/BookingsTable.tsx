@@ -352,27 +352,29 @@ export function BookingsTable({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="flex h-14 flex-row items-center justify-center px-4">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Voir la réservation"
-                        className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                        asChild
-                      >
-                        <Link href={`/bookings/${booking.id}`}>
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        aria-label="Supprimer la réservation"
-                        className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                        onClick={() => handleDeleteClick(booking.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <td className="h-14 px-4">
+                      <div className="flex flex-row items-center justify-center gap-1">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Voir la réservation"
+                          className="h-8 w-8"
+                          asChild
+                        >
+                          <Link href={`/bookings/${booking.id}`}>
+                            <Eye className="h-4 w-4" />
+                          </Link>
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Supprimer la réservation"
+                          className="text-destructive h-8 w-8"
+                          onClick={() => handleDeleteClick(booking.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 )

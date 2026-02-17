@@ -335,34 +335,36 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       {new Date(client.createdAt).toLocaleDateString('fr-FR')}
                     </span>
                   </td>
-                  <td className="flex h-14 flex-row items-center justify-center px-4">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Voir le client"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleViewProfile(client)}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Modifier le client"
-                      className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleEditClient(client)}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      aria-label="Supprimer le client"
-                      className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                      onClick={() => handleDeleteClick(client.id)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                  <td className="h-14 px-4">
+                    <div className="flex flex-row items-center justify-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Voir le client"
+                        className="h-8 w-8"
+                        onClick={() => handleViewProfile(client)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Modifier le client"
+                        className="h-8 w-8"
+                        onClick={() => handleEditClient(client)}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Supprimer le client"
+                        className="text-destructive h-8 w-8"
+                        onClick={() => handleDeleteClick(client.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               )
@@ -375,7 +377,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
           Aucun client trouvé
         </div>
       )}
-      {total && total > perPage && (
+      {total != null && total > perPage && (
         <div className="border-border flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground text-sm">
             {total} client{total > 1 ? 's' : ''} au total

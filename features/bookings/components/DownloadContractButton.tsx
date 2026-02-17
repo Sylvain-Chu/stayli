@@ -3,9 +3,9 @@
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import { Button } from '@/components/ui/button'
 import { FileText } from 'lucide-react'
-import { ContractPDF } from './ContractPDF'
+import { ContractPDF, type ContractProps } from './ContractPDF'
 
-export function DownloadContractButton({ booking, property, client, settings }: any) {
+export function DownloadContractButton({ booking, property, client, settings }: ContractProps) {
   const fileName = `Contrat-${client.lastName}-${new Date(booking.startDate).toISOString().split('T')[0]}.pdf`
 
   return (
