@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { useSession } from 'next-auth/react'
 import { useToast } from '@/hooks/use-toast'
 import { getInitials } from '@/lib/utils'
@@ -156,7 +156,6 @@ export default function AccountPage() {
           <CardContent className="flex-1 space-y-6">
             <div className="flex items-center gap-4">
               <Avatar className="h-20 w-20">
-                <AvatarImage src="/professional-avatar.png" />
                 <AvatarFallback className="bg-primary/10 text-primary text-xl">
                   {getInitials(profileData.name || session?.user?.name)}
                 </AvatarFallback>

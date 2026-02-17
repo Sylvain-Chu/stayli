@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Eye, Pencil, Trash2, Mail, Phone } from 'lucide-react'
@@ -23,8 +23,11 @@ import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
 import { FormEvent, useMemo, useState } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
+import { clientSchema } from '@/lib/validations/client'
+import { ZodError } from 'zod'
 
 type SortDirection = 'asc' | 'desc' | null
+type FieldErrors = Partial<Record<string, string>>
 
 type ClientRow = {
   id: string
@@ -62,6 +65,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [clientToDelete, setClientToDelete] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [editFieldErrors, setEditFieldErrors] = useState<FieldErrors>({})
   const [editFormData, setEditFormData] = useState({
     firstName: '',
     lastName: '',
@@ -108,6 +112,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
 
   const handleEditClient = (client: ClientRow) => {
     setEditClient(client)
+    setEditFieldErrors({})
     setEditFormData({
       firstName: client.firstName,
       lastName: client.lastName,
@@ -122,8 +127,12 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
   const handleSubmitEdit = async (e: FormEvent) => {
     e.preventDefault()
     if (!editClient) return
+    setEditFieldErrors({})
     setIsSubmitting(true)
     try {
+      // Validate form data before submitting
+      clientSchema.parse(editFormData)
+
       mutate(
         async (data: any) => {
           await updateClient(editClient.id, editFormData)
@@ -149,12 +158,21 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
         description: 'Les informations du client ont été mises à jour avec succès.',
       })
     } catch (error) {
-      console.error('Erreur lors de la modification:', error)
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de modifier le client. Veuillez réessayer.',
-        variant: 'destructive',
-      })
+      if (error instanceof ZodError) {
+        const errors: FieldErrors = {}
+        error.errors.forEach((e) => {
+          const field = e.path[0]?.toString()
+          if (field && !errors[field]) errors[field] = e.message
+        })
+        setEditFieldErrors(errors)
+      } else {
+        console.error('Erreur lors de la modification:', error)
+        toast({
+          title: 'Erreur',
+          description: 'Impossible de modifier le client. Veuillez réessayer.',
+          variant: 'destructive',
+        })
+      }
     } finally {
       setIsSubmitting(false)
     }
@@ -412,9 +430,6 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
             <div className="grid gap-4 py-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage
-                    src={`/.jpg?height=64&width=64&query=${viewClient.firstName} ${viewClient.lastName}`}
-                  />
                   <AvatarFallback className="bg-primary/10 text-primary text-lg font-medium">
                     {`${viewClient.firstName[0]}${viewClient.lastName[0]}`.toUpperCase()}
                   </AvatarFallback>
@@ -489,18 +504,32 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                 <Input
                   id="edit-firstName"
                   value={editFormData.firstName}
-                  onChange={(e) => setEditFormData({ ...editFormData, firstName: e.target.value })}
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, firstName: e.target.value })
+                    setEditFieldErrors((prev) => ({ ...prev, firstName: undefined }))
+                  }}
+                  className={editFieldErrors.firstName ? 'border-destructive' : ''}
                   required
                 />
+                {editFieldErrors.firstName && (
+                  <p className="text-destructive text-xs">{editFieldErrors.firstName}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-lastName">Nom *</Label>
                 <Input
                   id="edit-lastName"
                   value={editFormData.lastName}
-                  onChange={(e) => setEditFormData({ ...editFormData, lastName: e.target.value })}
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, lastName: e.target.value })
+                    setEditFieldErrors((prev) => ({ ...prev, lastName: undefined }))
+                  }}
+                  className={editFieldErrors.lastName ? 'border-destructive' : ''}
                   required
                 />
+                {editFieldErrors.lastName && (
+                  <p className="text-destructive text-xs">{editFieldErrors.lastName}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-email">Email *</Label>
@@ -508,9 +537,16 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                   id="edit-email"
                   type="email"
                   value={editFormData.email}
-                  onChange={(e) => setEditFormData({ ...editFormData, email: e.target.value })}
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, email: e.target.value })
+                    setEditFieldErrors((prev) => ({ ...prev, email: undefined }))
+                  }}
+                  className={editFieldErrors.email ? 'border-destructive' : ''}
                   required
                 />
+                {editFieldErrors.email && (
+                  <p className="text-destructive text-xs">{editFieldErrors.email}</p>
+                )}
               </div>
               <div className="grid gap-2">
                 <Label htmlFor="edit-phone">Téléphone</Label>
@@ -518,8 +554,16 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                   id="edit-phone"
                   type="tel"
                   value={editFormData.phone}
-                  onChange={(e) => setEditFormData({ ...editFormData, phone: e.target.value })}
+                  onChange={(e) => {
+                    setEditFormData({ ...editFormData, phone: e.target.value })
+                    setEditFieldErrors((prev) => ({ ...prev, phone: undefined }))
+                  }}
+                  className={editFieldErrors.phone ? 'border-destructive' : ''}
+                  placeholder="06 12 34 56 78"
                 />
+                {editFieldErrors.phone && (
+                  <p className="text-destructive text-xs">{editFieldErrors.phone}</p>
+                )}
               </div>
 
               <div className="grid gap-2">
@@ -537,8 +581,16 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                   <Input
                     id="edit-zipCode"
                     value={editFormData.zipCode}
-                    onChange={(e) => setEditFormData({ ...editFormData, zipCode: e.target.value })}
+                    onChange={(e) => {
+                      setEditFormData({ ...editFormData, zipCode: e.target.value })
+                      setEditFieldErrors((prev) => ({ ...prev, zipCode: undefined }))
+                    }}
+                    className={editFieldErrors.zipCode ? 'border-destructive' : ''}
+                    placeholder="75000"
                   />
+                  {editFieldErrors.zipCode && (
+                    <p className="text-destructive text-xs">{editFieldErrors.zipCode}</p>
+                  )}
                 </div>
                 <div className="grid gap-2">
                   <Label htmlFor="edit-city">Ville</Label>

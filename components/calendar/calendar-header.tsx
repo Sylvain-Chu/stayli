@@ -51,6 +51,10 @@ export function CalendarHeader({
           <span className="text-muted-foreground">En attente</span>
         </div>
         <div className="flex items-center gap-2">
+          <div className="h-3 w-3 rounded-full bg-[#c53030]" />
+          <span className="text-muted-foreground">Annulé</span>
+        </div>
+        <div className="flex items-center gap-2">
           <div className="h-3 w-3 rounded-full bg-[#9ca3af]" />
           <span className="text-muted-foreground">Bloqué</span>
         </div>

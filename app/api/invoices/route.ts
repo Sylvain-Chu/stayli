@@ -10,6 +10,7 @@ import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { invoiceSchema } from '@/lib/validations/invoice'
 import { generateInvoiceNumber } from '@/lib/invoice-number'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 /**
  * GET /api/invoices
@@ -90,6 +91,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
+    await applyRateLimit('POST:/api/invoices')
 
     const body = await request.json()
     const validatedData = invoiceSchema.parse(body)

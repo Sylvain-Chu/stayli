@@ -480,6 +480,7 @@ export function NewBookingDialog({
             Annuler
           </Button>
           <Button
+            type="button"
             onClick={onConfirm}
             disabled={!newBooking.clientName.trim() || isSubmitting}
             className="rounded-xl"

@@ -348,6 +348,32 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
         title="Supprimer la facture"
         description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
       />
+
+      {total != null && total > perPage && (
+        <div className="border-border flex items-center justify-between border-t px-4 py-3">
+          <div className="text-muted-foreground text-sm">
+            {total} facture{total > 1 ? 's' : ''} au total
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            >
+              Précédent
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setPage(page + 1)}
+              disabled={page >= Math.ceil(total / perPage)}
+            >
+              Suivant
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }

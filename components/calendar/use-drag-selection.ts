@@ -16,20 +16,23 @@ export function useDragSelection(isDayOccupied: (propertyId: string, day: number
       if (!isDragging || !dragState) return
       if (propertyId !== dragState.propertyId) return
 
-      const minDay = Math.min(dragState.startDay, day)
-      const maxDay = Math.max(dragState.startDay, day)
+      const newMin = Math.min(dragState.startDay, day)
+      const newMax = Math.max(dragState.startDay, day)
+      const oldMin = Math.min(dragState.startDay, dragState.endDay)
+      const oldMax = Math.max(dragState.startDay, dragState.endDay)
 
-      let hasConflict = false
-      for (let d = minDay; d <= maxDay; d++) {
-        if (isDayOccupied(propertyId, d)) {
-          hasConflict = true
-          break
+      // If the selection is shrinking (new range is subset of old range), allow without conflict check
+      const isShrinking = newMin >= oldMin && newMax <= oldMax
+
+      if (!isShrinking) {
+        // Only check conflicts for newly added days
+        for (let d = newMin; d <= newMax; d++) {
+          if (d >= oldMin && d <= oldMax) continue // already validated
+          if (isDayOccupied(propertyId, d)) return
         }
       }
 
-      if (!hasConflict) {
-        setDragState({ ...dragState, endDay: day })
-      }
+      setDragState({ ...dragState, endDay: day })
     },
     [isDragging, dragState, isDayOccupied],
   )

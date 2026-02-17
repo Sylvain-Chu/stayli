@@ -14,6 +14,8 @@ services:
       NODE_ENV: production
     ports:
       - '${APP_PORT:-3000}:3000'
+    volumes:
+      - stayli-uploads:/app/public/uploads
     networks:
       - stayli-net
 
@@ -38,6 +40,7 @@ services:
 
 volumes:
   stayli-data:
+  stayli-uploads:
 
 networks:
   stayli-net:

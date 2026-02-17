@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { clientSchema } from '@/lib/validations/client'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 /**
  * GET /api/clients
@@ -133,6 +134,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
+    await applyRateLimit('POST:/api/clients')
 
     const body = await request.json()
     const validatedData = clientSchema.parse(body)

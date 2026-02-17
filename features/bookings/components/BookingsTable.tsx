@@ -55,6 +55,10 @@ interface BookingsTableProps {
   sortColumn?: string | null
   sortDirection?: SortDirection
   onSortChange?: (column: string | null, direction: SortDirection) => void
+  page?: number
+  perPage?: number
+  total?: number
+  onPageChange?: (page: number) => void
 }
 
 export function BookingsTable({
@@ -65,6 +69,10 @@ export function BookingsTable({
   sortColumn: externalSortColumn,
   sortDirection: externalSortDirection,
   onSortChange,
+  page = 1,
+  perPage = 10,
+  total,
+  onPageChange,
 }: BookingsTableProps) {
   const { selectedIds, toggleSelection, selectAll, clearSelection } = useBookingsContext()
   const [localSortColumn, setLocalSortColumn] = useState<string | null>(null)
@@ -406,6 +414,32 @@ export function BookingsTable({
         confirmText="Annuler la réservation"
         variant="destructive"
       />
+
+      {total != null && total > perPage && onPageChange && (
+        <div className="border-border flex items-center justify-between border-t px-4 py-3">
+          <div className="text-muted-foreground text-sm">
+            {total} réservation{total > 1 ? 's' : ''} au total
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page === 1}
+            >
+              Précédent
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page >= Math.ceil(total / perPage)}
+            >
+              Suivant
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
