@@ -31,7 +31,7 @@ function BookingsContent() {
     status: status !== 'all' ? status : undefined,
   }
 
-  const { bookings, isLoading, error, refresh } = useBookings({
+  const { bookings, total, isLoading, error, refresh } = useBookings({
     filters,
     page,
     perPage: 10,
@@ -85,6 +85,10 @@ function BookingsContent() {
             setSortColumn(col)
             setSortDirection(dir)
           }}
+          page={page}
+          perPage={10}
+          total={total}
+          onPageChange={setPage}
         />
       </Suspense>
     </>

@@ -71,9 +71,40 @@ export function FullCalendar() {
   const nextMonth = () => setCurrentDate(new Date(displayYear, displayMonth + 1, 1))
 
   // Wrap drag mouseUp to trigger modal + price calc
-  const handleMouseUp = () => {
+  const handleMouseUp = async () => {
     const selection = drag.handleMouseUp()
     if (selection) {
+      // Check availability before opening the dialog
+      try {
+        const startDate = new Date(displayYear, displayMonth, selection.startDay)
+        const endDate = new Date(
+          displayYear,
+          displayMonth,
+          selection.startDay === selection.endDay ? selection.endDay + 1 : selection.endDay,
+        )
+        const res = await fetch('/api/bookings/check-availability', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            propertyId: selection.propertyId,
+            startDate: startDate.toISOString(),
+            endDate: endDate.toISOString(),
+          }),
+        })
+        const { data } = await res.json()
+        if (!data?.available) {
+          toast({
+            title: 'Dates non disponibles',
+            description: `Ce logement est déjà réservé sur ces dates.`,
+            variant: 'destructive',
+          })
+          drag.resetDrag()
+          return
+        }
+      } catch {
+        // If check fails, still allow opening the dialog — server will validate on save
+      }
+
       setShowModal(true)
       const startDate = new Date(displayYear, displayMonth, selection.startDay)
       const endDate = new Date(displayYear, displayMonth, selection.endDay)
@@ -111,8 +142,8 @@ export function FullCalendar() {
         const newClient = await createClient({
           firstName,
           lastName,
-          email: nb.clientEmail,
-          phone: nb.clientPhone,
+          email: nb.clientEmail || '',
+          phone: nb.clientPhone || undefined,
         })
         clientId = newClient.id
         await mutateClients()
@@ -120,15 +151,16 @@ export function FullCalendar() {
 
       if (!clientId) {
         toast({
-          title: 'Error',
-          description: 'Please select or create a client',
+          title: 'Erreur',
+          description: 'Veuillez sélectionner ou créer un client',
           variant: 'destructive',
         })
         return
       }
 
       const startDate = new Date(displayYear, displayMonth, start)
-      const endDate = new Date(displayYear, displayMonth, end)
+      // Ensure endDate is always at least 1 day after startDate
+      const endDate = new Date(displayYear, displayMonth, end === start ? end + 1 : end)
       const totalPrice =
         (nb.basePrice || 0) +
         (nb.cleaningFee || 0) +
@@ -167,9 +199,14 @@ export function FullCalendar() {
       bookingForm.resetForm()
     } catch (error) {
       console.error('Error creating booking:', error)
+      const message = error instanceof Error ? error.message : 'Impossible de créer la réservation'
+      const details = (error as any)?.details
+      const detailText = Array.isArray(details)
+        ? details.map((d: { path?: string; message?: string }) => d.message || d.path).join(', ')
+        : ''
       toast({
-        title: 'Erreur',
-        description: 'Impossible de créer la réservation',
+        title: 'Erreur de création',
+        description: detailText || message,
         variant: 'destructive',
       })
     } finally {

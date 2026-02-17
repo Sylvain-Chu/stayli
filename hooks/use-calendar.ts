@@ -125,8 +125,12 @@ export async function createCalendarBooking(bookingData: {
   })
 
   if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.error || 'Failed to create booking')
+    const errorData = await response.json().catch(() => ({}))
+    const message = errorData.error?.message || errorData.error || 'Failed to create booking'
+    const details = errorData.error?.details
+    const err = new Error(message)
+    ;(err as any).details = details
+    throw err
   }
 
   return response.json()
@@ -148,8 +152,11 @@ export async function createClient(clientData: {
   })
 
   if (!response.ok) {
-    const error = await response.json()
-    throw new Error(error.error || 'Failed to create client')
+    const errorData = await response.json().catch(() => ({}))
+    const message = errorData.error?.message || errorData.error || 'Failed to create client'
+    const err = new Error(message)
+    ;(err as any).details = errorData.error?.details
+    throw err
   }
 
   return response.json()

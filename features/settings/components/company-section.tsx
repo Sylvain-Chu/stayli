@@ -1,13 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { PhoneInput } from '@/components/ui/phone-input'
 import { SiretInput } from '@/components/ui/siret-input'
-import { Upload, Save, Loader2, Check } from 'lucide-react'
+import { Upload, Save, Loader2, Check, X } from 'lucide-react'
 import { useSettingsMutations } from '../hooks/useSettingsMutations'
 import { useToast } from '@/hooks/use-toast'
 import { isValidFrenchPhone, isValidSiret } from '@/lib/utils'
@@ -26,6 +26,7 @@ interface Settings {
 export function CompanySettings({ settings }: { settings: Settings }) {
   const { toast } = useToast()
   const { updateSettings } = useSettingsMutations()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [formData, setFormData] = useState({
     companyName: settings.companyName,
     companyAddress: settings.companyAddress || '',
@@ -35,6 +36,8 @@ export function CompanySettings({ settings }: { settings: Settings }) {
     companyEmail: settings.companyEmail || '',
     companySiret: settings.companySiret || '',
   })
+  const [logoUrl, setLogoUrl] = useState<string | null>(settings.companyLogoUrl)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
 
@@ -77,6 +80,81 @@ export function CompanySettings({ settings }: { settings: Settings }) {
       })
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Client-side validation
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+    if (!allowedTypes.includes(file.type)) {
+      toast({
+        title: 'Type de fichier non supporté',
+        description: 'Utilisez un fichier PNG, JPEG, WebP ou SVG.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: 'Fichier trop volumineux',
+        description: 'Le fichier ne doit pas dépasser 2 Mo.',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    setUploadingLogo(true)
+    try {
+      const formData = new FormData()
+      formData.append('logo', file)
+
+      const res = await fetch('/api/settings/logo', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error?.message || 'Échec du téléchargement')
+      }
+
+      const { data } = await res.json()
+      setLogoUrl(data.logoUrl)
+      toast({
+        title: 'Logo mis à jour',
+        description: 'Le logo de votre entreprise a été mis à jour.',
+      })
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: error instanceof Error ? error.message : 'Impossible de télécharger le logo.',
+        variant: 'destructive',
+      })
+    } finally {
+      setUploadingLogo(false)
+      // Reset file input
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleRemoveLogo = async () => {
+    try {
+      await updateSettings({ companyLogoUrl: null })
+      setLogoUrl(null)
+      toast({
+        title: 'Logo supprimé',
+        description: 'Le logo a été supprimé.',
+      })
+    } catch {
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de supprimer le logo.',
+        variant: 'destructive',
+      })
     }
   }
   return (
@@ -162,15 +240,52 @@ export function CompanySettings({ settings }: { settings: Settings }) {
         <div className="space-y-2">
           <Label>Logo</Label>
           <div className="flex items-center gap-4">
-            <div className="border-border bg-muted/30 flex h-20 w-20 items-center justify-center rounded-lg border border-dashed">
-              <span className="text-muted-foreground text-xl font-bold">
-                {formData.companyName.substring(0, 2).toUpperCase()}
-              </span>
+            <div className="border-border bg-muted/30 relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-dashed">
+              {logoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={logoUrl} alt="Logo entreprise" className="h-full w-full object-contain" />
+              ) : (
+                <span className="text-muted-foreground text-xl font-bold">
+                  {formData.companyName.substring(0, 2).toUpperCase()}
+                </span>
+              )}
             </div>
-            <Button variant="outline" className="bg-transparent">
-              <Upload className="mr-2 h-4 w-4" />
-              Changer le logo
-            </Button>
+            <div className="flex flex-col gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                className="hidden"
+                onChange={handleLogoUpload}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="bg-transparent"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingLogo}
+              >
+                {uploadingLogo ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : (
+                  <Upload className="mr-2 h-4 w-4" />
+                )}
+                {uploadingLogo ? 'Envoi...' : 'Changer le logo'}
+              </Button>
+              {logoUrl && (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="text-destructive hover:text-destructive/90"
+                  onClick={handleRemoveLogo}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Supprimer
+                </Button>
+              )}
+            </div>
+            <p className="text-muted-foreground text-xs">PNG, JPEG, WebP ou SVG. Max 2 Mo.</p>
           </div>
         </div>
 

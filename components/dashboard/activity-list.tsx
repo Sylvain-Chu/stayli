@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { cn } from '@/lib/utils'
 import { useActivities } from '@/hooks/use-dashboard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -57,10 +57,6 @@ export function ActivityCard() {
                 className="border-border flex items-center gap-4 rounded-lg border p-4"
               >
                 <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={`/.jpg?height=40&width=40&query=${item.client.name} avatar`}
-                    alt={item.client.name}
-                  />
                   <AvatarFallback className="bg-primary/10 text-primary text-sm">
                     {item.client.initials}
                   </AvatarFallback>

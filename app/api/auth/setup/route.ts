@@ -4,6 +4,7 @@ import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import bcrypt from 'bcrypt'
 import { z } from 'zod'
+import { applyRateLimit, RATE_LIMITS } from '@/lib/rate-limit'
 
 const setupSchema = z.object({
   user: z.object({
@@ -45,6 +46,8 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
+    await applyRateLimit('POST:/api/auth/setup', RATE_LIMITS.auth)
+
     // Check if users already exist
     const existingUserCount = await prisma.user.count()
 

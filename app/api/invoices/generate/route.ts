@@ -4,10 +4,12 @@ import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { generateInvoiceNumber } from '@/lib/invoice-number'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
+    await applyRateLimit('POST:/api/invoices/generate')
 
     const { bookingId } = await request.json()
 

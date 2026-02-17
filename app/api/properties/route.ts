@@ -9,6 +9,7 @@ import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { propertySchema } from '@/lib/validations/property'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 /**
  * GET /api/properties
@@ -89,6 +90,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
+    await applyRateLimit('POST:/api/properties')
 
     const body = await request.json()
     const validatedData = propertySchema.parse(body)
