@@ -23,7 +23,6 @@ RUN yarn build
 
 # ── Stage 3: Production image ────────────────────────────────────────────────
 FROM node:20-alpine AS runner
-RUN corepack enable
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -38,14 +37,20 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma schema + config + migrations + CLI for runtime migrate
-COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+# Copy Prisma client runtime (needed by the app)
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
-COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
-COPY --from=builder /app/node_modules/pg ./node_modules/pg
+
+# Install only what's needed for migrations at startup
+RUN npm install --no-save prisma@7.4.0 dotenv@17.2.3 @prisma/adapter-pg@7.4.0
+
+# Copy Prisma schema + config + migrations
+COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
+
+# Entrypoint : migrations auto + démarrage
+COPY --chown=nextjs:nodejs docker-entrypoint.sh ./
+RUN chmod +x docker-entrypoint.sh
 
 USER nextjs
 
@@ -53,4 +58,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
