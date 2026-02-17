@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/${GITHUB_REPOSITORY:-Sylvain-Chu/stayli}:latest
+    image: ghcr.io/sylvain-chu/stayli:latest
     container_name: stayli-app
     restart: unless-stopped
     depends_on:
@@ -10,6 +10,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
       NEXTAUTH_URL: ${NEXTAUTH_URL}
+      AUTH_TRUST_HOST: "true"
       NODE_ENV: production
     ports:
       - '${APP_PORT:-3000}:3000'
@@ -34,9 +35,6 @@ services:
       start_period: 30s
     networks:
       - stayli-net
-    # Ne pas exposer le port 5432 en prod sauf si besoin
-    # ports:
-    #   - "5432:5432"
 
 volumes:
   stayli-data:
