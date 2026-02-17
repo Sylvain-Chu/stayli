@@ -136,6 +136,10 @@ export interface Settings extends BaseEntity {
   invoicePaymentInstructions: string | null
   cancellationInsurancePercentage: number
   cancellationInsuranceProviderName: string
+  depositPercentage: number
+  securityDepositAmount: number
+  checkInTime: string
+  checkOutTime: string
 }
 
 // ============ API Response Types ============

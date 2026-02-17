@@ -162,10 +162,55 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
 
             {settings && booking.client && booking.property && (
               <DownloadContractButton
-                booking={booking}
-                property={booking.property}
-                client={booking.client}
-                settings={settings}
+                booking={{
+                  id: booking.id,
+                  startDate: booking.startDate.toISOString(),
+                  endDate: booking.endDate.toISOString(),
+                  totalPrice: booking.totalPrice,
+                  basePrice: booking.basePrice,
+                  cleaningFee: booking.cleaningFee,
+                  linensPrice: booking.linensPrice,
+                  insuranceFee: booking.insuranceFee,
+                  taxes: booking.taxes,
+                  adults: booking.adults,
+                  children: booking.children,
+                  hasCancellationInsurance: booking.hasCancellationInsurance,
+                  hasLinens: booking.hasLinens,
+                  hasCleaning: booking.hasCleaning,
+                  cleaningPrice: booking.cleaningPrice,
+                }}
+                property={{
+                  name: booking.property.name,
+                  address: booking.property.address,
+                  contractDescription: booking.property.contractDescription,
+                }}
+                client={{
+                  firstName: booking.client.firstName,
+                  lastName: booking.client.lastName,
+                  email: booking.client.email,
+                  phone: booking.client.phone,
+                  address: booking.client.address,
+                  zipCode: booking.client.zipCode,
+                  city: booking.client.city,
+                }}
+                settings={{
+                  companyName: settings.companyName,
+                  companyAddress: settings.companyAddress,
+                  companyPhoneNumber: settings.companyPhoneNumber,
+                  companyEmail: settings.companyEmail,
+                  companySiret: settings.companySiret,
+                  companyZipCode: settings.companyZipCode,
+                  companyCity: settings.companyCity,
+                  touristTaxRatePerPersonPerDay: settings.touristTaxRatePerPersonPerDay,
+                  depositPercentage: settings.depositPercentage,
+                  securityDepositAmount: settings.securityDepositAmount,
+                  checkInTime: settings.checkInTime,
+                  checkOutTime: settings.checkOutTime,
+                  cancellationInsurancePercentage: settings.cancellationInsurancePercentage,
+                  cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
+                  cleaningOptionPrice: settings.cleaningOptionPrice,
+                  linensOptionPrice: settings.linensOptionPrice,
+                }}
               />
             )}
 

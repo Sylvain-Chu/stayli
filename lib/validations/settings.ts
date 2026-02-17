@@ -27,6 +27,10 @@ export const settingsSchema = z.object({
   invoicePaymentInstructions: z.string().optional(),
   cancellationInsurancePercentage: z.number().min(0).max(100).optional(),
   cancellationInsuranceProviderName: z.string().optional(),
+  depositPercentage: z.number().min(0).max(100).optional(),
+  securityDepositAmount: z.number().nonnegative().optional(),
+  checkInTime: z.string().optional(),
+  checkOutTime: z.string().optional(),
 })
 
 export type SettingsFormData = z.infer<typeof settingsSchema>
