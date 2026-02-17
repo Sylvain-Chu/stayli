@@ -13,8 +13,41 @@ async function main() {
   await prisma.booking.deleteMany()
   await prisma.client.deleteMany()
   await prisma.property.deleteMany()
+  await prisma.settings.deleteMany()
 
   console.log('Existing data deleted')
+
+  // Create settings
+  const settings = await prisma.settings.create({
+    data: {
+      companyName: 'Vacation Rentals',
+      companyEmail: 'contact@vacationrentals.com',
+      companyPhoneNumber: '+33 1 23 45 67 89',
+      companyAddress: '123 Rue de la Location',
+      companyCity: 'Paris',
+      companyZipCode: '75001',
+      companySiret: '123 456 789 00012',
+      defaultLanguage: 'fr',
+      currencyCode: 'EUR',
+      currencySymbol: '€',
+      lowSeasonMonths: [1, 2, 3, 11, 12],
+      lowSeasonRate: 750,
+      highSeasonRate: 830,
+      linensOptionPrice: 20,
+      cleaningOptionPrice: 35,
+      touristTaxRatePerPersonPerDay: 1,
+      invoicePrefix: 'INV-',
+      invoiceDueDays: 30,
+      cancellationInsurancePercentage: 6,
+      cancellationInsuranceProviderName: 'Holiday Peace of Mind Insurance',
+      depositPercentage: 25,
+      securityDepositAmount: 300,
+      checkInTime: '14:00',
+      checkOutTime: '10:00',
+    },
+  })
+
+  console.log('Settings created')
 
   // Create properties
   const properties = await Promise.all([

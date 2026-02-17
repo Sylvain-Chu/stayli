@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { BookingStatus, Prisma } from '@prisma/client'
-import { handleApiError, successResponse } from '@/lib/api-error'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { requireAuth } from '@/lib/auth'
 import { createBookingSchema, bookingQuerySchema } from '@/lib/validations/booking'
@@ -98,6 +98,41 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
 
     const validatedData = createBookingSchema.parse(body)
+
+    // Check for overlapping bookings to prevent conflicts
+    const conflicts = await prisma.booking.findMany({
+      where: {
+        propertyId: validatedData.propertyId,
+        status: {
+          in: ['confirmed', 'pending'],
+        },
+        OR: [
+          {
+            AND: [
+              { startDate: { lte: new Date(validatedData.startDate) } },
+              { endDate: { gt: new Date(validatedData.startDate) } },
+            ],
+          },
+          {
+            AND: [
+              { startDate: { lt: new Date(validatedData.endDate) } },
+              { endDate: { gte: new Date(validatedData.endDate) } },
+            ],
+          },
+          {
+            AND: [
+              { startDate: { gte: new Date(validatedData.startDate) } },
+              { endDate: { lte: new Date(validatedData.endDate) } },
+            ],
+          },
+        ],
+      },
+      select: { id: true },
+    })
+
+    if (conflicts.length > 0) {
+      throw ApiError.conflict('Cette propriété est déjà réservée pour ces dates')
+    }
 
     const booking = await prisma.booking.create({
       data: {

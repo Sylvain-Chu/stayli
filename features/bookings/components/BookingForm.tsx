@@ -58,12 +58,28 @@ export function BookingForm() {
   useEffect(() => {
     fetch('/api/properties/list')
       .then((res) => res.json())
-      .then((data) => setProperties(data))
+      .then((payload) => {
+        const list = Array.isArray(payload) ? payload : (payload?.data ?? [])
+        if (!Array.isArray(list)) {
+          console.error('Unexpected properties response', payload)
+          setProperties([])
+          return
+        }
+        setProperties(list)
+      })
       .catch((err) => console.error('Error fetching properties:', err))
 
     fetch('/api/clients/list')
       .then((res) => res.json())
-      .then((data) => setClients(data))
+      .then((payload) => {
+        const list = Array.isArray(payload) ? payload : (payload?.data ?? [])
+        if (!Array.isArray(list)) {
+          console.error('Unexpected clients response', payload)
+          setClients([])
+          return
+        }
+        setClients(list)
+      })
       .catch((err) => console.error('Error fetching clients:', err))
   }, [])
 
@@ -89,11 +105,14 @@ export function BookingForm() {
         }),
       })
         .then((res) => res.json())
-        .then((data) => {
+        .then((payload) => {
           if (!isMounted) return
 
-          if (!data.available && data.conflicts.length > 0) {
-            const conflict = data.conflicts[0]
+          const data = payload?.data ?? payload
+          const conflicts = Array.isArray(data?.conflicts) ? data.conflicts : []
+
+          if (!data.available && conflicts.length > 0) {
+            const conflict = conflicts[0]
             const startDate = new Date(conflict.startDate).toLocaleDateString('fr-FR')
             const endDate = new Date(conflict.endDate).toLocaleDateString('fr-FR')
 

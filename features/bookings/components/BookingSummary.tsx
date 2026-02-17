@@ -71,22 +71,28 @@ export function BookingSummary() {
       })
 
       if (!response.ok) {
-        throw new Error('Erreur lors de la création de la réservation')
+        const errorData = await response.json().catch(() => null)
+        const errorMessage =
+          errorData?.error?.message || 'Erreur lors de la création de la réservation'
+        throw new Error(errorMessage)
       }
 
-      const booking = await response.json()
+      const payload = await response.json()
+      const booking = payload?.data ?? payload
 
       toast({
         title: 'Réservation créée',
         description: 'La réservation a été créée avec succès',
       })
 
-      router.push(`/bookings/${booking.id}`)
+      if (booking?.id) {
+        router.push(`/bookings/${booking.id}`)
+      }
     } catch (error) {
       console.error('Error creating booking:', error)
       toast({
         title: 'Erreur',
-        description: 'Impossible de créer la réservation',
+        description: error instanceof Error ? error.message : 'Impossible de créer la réservation',
         variant: 'destructive',
       })
     } finally {
@@ -115,8 +121,20 @@ export function BookingSummary() {
       }),
     })
       .then((res) => res.json())
-      .then((data) => {
-        setPriceBreakdown(data)
+      .then((payload) => {
+        const data = payload?.data ?? payload
+        // Normalize fields to avoid undefined values coming from API wrapper
+        const normalized: PriceBreakdown = {
+          basePrice: Number(data?.basePrice ?? 0),
+          linensPrice: Number(data?.linensPrice ?? 0),
+          cleaningPrice: Number(data?.cleaningPrice ?? 0),
+          discount: Number(data?.discount ?? 0),
+          insuranceFee: Number(data?.insuranceFee ?? 0),
+          touristTax: Number(data?.touristTax ?? 0),
+          totalPrice: Number(data?.totalPrice ?? 0),
+        }
+
+        setPriceBreakdown(normalized)
         setLoading(false)
       })
       .catch((err) => {
