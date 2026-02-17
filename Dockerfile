@@ -37,12 +37,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Copy Prisma client runtime (needed by the app)
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-
-# Install only what's needed for migrations at startup
-RUN npm install --no-save prisma@7.4.0 dotenv@17.2.3 @prisma/adapter-pg@7.4.0
+# Copy all node_modules (Prisma CLI + all its dependencies)
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy Prisma schema + config + migrations
 COPY --from=builder /app/prisma ./prisma
