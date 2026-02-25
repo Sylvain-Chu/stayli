@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
+import bcrypt from 'bcrypt'
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL! })
 const prisma = new PrismaClient({ adapter })
@@ -14,8 +15,25 @@ async function main() {
   await prisma.client.deleteMany()
   await prisma.property.deleteMany()
   await prisma.settings.deleteMany()
+  await prisma.user.deleteMany()
 
   console.log('Existing data deleted')
+
+  // Create admin user
+  const adminPassword = process.env.ADMIN_PASSWORD || 'admin123'
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@example.com'
+  const passwordHash = await bcrypt.hash(adminPassword, 12)
+
+  const adminUser = await prisma.user.create({
+    data: {
+      name: 'Admin',
+      email: adminEmail,
+      passwordHash,
+      role: 'ADMIN',
+    },
+  })
+
+  console.log('Admin user created:', adminUser.email)
 
   // Create settings
   const settings = await prisma.settings.create({

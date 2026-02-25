@@ -8,37 +8,36 @@ export async function GET() {
 
     const now = new Date()
 
-    const [allInvoices, paidInvoices, overdueInvoices] = await Promise.all([
+    const [allStats, paidStats, overdueStats] = await Promise.all([
       // Total invoices
-      prisma.invoice.findMany({
-        select: {
-          amount: true,
-          status: true,
-          dueDate: true,
-        },
+      prisma.invoice.aggregate({
+        _count: true,
+        _sum: { amount: true },
       }),
       // Paid invoices
-      prisma.invoice.findMany({
+      prisma.invoice.aggregate({
         where: { status: 'paid' },
-        select: { amount: true },
+        _count: true,
+        _sum: { amount: true },
       }),
       // Overdue invoices (unpaid and past due date)
-      prisma.invoice.findMany({
+      prisma.invoice.aggregate({
         where: {
           status: { in: ['sent', 'draft'] },
           dueDate: { lt: now },
         },
-        select: { amount: true },
+        _count: true,
+        _sum: { amount: true },
       }),
     ])
 
-    const total = allInvoices.length
-    const paid = paidInvoices.length
-    const overdue = overdueInvoices.length
+    const total = allStats._count
+    const paid = paidStats._count
+    const overdue = overdueStats._count
 
-    const totalAmount = allInvoices.reduce((sum, inv) => sum + inv.amount, 0)
-    const paidAmount = paidInvoices.reduce((sum, inv) => sum + inv.amount, 0)
-    const overdueAmount = overdueInvoices.reduce((sum, inv) => sum + inv.amount, 0)
+    const totalAmount = allStats._sum.amount ?? 0
+    const paidAmount = paidStats._sum.amount ?? 0
+    const overdueAmount = overdueStats._sum.amount ?? 0
 
     return successResponse({
       total,
