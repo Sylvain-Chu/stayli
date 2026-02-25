@@ -4,6 +4,7 @@ import { requireAuth, requireAdmin } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { updateBookingSchema } from '@/lib/validations/booking'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -31,7 +32,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAuth()
+    await requireAdmin()
+    await applyRateLimit('PATCH:/api/bookings/[id]')
 
     const { id } = await params
     const body = await request.json()
@@ -89,6 +91,7 @@ export async function DELETE(
 ) {
   try {
     await requireAdmin()
+    await applyRateLimit('DELETE:/api/bookings/[id]')
 
     const { id } = await params
 

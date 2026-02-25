@@ -8,6 +8,7 @@ import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
+import { applyRateLimit } from '@/lib/rate-limit'
 import { z } from 'zod'
 
 /**
@@ -68,6 +69,7 @@ export async function GET() {
 export async function PATCH(request: NextRequest) {
   try {
     const session = await requireAuth()
+    await applyRateLimit('PATCH:/api/account')
 
     const body = await request.json()
     const validatedData = profileSchema.parse(body)

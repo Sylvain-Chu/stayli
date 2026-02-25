@@ -4,12 +4,12 @@
  */
 
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 
 export async function GET() {
   try {
-    await requireAuth()
+    await requireAdmin()
 
     const clients = await prisma.client.findMany({
       select: {
@@ -21,6 +21,7 @@ export async function GET() {
         createdAt: true,
       },
       orderBy: { createdAt: 'desc' },
+      take: 10000,
     })
 
     return successResponse(clients)
