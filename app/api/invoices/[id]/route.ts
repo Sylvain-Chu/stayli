@@ -5,7 +5,7 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
+import { requireAuth, requireAdmin } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { updateInvoiceSchema } from '@/lib/validations/invoice'
@@ -86,7 +86,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    await requireAuth()
+    await requireAdmin()
 
     const { id } = await params
     await prisma.invoice.delete({

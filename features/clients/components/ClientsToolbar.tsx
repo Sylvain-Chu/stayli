@@ -17,18 +17,16 @@ import { ExportClientsButton } from './ExportButton'
 import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { useToast } from '@/hooks/use-toast'
 import { clientSchema } from '@/lib/validations/client'
-import type { Client } from '@/features/clients/types'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 import { ZodError } from 'zod'
 
 interface ClientsToolbarProps {
   onSearchChange?: (search: string) => void
-  clients?: Client[]
 }
 
 type FieldErrors = Partial<Record<string, string>>
 
-export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps) {
+export function ClientsToolbar({ onSearchChange }: ClientsToolbarProps) {
   const [search, setSearch] = useState('')
   const [open, setOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -144,7 +142,7 @@ export function ClientsToolbar({ onSearchChange, clients }: ClientsToolbarProps)
               </Button>
             </>
           )}
-          <ExportClientsButton clients={clients || []} />
+          <ExportClientsButton />
           <Button className="bg-primary hover:bg-primary/90" onClick={() => setOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Nouveau Client

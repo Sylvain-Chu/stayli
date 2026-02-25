@@ -5,7 +5,7 @@
 
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth } from '@/lib/auth'
+import { requireAuth, requireAdmin } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { settingsSchema } from '@/lib/validations/settings'
@@ -40,7 +40,7 @@ export async function GET() {
  */
 export async function PATCH(request: NextRequest) {
   try {
-    await requireAuth()
+    await requireAdmin()
 
     const body = await request.json()
     const validatedData = settingsSchema.parse(body)

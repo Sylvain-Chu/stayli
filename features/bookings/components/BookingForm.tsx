@@ -39,6 +39,7 @@ interface Client {
 
 import { useBookingForm } from '../context/BookingFormContext'
 import { useToast } from '@/hooks/use-toast'
+import * as clientsService from '@/services/clients.service'
 
 export function BookingForm() {
   const { formData, updateFormData } = useBookingForm()
@@ -47,6 +48,8 @@ export function BookingForm() {
   const [clients, setClients] = useState<Client[]>([])
   const [availabilityError, setAvailabilityError] = useState<string | null>(null)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [isCreatingClient, setIsCreatingClient] = useState(false)
 
   const [newClientData, setNewClientData] = useState({
     firstName: '',
@@ -54,6 +57,47 @@ export function BookingForm() {
     email: '',
     phone: '',
   })
+
+  const handleCreateClient = async () => {
+    if (!newClientData.firstName || !newClientData.lastName) {
+      toast({
+        title: 'Erreur',
+        description: 'Le prénom et le nom sont requis',
+        variant: 'destructive',
+      })
+      return
+    }
+
+    setIsCreatingClient(true)
+    try {
+      const newClient = await clientsService.createClient({
+        firstName: newClientData.firstName,
+        lastName: newClientData.lastName,
+        email: newClientData.email,
+        phone: newClientData.phone || undefined,
+      })
+
+      setClients([...clients, newClient])
+      updateFormData({ clientId: newClient.id })
+
+      setNewClientData({ firstName: '', lastName: '', email: '', phone: '' })
+      setIsDialogOpen(false)
+
+      toast({
+        title: 'Succès',
+        description: 'Client créé et sélectionné',
+      })
+    } catch (error) {
+      console.error('Error creating client:', error)
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de créer le client',
+        variant: 'destructive',
+      })
+    } finally {
+      setIsCreatingClient(false)
+    }
+  }
 
   useEffect(() => {
     fetch('/api/properties/list')
@@ -197,7 +241,7 @@ export function BookingForm() {
                     ))}
                   </SelectContent>
                 </Select>
-                <Dialog>
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button
                       variant="outline"
@@ -225,6 +269,7 @@ export function BookingForm() {
                             onChange={(e) =>
                               setNewClientData({ ...newClientData, firstName: e.target.value })
                             }
+                            disabled={isCreatingClient}
                           />
                         </div>
                         <div className="space-y-2">
@@ -235,6 +280,7 @@ export function BookingForm() {
                             onChange={(e) =>
                               setNewClientData({ ...newClientData, lastName: e.target.value })
                             }
+                            disabled={isCreatingClient}
                           />
                         </div>
                       </div>
@@ -247,6 +293,7 @@ export function BookingForm() {
                           onChange={(e) =>
                             setNewClientData({ ...newClientData, email: e.target.value })
                           }
+                          disabled={isCreatingClient}
                         />
                       </div>
                       <div className="space-y-2">
@@ -258,9 +305,16 @@ export function BookingForm() {
                           onChange={(e) =>
                             setNewClientData({ ...newClientData, phone: e.target.value })
                           }
+                          disabled={isCreatingClient}
                         />
                       </div>
-                      <Button className="w-full">Créer le client</Button>
+                      <Button
+                        className="w-full"
+                        onClick={handleCreateClient}
+                        disabled={isCreatingClient}
+                      >
+                        {isCreatingClient ? 'Création...' : 'Créer le client'}
+                      </Button>
                     </div>
                   </DialogContent>
                 </Dialog>
