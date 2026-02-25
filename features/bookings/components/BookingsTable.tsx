@@ -340,7 +340,7 @@ export function BookingsTable({
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
-                          {(Object.entries(statusConfig) as [BookingStatus, typeof status][]).map(
+                          {(Object.entries(BOOKING_STATUS_COLORS) as [BookingStatus, (typeof BOOKING_STATUS_COLORS)[BookingStatus]][]).map(
                             ([key, cfg]) => (
                               <DropdownMenuItem
                                 key={key}

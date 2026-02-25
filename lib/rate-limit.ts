@@ -101,7 +101,7 @@ export async function applyRateLimit(
 
   if (!result.success) {
     throw new ApiError(
-      ApiErrorCode.BAD_REQUEST,
+      ApiErrorCode.RATE_LIMIT,
       'Trop de requêtes. Veuillez réessayer dans quelques instants.',
       429,
     )

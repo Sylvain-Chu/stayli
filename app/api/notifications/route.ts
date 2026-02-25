@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
       },
       include: { client: true, property: true },
       orderBy: { startDate: 'asc' },
+      take: 10,
     })
 
     for (const booking of upcomingCheckins) {
@@ -72,6 +73,7 @@ export async function GET(request: NextRequest) {
       },
       include: { client: true, property: true },
       orderBy: { endDate: 'asc' },
+      take: 10,
     })
 
     for (const booking of upcomingCheckouts) {
@@ -108,6 +110,7 @@ export async function GET(request: NextRequest) {
         },
       },
       orderBy: { dueDate: 'asc' },
+      take: 10,
     })
 
     for (const invoice of overdueInvoices) {

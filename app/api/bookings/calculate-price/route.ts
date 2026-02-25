@@ -4,10 +4,12 @@ import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { calculatePriceSchema } from '@/lib/validations/booking'
+import { applyRateLimit } from '@/lib/rate-limit'
 
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
+    await applyRateLimit('POST:/api/bookings/calculate-price')
 
     const body = await request.json()
     const validatedData = calculatePriceSchema.parse(body)
