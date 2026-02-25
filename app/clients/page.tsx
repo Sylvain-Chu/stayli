@@ -16,14 +16,13 @@ const ClientsTable = lazy(() =>
 export default function ClientsPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const debouncedSearchQuery = useDebounce(searchQuery, 500)
-  const { clients, total, isLoading } = useClients(debouncedSearchQuery, 1, 1000)
 
   return (
     <ClientsProvider>
       <AppLayout title="Clients">
         <div className="space-y-4">
-          <ClientsStats total={total} isLoading={isLoading} />
-          <ClientsToolbar onSearchChange={setSearchQuery} clients={clients} />
+          <ClientsStats />
+          <ClientsToolbar onSearchChange={setSearchQuery} />
           <Suspense
             fallback={
               <div className="space-y-4">
