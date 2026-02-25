@@ -12,13 +12,14 @@ import {
 } from '@/components/ui/select'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
+import { BOOKING_STATUS_COLORS, getBookingStatusDot } from '@/lib/constants/status-colors'
 import type { BookingStatus } from '@/types/entities'
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string; color: string }[] = [
-  { value: 'pending', label: 'En attente', color: 'bg-orange-100 text-orange-700' },
-  { value: 'confirmed', label: 'Confirmée', color: 'bg-green-100 text-green-700' },
-  { value: 'cancelled', label: 'Annulée', color: 'bg-red-100 text-red-700' },
-  { value: 'blocked', label: 'Bloquée', color: 'bg-gray-100 text-gray-700' },
+  { value: 'pending', label: BOOKING_STATUS_COLORS.pending.label, color: BOOKING_STATUS_COLORS.pending.color },
+  { value: 'confirmed', label: BOOKING_STATUS_COLORS.confirmed.label, color: BOOKING_STATUS_COLORS.confirmed.color },
+  { value: 'cancelled', label: BOOKING_STATUS_COLORS.cancelled.label, color: BOOKING_STATUS_COLORS.cancelled.color },
+  { value: 'blocked', label: BOOKING_STATUS_COLORS.blocked.label, color: BOOKING_STATUS_COLORS.blocked.color },
 ]
 
 interface BookingActionsProps {
@@ -101,9 +102,7 @@ export function BookingStatusSelect({ bookingId, currentStatus }: BookingActions
           {STATUS_OPTIONS.map((opt) => (
             <SelectItem key={opt.value} value={opt.value}>
               <span className={`inline-flex items-center gap-2`}>
-                <span
-                  className={`h-2 w-2 rounded-full ${opt.value === 'pending' ? 'bg-orange-500' : opt.value === 'confirmed' ? 'bg-green-500' : opt.value === 'cancelled' ? 'bg-red-500' : 'bg-gray-500'}`}
-                />
+                <span className={`h-2 w-2 rounded-full ${getBookingStatusDot(opt.value)}`} />
                 {opt.label}
               </span>
             </SelectItem>

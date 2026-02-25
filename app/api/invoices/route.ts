@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const search = searchParams.get('search') || ''
     const page = parseInt(searchParams.get('page') || '1')
-    const perPage = parseInt(searchParams.get('perPage') || '10')
+    const perPage = Math.min(parseInt(searchParams.get('perPage') || '10'), 100)
     const sortBy = searchParams.get('sortBy')
     const sortDir = searchParams.get('sortDir') === 'asc' ? 'asc' : 'desc'
 

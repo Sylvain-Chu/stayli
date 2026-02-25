@@ -17,18 +17,15 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
 import { Booking, BookingStatus } from '../types'
+import { BOOKING_STATUS_COLORS, getBookingStatusColor, getBookingStatusLabel, getBookingStatusDot } from '@/lib/constants/status-colors'
 
 type SortDirection = 'asc' | 'desc' | null
 
-const statusConfig = {
-  confirmed: { label: 'Confirmée', color: 'bg-green-100 text-green-700' },
-  pending: { label: 'En attente', color: 'bg-orange-100 text-orange-700' },
-  cancelled: { label: 'Annulée', color: 'bg-red-100 text-red-700' },
-  blocked: { label: 'Bloquée', color: 'bg-gray-100 text-gray-700' },
-}
-
 function getStatusBadge(status: BookingStatus) {
-  return statusConfig[status] || statusConfig.confirmed
+  return {
+    label: getBookingStatusLabel(status),
+    color: getBookingStatusColor(status),
+  }
 }
 
 function formatDate(dateString: string) {
@@ -350,9 +347,7 @@ export function BookingsTable({
                                 disabled={key === booking.status}
                                 onClick={() => handleStatusChange(booking.id, key)}
                               >
-                                <span
-                                  className={`mr-2 h-2 w-2 rounded-full ${key === 'pending' ? 'bg-orange-500' : key === 'confirmed' ? 'bg-green-500' : key === 'cancelled' ? 'bg-red-500' : 'bg-gray-500'}`}
-                                />
+                                <span className={`mr-2 h-2 w-2 rounded-full ${getBookingStatusDot(key)}`} />
                                 {cfg.label}
                               </DropdownMenuItem>
                             ),

@@ -1,17 +1,17 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
+import { handleApiError, successResponse } from '@/lib/api-error'
+import { checkAvailabilitySchema } from '@/lib/validations/booking'
 
 export async function POST(request: NextRequest) {
   try {
     await requireAuth()
 
-    const { propertyId, startDate, endDate, excludeBookingId, clientId } = await request.json()
+    const body = await request.json()
+    const validatedData = checkAvailabilitySchema.parse(body)
 
-    if (!propertyId || !startDate || !endDate) {
-      throw ApiError.badRequest('Missing required fields')
-    }
+    const { propertyId, startDate, endDate, excludeBookingId, clientId } = validatedData
 
     // Check for overlapping bookings
     const conflicts = await prisma.booking.findMany({

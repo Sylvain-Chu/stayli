@@ -1,21 +1,24 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { requireAuth, requireAdmin } from '@/lib/auth'
+import { requireAdmin } from '@/lib/auth'
 import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { generateInvoiceNumber } from '@/lib/invoice-number'
 import { applyRateLimit } from '@/lib/rate-limit'
+import { z } from 'zod'
+
+const generateInvoiceSchema = z.object({
+  bookingId: z.string().uuid('ID de réservation invalide'),
+})
 
 export async function POST(request: NextRequest) {
   try {
     await requireAdmin()
     await applyRateLimit('POST:/api/invoices/generate')
 
-    const { bookingId } = await request.json()
-
-    if (!bookingId) {
-      throw ApiError.badRequest('Booking ID is required')
-    }
+    const body = await request.json()
+    const validatedData = generateInvoiceSchema.parse(body)
+    const { bookingId } = validatedData
 
     // Get booking with relations
     const booking = await prisma.booking.findUnique({

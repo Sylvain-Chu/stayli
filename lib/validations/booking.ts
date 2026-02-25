@@ -76,6 +76,46 @@ export const bookingQuerySchema = z.object({
   status: BookingStatusEnum.optional(),
 })
 
+/**
+ * Price calculation request validation
+ */
+export const calculatePriceSchema = z.object({
+  startDate: z.string().datetime('Date de début invalide'),
+  endDate: z.string().datetime('Date de fin invalide'),
+  adults: z.number().int().min(1).default(1),
+  children: z.number().int().min(0).default(0),
+  hasLinens: z.boolean().default(false),
+  hasCleaning: z.boolean().default(false),
+  hasCancellationInsurance: z.boolean().default(false),
+  discount: z.number().min(0).default(0),
+  discountType: z.enum(['amount', 'percent']).nullable().optional(),
+}).refine(
+  (data) => new Date(data.endDate) > new Date(data.startDate),
+  {
+    message: 'La date de fin doit être après la date de début',
+    path: ['endDate'],
+  },
+)
+
+/**
+ * Availability check request validation
+ */
+export const checkAvailabilitySchema = z.object({
+  propertyId: z.string().uuid('ID de propriété invalide'),
+  startDate: z.string().datetime('Date de début invalide'),
+  endDate: z.string().datetime('Date de fin invalide'),
+  excludeBookingId: z.string().uuid().optional(),
+  clientId: z.string().uuid().optional(),
+}).refine(
+  (data) => new Date(data.endDate) > new Date(data.startDate),
+  {
+    message: 'La date de fin doit être après la date de début',
+    path: ['endDate'],
+  },
+)
+
 export type CreateBookingInput = z.infer<typeof createBookingSchema>
 export type UpdateBookingInput = z.infer<typeof updateBookingSchema>
 export type BookingQueryParams = z.infer<typeof bookingQuerySchema>
+export type CalculatePriceInput = z.infer<typeof calculatePriceSchema>
+export type CheckAvailabilityInput = z.infer<typeof checkAvailabilitySchema>
