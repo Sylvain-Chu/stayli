@@ -96,7 +96,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
         <DialogHeader>
           <DialogTitle>Modifier l&#39;utilisateur</DialogTitle>
           <DialogDescription>
-            Modifiez les informations de l'utilisateur ci-dessous.
+            Modifiez les informations de l&apos;utilisateur ci-dessous.
           </DialogDescription>
         </DialogHeader>
 
