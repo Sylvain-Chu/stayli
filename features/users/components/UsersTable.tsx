@@ -6,6 +6,7 @@ import { MoreVertical, Trash2, Edit2 } from 'lucide-react'
 import { useUsers } from '../hooks/useUsers'
 import { useUserMutations } from '../hooks/useUserMutations'
 import { useUsersContext } from '../context/UsersContext'
+import { EditUserDialog } from './EditUserDialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +36,13 @@ export function UsersTable({ searchQuery = '', page = 1, perPage = 10 }: UsersTa
   const { toast } = useToast()
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | null>(null)
+  const [editDialogOpen, setEditDialogOpen] = useState(false)
+  const [userToEdit, setUserToEdit] = useState<User | null>(null)
+
+  const handleEditClick = (user: User) => {
+    setUserToEdit(user)
+    setEditDialogOpen(true)
+  }
 
   const handleDeleteClick = (user: User) => {
     setUserToDelete(user)
@@ -127,7 +135,7 @@ export function UsersTable({ searchQuery = '', page = 1, perPage = 10 }: UsersTa
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem disabled={user.id === session?.user?.id}>
+                      <DropdownMenuItem onClick={() => handleEditClick(user)}>
                         <Edit2 className="h-4 w-4 mr-2" />
                         Modifier
                       </DropdownMenuItem>
@@ -149,6 +157,13 @@ export function UsersTable({ searchQuery = '', page = 1, perPage = 10 }: UsersTa
           </tbody>
         </table>
       </div>
+
+      <EditUserDialog
+        open={editDialogOpen}
+        onOpenChange={setEditDialogOpen}
+        user={userToEdit}
+        onSuccess={mutate}
+      />
 
       <ConfirmDialog
         open={deleteConfirmOpen}

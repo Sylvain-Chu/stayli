@@ -69,6 +69,6 @@ export async function deleteUser(id: string): Promise<void> {
 /**
  * Invites a user (generates an invitation token)
  */
-export async function inviteUser(data: InviteUserData): Promise<{ token: string; inviteUrl: string }> {
-  return apiPost<{ token: string; inviteUrl: string }, InviteUserData>('/api/users/invite', data)
+export async function inviteUser(data: InviteUserData): Promise<{ success: boolean; data: { token: string; inviteUrl: string } }> {
+  return apiPost<{ success: boolean; data: { token: string; inviteUrl: string } }, InviteUserData>('/api/users/invite', data)
 }
