@@ -105,6 +105,17 @@ model User {
   updatedAt    DateTime @updatedAt
 }
 
+model InvitationToken {
+  id        String    @id @default(uuid())
+  token     String    @unique
+  email     String?
+  role      Role      @default(USER)
+  usedAt    DateTime?
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  createdBy String
+}
+
 model Settings {
   id                                   String   @id @default(uuid())
   companyName                          String   @default("Vacation Rentals")
