@@ -82,7 +82,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
     } catch (error: any) {
       toast({
         title: 'Erreur',
-        description: error.message || 'Impossible de modifier l\'utilisateur.',
+        description: error.message || "Impossible de modifier l'utilisateur.",
         variant: 'destructive',
       })
     } finally {
@@ -103,13 +103,8 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nom</Label>
-            <Input
-              id="name"
-              placeholder="John Doe"
-              {...register('name')}
-              disabled={isSubmitting}
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
+            <Input id="name" placeholder="John Doe" {...register('name')} disabled={isSubmitting} />
+            {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -121,12 +116,15 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
               {...register('email')}
               disabled={isSubmitting}
             />
-            {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
+            {errors.email && <p className="text-destructive text-sm">{errors.email.message}</p>}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="role">Rôle</Label>
-            <Select value={role} onValueChange={(value: any) => register('role').onChange({ target: { value } })}>
+            <Select
+              value={role}
+              onValueChange={(value: any) => register('role').onChange({ target: { value } })}
+            >
               <SelectTrigger id="role" disabled={isSubmitting}>
                 <SelectValue />
               </SelectTrigger>
@@ -135,7 +133,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
                 <SelectItem value="ADMIN">Administrateur</SelectItem>
               </SelectContent>
             </Select>
-            {errors.role && <p className="text-sm text-destructive">{errors.role.message}</p>}
+            {errors.role && <p className="text-destructive text-sm">{errors.role.message}</p>}
           </div>
 
           <div className="space-y-2">
@@ -147,10 +145,12 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
               {...register('password')}
               disabled={isSubmitting}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               Laissez ce champ vide pour conserver le mot de passe actuel.
             </p>
-            {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
+            {errors.password && (
+              <p className="text-destructive text-sm">{errors.password.message}</p>
+            )}
           </div>
 
           <DialogFooter className="gap-2 pt-4">
@@ -163,7 +163,7 @@ export function EditUserDialog({ open, onOpenChange, user, onSuccess }: EditUser
               Annuler
             </Button>
             <Button type="submit" disabled={isSubmitting || isMutating}>
-              {(isSubmitting || isMutating) && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {(isSubmitting || isMutating) && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Enregistrer
             </Button>
           </DialogFooter>
