@@ -7,7 +7,7 @@ describe('clientSchema', () => {
       firstName: 'John',
       lastName: 'Doe',
       email: 'john@example.com',
-      phone: '123456789',
+      phone: '06 12 34 56 78',
     }
 
     const result = clientSchema.safeParse(validData)
@@ -56,5 +56,25 @@ describe('clientSchema', () => {
 
     const result = clientSchema.safeParse(invalidData)
     expect(result.success).toBe(false)
+  })
+
+  it('should reject invalid zip code', () => {
+    const result = clientSchema.safeParse({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      zipCode: '1234',
+    })
+    expect(result.success).toBe(false)
+  })
+
+  it('should accept valid zip code', () => {
+    const result = clientSchema.safeParse({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john@example.com',
+      zipCode: '75001',
+    })
+    expect(result.success).toBe(true)
   })
 })

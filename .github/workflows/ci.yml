@@ -40,9 +40,41 @@ jobs:
       - name: Type check
         run: npx tsc --noEmit
 
+  test:
+    runs-on: ubuntu-latest
+    name: Unit Tests
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/stayli_test
+      NEXTAUTH_SECRET: test-secret-for-ci
+      NEXTAUTH_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Enable Corepack (Yarn)
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Generate Prisma Client
+        run: yarn prisma:generate
+
+      - name: Run tests
+        run: yarn test --run
+
   build:
     runs-on: ubuntu-latest
     name: Build
+    needs: [lint-and-typecheck, test]
 
     services:
       postgres:
@@ -84,21 +116,6 @@ jobs:
 
       - name: Generate Prisma Client
         run: yarn prisma:generate
-
-      - name: Wait for Postgres to be ready
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y postgresql-client
-          ATTEMPTS=0
-          until pg_isready -h localhost -p 5432 -U postgres; do
-            ATTEMPTS=$((ATTEMPTS+1))
-            if [ "$ATTEMPTS" -ge 60 ]; then
-              echo "Postgres did not become ready after 120s"
-              exit 1
-            fi
-            echo "Waiting for postgres..."
-            sleep 2
-          done
 
       - name: Run database migrations
         run: npx prisma migrate deploy || npx prisma db push

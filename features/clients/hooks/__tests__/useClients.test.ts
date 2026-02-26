@@ -2,14 +2,19 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook, waitFor } from '@testing-library/react'
 import { SWRConfig } from 'swr'
 import { useClients } from '../useClients'
+import { swrFetcher } from '@/lib/swr-fetcher'
 import React from 'react'
 
 // Mock fetch
 global.fetch = vi.fn()
 
-// Wrapper pour isoler le cache SWR de chaque test
+// Wrapper: fresh cache + global fetcher (SWR v2 has no built-in default fetcher)
 const wrapper = ({ children }: { children: React.ReactNode }) => {
-  return React.createElement(SWRConfig, { value: { provider: () => new Map() } }, children)
+  return React.createElement(
+    SWRConfig,
+    { value: { provider: () => new Map(), fetcher: swrFetcher } },
+    children,
+  )
 }
 
 describe('useClients', () => {
@@ -68,6 +73,25 @@ describe('useClients', () => {
     })
 
     expect(global.fetch).toHaveBeenCalledWith('/api/clients?page=1&perPage=10&q=John')
+  })
+
+  it('should include sortBy and sortDir in query when provided', async () => {
+    ;(global.fetch as any).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ clients: [], total: 0, totalPages: 0 }),
+    })
+
+    const { result } = renderHook(() => useClients(undefined, 1, 10, 'lastName', 'asc'), {
+      wrapper,
+    })
+
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      '/api/clients?page=1&perPage=10&sortBy=lastName&sortDir=asc',
+    )
   })
 
   it('should handle error', async () => {
