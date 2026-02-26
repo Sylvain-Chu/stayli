@@ -21,7 +21,7 @@ import { useClientMutations } from '@/features/clients/hooks/useClientMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useMemo, useState, useEffect } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 import { clientSchema } from '@/lib/validations/client'
 import { ZodError } from 'zod'
@@ -55,11 +55,10 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
   })
   const [page, setPage] = useState(1)
   const perPage = 10
-  const [prevSearch, setPrevSearch] = useState(searchQuery)
-  if (prevSearch !== searchQuery) {
-    setPrevSearch(searchQuery)
+
+  useEffect(() => {
     setPage(1)
-  }
+  }, [searchQuery])
   const [viewClient, setViewClient] = useState<ClientRow | null>(null)
   const [editClient, setEditClient] = useState<ClientRow | null>(null)
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)

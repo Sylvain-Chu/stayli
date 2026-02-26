@@ -13,6 +13,7 @@ import {
   User,
   BookOpen,
   X,
+  UserCog,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
@@ -24,6 +25,7 @@ const mainNavItems = [
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/properties', label: 'Propriétés', icon: Home },
   { href: '/invoices', label: 'Factures', icon: FileText },
+  { href: '/users', label: 'Utilisateurs', icon: UserCog, adminOnly: true },
 ]
 
 const bottomNavItems = [
@@ -82,7 +84,12 @@ export function Sidebar({ isMobile, isOpen, onClose }: SidebarProps) {
           <p className="text-sidebar-muted mb-3 px-3 text-xs font-medium tracking-wider uppercase">
             Menu
           </p>
-          {mainNavItems.map((item) => {
+          {mainNavItems.map((item: any) => {
+            // Skip admin-only items if user is not admin
+            if (item.adminOnly && session?.user?.role !== 'ADMIN') {
+              return null
+            }
+
             const isActive = item.exact
               ? pathname === item.href ||
                 (pathname.startsWith(item.href + '/') &&

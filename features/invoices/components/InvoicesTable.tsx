@@ -17,7 +17,7 @@ import { useInvoices } from '@/features/invoices/hooks/useInvoices'
 import { useInvoiceMutations } from '@/features/invoices/hooks/useInvoiceMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useInvoicesContext } from '@/features/invoices/context/InvoicesContext'
 import { Invoice } from '../types'
 
@@ -65,11 +65,10 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
   const perPage = 10
-  const [prevSearch, setPrevSearch] = useState(searchQuery)
-  if (prevSearch !== searchQuery) {
-    setPrevSearch(searchQuery)
+
+  useEffect(() => {
     setPage(1)
-  }
+  }, [searchQuery])
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
