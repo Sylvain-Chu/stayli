@@ -170,7 +170,7 @@ export function BookingsTable({
         if (!response.ok) throw new Error('Erreur')
 
         onDataChange()
-        const label = statusConfig[newStatus]?.label ?? newStatus
+        const label = getBookingStatusLabel(newStatus)
         toast({
           title: 'Statut mis à jour',
           description: `Réservation passée en "${label}".`,
