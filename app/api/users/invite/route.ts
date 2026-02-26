@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    const inviteUrl = `${new URL(request.url).origin}/auth/invite/${token}`
+    const inviteUrl = `${process.env.APP_URL}/auth/invite/${token}`
 
     return successResponse({ token, inviteUrl })
   } catch (error) {
