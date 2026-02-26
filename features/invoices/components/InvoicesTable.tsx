@@ -1,23 +1,16 @@
 'use client'
 
-import * as React from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { MoreHorizontal, Eye, Download, Trash2, Check } from 'lucide-react'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+import { Eye, Trash2, Check } from 'lucide-react'
 import { ColumnHeader } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
 import { useInvoices } from '@/features/invoices/hooks/useInvoices'
 import { useInvoiceMutations } from '@/features/invoices/hooks/useInvoiceMutations'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { useToast } from '@/hooks/use-toast'
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition } from 'react'
 import { useInvoicesContext } from '@/features/invoices/context/InvoicesContext'
 import { Invoice } from '../types'
 
@@ -64,18 +57,20 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
+  const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery)
   const perPage = 10
 
-  useEffect(() => {
+  if (prevSearchQuery !== searchQuery) {
+    setPrevSearchQuery(searchQuery)
     setPage(1)
-  }, [searchQuery])
+  }
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
   const [invoiceToDelete, setInvoiceToDelete] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
   const { toast } = useToast()
   const { updateInvoice, deleteInvoice } = useInvoiceMutations()
 
-  const { invoices, isLoading, isError, total, mutate } = useInvoices(
+  const { invoices, isLoading, isError, total } = useInvoices(
     searchQuery,
     page,
     perPage,
