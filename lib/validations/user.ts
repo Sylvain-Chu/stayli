@@ -21,10 +21,10 @@ export const updateUserSchema = z.object({
     .optional(),
   email: z.string().email('Adresse e-mail invalide').optional(),
   role: z.enum(['ADMIN', 'USER']).optional(),
-  password: z
-    .string()
-    .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
-    .optional(),
+  password: z.union([
+    z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+    z.literal(''),
+  ]).optional(),
 })
 
 export const inviteUserSchema = z.object({
