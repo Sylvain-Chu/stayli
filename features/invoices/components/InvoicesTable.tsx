@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
 import { useInvoicesContext } from '@/features/invoices/context/InvoicesContext'
 import { Invoice } from '../types'
+import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 
@@ -58,7 +59,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery)
-  const perPage = 10
+  const perPage = usePerPage(464)
 
   if (prevSearchQuery !== searchQuery) {
     setPrevSearchQuery(searchQuery)
@@ -184,17 +185,17 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                   onSort={() => handleSort('client')}
                   className="min-w-40"
                 />
-                <th className="h-11 px-4 text-left">
+                <th className="hidden h-11 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Réservation
                   </span>
                 </th>
-                <th className="h-11 px-4 text-left">
+                <th className="hidden h-11 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Émission
                   </span>
                 </th>
-                <th className="h-11 px-4 text-left">
+                <th className="hidden h-11 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Échéance
                   </span>
@@ -228,13 +229,13 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                       idx === (invoices?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <Checkbox
                         checked={selectedIds.includes(invoice.id)}
                         onCheckedChange={() => toggleSelection(invoice.id)}
                       />
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <Link
                         href={`/invoices/${invoice.id}`}
                         className="text-primary text-sm font-medium hover:underline"
@@ -242,14 +243,14 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {invoice.invoiceNumber}
                       </Link>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <span className="text-foreground text-sm">
                         {invoice.booking?.client
                           ? `${invoice.booking.client.firstName} ${invoice.booking.client.lastName}`
                           : 'N/A'}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <Link
                         href={`/bookings/${invoice.bookingId}`}
                         className="text-muted-foreground hover:text-primary text-sm hover:underline"
@@ -257,12 +258,12 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {invoice.booking?.property?.name || invoice.bookingId.slice(0, 8)}
                       </Link>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <span className="text-foreground text-sm">
                         {formatDate(invoice.issueDate)}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <span
                         className={cn(
                           'text-sm',
@@ -272,12 +273,12 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {formatDate(invoice.dueDate)}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <span className="text-foreground text-sm font-semibold">
                         {invoice.amount.toLocaleString('fr-FR')} €
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <span
                         className={cn(
                           'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
@@ -287,7 +288,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {status.label}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"

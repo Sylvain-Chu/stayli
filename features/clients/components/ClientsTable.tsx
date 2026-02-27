@@ -25,6 +25,7 @@ import { FormEvent, useMemo, useState, useEffect } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 import { clientSchema } from '@/lib/validations/client'
 import { ZodError } from 'zod'
+import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 type FieldErrors = Partial<Record<string, string>>
@@ -54,7 +55,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     email: '',
   })
   const [page, setPage] = useState(1)
-  const perPage = 10
+  const perPage = usePerPage(464)
 
   useEffect(() => {
     setPage(1)
@@ -280,14 +281,14 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                 filterable
                 filterValue={filters.email}
                 onFilterChange={(value) => setFilters((prev) => ({ ...prev, email: value }))}
-                className="min-w-[220px]"
+                className="hidden min-w-[220px] sm:table-cell"
               />
-              <th className="h-11 px-4 text-left">
+              <th className="hidden h-11 px-4 text-left sm:table-cell">
                 <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                   Téléphone
                 </span>
               </th>
-              <th className="h-11 px-4 text-left">
+              <th className="hidden h-11 px-4 text-left sm:table-cell">
                 <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                   Créé le
                 </span>
@@ -307,13 +308,13 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     idx === (clients?.length || 0) - 1 && 'border-b-0',
                   )}
                 >
-                  <td className="h-14 px-4">
+                  <td className="h-11 px-4">
                     <Checkbox
                       checked={selectedIds.includes(client.id)}
                       onCheckedChange={() => toggleSelection(client.id)}
                     />
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="h-11 px-4">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
@@ -325,7 +326,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       </span>
                     </div>
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="hidden h-11 px-4 sm:table-cell">
                     <a
                       href={`mailto:${client.email}`}
                       className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm"
@@ -334,7 +335,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       {client.email}
                     </a>
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="hidden h-11 px-4 sm:table-cell">
                     {client.phone ? (
                       <a
                         href={`tel:${client.phone}`}
@@ -347,12 +348,12 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="hidden h-11 px-4 sm:table-cell">
                     <span className="text-muted-foreground text-sm">
                       {new Date(client.createdAt).toLocaleDateString('fr-FR')}
                     </span>
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="h-11 px-4">
                     <div className="flex flex-row items-center justify-center gap-1">
                       <Button
                         variant="ghost"

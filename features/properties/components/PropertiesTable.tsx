@@ -26,6 +26,7 @@ import { usePropertiesContext } from '@/features/properties/context/PropertiesCo
 import { Property } from '../types'
 import { propertySchema } from '@/lib/validations/property'
 import { ZodError } from 'zod'
+import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 
@@ -38,7 +39,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
-  const perPage = 10
+  const perPage = usePerPage(552)
   const [prevSearch, setPrevSearch] = useState(searchQuery)
   if (prevSearch !== searchQuery) {
     setPrevSearch(searchQuery)

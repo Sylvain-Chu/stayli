@@ -16,8 +16,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
+import { usePerPage } from '@/hooks/use-per-page'
 import { Booking, BookingStatus } from '../types'
-import { BOOKING_STATUS_COLORS, getBookingStatusColor, getBookingStatusLabel, getBookingStatusDot } from '@/lib/constants/status-colors'
+import {
+  BOOKING_STATUS_COLORS,
+  getBookingStatusColor,
+  getBookingStatusLabel,
+  getBookingStatusDot,
+} from '@/lib/constants/status-colors'
 
 type SortDirection = 'asc' | 'desc' | null
 
@@ -67,11 +73,12 @@ export function BookingsTable({
   sortDirection: externalSortDirection,
   onSortChange,
   page = 1,
-  perPage = 10,
+  perPage: _perPage = 10,
   total,
   onPageChange,
 }: BookingsTableProps) {
   const { selectedIds, toggleSelection, selectAll, clearSelection } = useBookingsContext()
+  const perPage = usePerPage(508)
   const [localSortColumn, setLocalSortColumn] = useState<string | null>(null)
   const [localSortDirection, setLocalSortDirection] = useState<SortDirection>(null)
 
@@ -237,7 +244,7 @@ export function BookingsTable({
                   sortable
                   sortDirection={sortColumn === 'property' ? sortDirection : null}
                   onSort={() => handleSort('property')}
-                  className="min-w-[180px]"
+                  className="hidden min-w-[180px] sm:table-cell"
                 />
                 <ColumnHeader
                   label="Arrivée"
@@ -250,7 +257,7 @@ export function BookingsTable({
                     Départ
                   </span>
                 </th>
-                <th className="h-11 px-4 text-left">
+                <th className="hidden h-11 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Nuits
                   </span>
@@ -260,7 +267,7 @@ export function BookingsTable({
                   sortable
                   sortDirection={sortColumn === 'price' ? sortDirection : null}
                   onSort={() => handleSort('price')}
-                  className="min-w-[100px]"
+                  className="hidden min-w-[100px] sm:table-cell"
                 />
                 <th className="h-11 px-4 text-left">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
@@ -285,13 +292,13 @@ export function BookingsTable({
                       idx === (bookings?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <Checkbox
                         checked={selectedIds.includes(booking.id)}
                         onCheckedChange={() => toggleSelection(booking.id)}
                       />
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <Link
                         href={`/bookings/${booking.id}`}
                         className="hover:text-primary flex items-center gap-3"
@@ -306,28 +313,28 @@ export function BookingsTable({
                         </div>
                       </Link>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <span className="text-foreground text-sm">
                         {booking.property?.name || 'N/A'}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <span className="text-foreground text-sm">
                         {formatDate(booking.startDate)}
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <span className="text-foreground text-sm">{formatDate(booking.endDate)}</span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <span className="text-muted-foreground text-sm">{nights} nuits</span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="hidden h-11 px-4 sm:table-cell">
                       <span className="text-foreground text-sm font-semibold">
                         {booking.totalPrice.toLocaleString('fr-FR')} €
                       </span>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
@@ -340,22 +347,27 @@ export function BookingsTable({
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
-                          {(Object.entries(BOOKING_STATUS_COLORS) as [BookingStatus, (typeof BOOKING_STATUS_COLORS)[BookingStatus]][]).map(
-                            ([key, cfg]) => (
-                              <DropdownMenuItem
-                                key={key}
-                                disabled={key === booking.status}
-                                onClick={() => handleStatusChange(booking.id, key)}
-                              >
-                                <span className={`mr-2 h-2 w-2 rounded-full ${getBookingStatusDot(key)}`} />
-                                {cfg.label}
-                              </DropdownMenuItem>
-                            ),
-                          )}
+                          {(
+                            Object.entries(BOOKING_STATUS_COLORS) as [
+                              BookingStatus,
+                              (typeof BOOKING_STATUS_COLORS)[BookingStatus],
+                            ][]
+                          ).map(([key, cfg]) => (
+                            <DropdownMenuItem
+                              key={key}
+                              disabled={key === booking.status}
+                              onClick={() => handleStatusChange(booking.id, key)}
+                            >
+                              <span
+                                className={`mr-2 h-2 w-2 rounded-full ${getBookingStatusDot(key)}`}
+                              />
+                              {cfg.label}
+                            </DropdownMenuItem>
+                          ))}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="h-14 px-4">
+                    <td className="h-11 px-4">
                       <div className="flex flex-row items-center justify-center gap-1">
                         <Button
                           variant="ghost"

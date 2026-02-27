@@ -38,14 +38,14 @@ export function StatsCard({
 }: StatsCardProps) {
   return (
     <Card className={cn('border-border bg-card', className)}>
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
             <p className="text-muted-foreground truncate text-sm font-medium">{title}</p>
-            <div className="mt-2 flex items-baseline gap-2">
+            <div className="mt-1 flex items-baseline gap-2">
               <p
                 className={cn(
-                  'text-2xl font-bold',
+                  'text-xl font-bold',
                   isWarning ? 'text-destructive' : 'text-foreground',
                 )}
               >
@@ -56,7 +56,7 @@ export function StatsCard({
             {trend && (
               <p
                 className={cn(
-                  'mt-2 text-xs font-medium',
+                  'mt-1 text-xs font-medium',
                   trend.isPositive ? 'text-primary' : 'text-muted-foreground',
                 )}
               >
@@ -66,11 +66,11 @@ export function StatsCard({
           </div>
           <div
             className={cn(
-              'flex h-12 w-12 shrink-0 items-center justify-center rounded-lg',
+              'flex h-10 w-10 shrink-0 items-center justify-center rounded-lg',
               isWarning ? 'bg-destructive/10' : iconBgColor,
             )}
           >
-            <Icon className={cn('h-6 w-6', isWarning ? 'text-destructive' : iconColor)} />
+            <Icon className={cn('h-5 w-5', isWarning ? 'text-destructive' : iconColor)} />
           </div>
         </div>
       </CardContent>
