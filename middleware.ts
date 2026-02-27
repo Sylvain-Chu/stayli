@@ -13,15 +13,19 @@ function isPublicPath(pathname: string): boolean {
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
+  const sessionToken =
+    request.cookies.get('authjs.session-token')?.value ||
+    request.cookies.get('__Secure-authjs.session-token')?.value
+
+  // Authenticated users cannot access the setup page
+  if (pathname === '/auth/setup' && sessionToken) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
   // Allow public paths
   if (isPublicPath(pathname)) {
     return NextResponse.next()
   }
-
-  // Check for session token in cookies (NextAuth stores session in cookies)
-  const sessionToken =
-    request.cookies.get('authjs.session-token')?.value ||
-    request.cookies.get('__Secure-authjs.session-token')?.value
 
   // If no session token and trying to access protected route
   if (!sessionToken) {
