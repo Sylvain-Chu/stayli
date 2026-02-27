@@ -135,7 +135,7 @@ model Settings {
   linensOptionPrice                    Float    @default(20)
   cleaningOptionPrice                  Float    @default(35)
   touristTaxRatePerPersonPerDay        Float    @default(1)
-  invoicePrefix                        String   @default("INV-")
+  invoicePrefix                        String   @default("FAC-")
   invoiceDueDays                       Int      @default(30)
   invoicePaymentInstructions           String?
   cancellationInsurancePercentage      Float    @default(6)

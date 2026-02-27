@@ -289,22 +289,24 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                     </td>
                     <td className="h-14 px-4">
                       <div className="flex items-center gap-1">
-                        {invoice.status !== 'paid' && invoice.status !== 'cancelled' && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Marquer comme payée"
-                            className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                            onClick={() => handleChangeStatus(invoice.id, 'paid')}
-                          >
-                            <Check className="h-4 w-4" />
-                          </Button>
-                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Marquer comme payée"
+                          className={cn(
+                            'h-8 w-8 focus-visible:ring-2',
+                            (invoice.status === 'paid' || invoice.status === 'cancelled') &&
+                              'invisible pointer-events-none',
+                          )}
+                          onClick={() => handleChangeStatus(invoice.id, 'paid')}
+                        >
+                          <Check className="h-4 w-4" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           aria-label="Voir la facture"
-                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                          className="h-8 w-8 focus-visible:ring-2"
                           asChild
                         >
                           <Link href={`/invoices/${invoice.id}`}>
@@ -315,7 +317,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                           variant="ghost"
                           size="icon"
                           aria-label="Supprimer la facture"
-                          className="text-destructive h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                          className="text-destructive h-8 w-8 focus-visible:ring-2"
                           onClick={() => handleDeleteClick(invoice.id)}
                         >
                           <Trash2 className="h-4 w-4" />

@@ -33,7 +33,8 @@ export async function GET(request: NextRequest) {
       issueDate: { issueDate: sortDir },
       status: { status: sortDir },
     }
-    const orderBy = (sortBy && allowedSortFields[sortBy]) || { issueDate: 'desc' }
+    const primarySort = (sortBy && allowedSortFields[sortBy]) || { issueDate: 'desc' }
+    const orderBy = [primarySort, { id: 'desc' }]
 
     const where = search
       ? {

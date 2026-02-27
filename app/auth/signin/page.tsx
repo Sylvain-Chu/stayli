@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -20,6 +20,14 @@ function SignInForm() {
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [needsSetup, setNeedsSetup] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/auth/setup')
+      .then((r) => r.json())
+      .then((d) => setNeedsSetup(d.needsSetup === true))
+      .catch(() => {})
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -104,12 +112,14 @@ function SignInForm() {
           </Button>
         </form>
 
-        <div className="text-muted-foreground mt-6 text-center text-sm">
-          First time here?{' '}
-          <Link href="/auth/setup" className="text-primary hover:underline">
-            Set up your account
-          </Link>
-        </div>
+        {needsSetup && (
+          <div className="text-muted-foreground mt-6 text-center text-sm">
+            First time here?{' '}
+            <Link href="/auth/setup" className="text-primary hover:underline">
+              Set up your account
+            </Link>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

@@ -20,6 +20,14 @@ const setupSchema = z.object({
     companyCity: z.string().optional(),
     companyZipCode: z.string().optional(),
     companySiret: z.string().optional(),
+    currencyCode: z.string().optional(),
+    currencySymbol: z.string().optional(),
+    lowSeasonRate: z.number().positive().optional(),
+    highSeasonRate: z.number().positive().optional(),
+    checkInTime: z.string().optional(),
+    checkOutTime: z.string().optional(),
+    cancellationInsurancePercentage: z.number().positive().optional(),
+    cancellationInsuranceProviderName: z.string().optional(),
   }),
 })
 
@@ -78,31 +86,36 @@ export async function POST(request: NextRequest) {
       const existingSettings = await tx.settings.findFirst()
 
       let settings
+      const s = validatedData.settings
+      const settingsData = {
+        companyName: s.companyName,
+        companyEmail: s.companyEmail || null,
+        companyPhoneNumber: s.companyPhoneNumber || null,
+        companyAddress: s.companyAddress || null,
+        companyCity: s.companyCity || null,
+        companyZipCode: s.companyZipCode || null,
+        companySiret: s.companySiret || null,
+        ...(s.currencyCode && { currencyCode: s.currencyCode }),
+        ...(s.currencySymbol && { currencySymbol: s.currencySymbol }),
+        ...(s.lowSeasonRate !== undefined && { lowSeasonRate: s.lowSeasonRate }),
+        ...(s.highSeasonRate !== undefined && { highSeasonRate: s.highSeasonRate }),
+        ...(s.checkInTime && { checkInTime: s.checkInTime }),
+        ...(s.checkOutTime && { checkOutTime: s.checkOutTime }),
+        ...(s.cancellationInsurancePercentage !== undefined && {
+          cancellationInsurancePercentage: s.cancellationInsurancePercentage,
+        }),
+        ...(s.cancellationInsuranceProviderName && {
+          cancellationInsuranceProviderName: s.cancellationInsuranceProviderName,
+        }),
+      }
+
       if (existingSettings) {
         settings = await tx.settings.update({
           where: { id: existingSettings.id },
-          data: {
-            companyName: validatedData.settings.companyName,
-            companyEmail: validatedData.settings.companyEmail || null,
-            companyPhoneNumber: validatedData.settings.companyPhoneNumber || null,
-            companyAddress: validatedData.settings.companyAddress || null,
-            companyCity: validatedData.settings.companyCity || null,
-            companyZipCode: validatedData.settings.companyZipCode || null,
-            companySiret: validatedData.settings.companySiret || null,
-          },
+          data: settingsData,
         })
       } else {
-        settings = await tx.settings.create({
-          data: {
-            companyName: validatedData.settings.companyName,
-            companyEmail: validatedData.settings.companyEmail || null,
-            companyPhoneNumber: validatedData.settings.companyPhoneNumber || null,
-            companyAddress: validatedData.settings.companyAddress || null,
-            companyCity: validatedData.settings.companyCity || null,
-            companyZipCode: validatedData.settings.companyZipCode || null,
-            companySiret: validatedData.settings.companySiret || null,
-          },
-        })
+        settings = await tx.settings.create({ data: settingsData })
       }
 
       return { user, settings }
