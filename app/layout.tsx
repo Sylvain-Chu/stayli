@@ -7,8 +7,10 @@ import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Stayli - Gestion Locative',
-  description: 'Application SaaS de gestion locative immobilière',
+  metadataBase: new URL(process.env.APP_URL ?? 'http://localhost:3000'),
+  title: 'Stayli - Logiciel de Gestion de Locations Saisonnières',
+  description:
+    'Gérez vos propriétés, réservations, clients et factures en un seul endroit. Stayli simplifie la gestion locative saisonnière pour les propriétaires et agences.',
 }
 
 export default function RootLayout({
