@@ -7,8 +7,7 @@
  */
 
 import { apiGet, apiPost, apiPatch, apiDelete, buildUrl } from '@/lib/api-client'
-import type { Booking, BookingWithRelations, BookingStats, BookingStatus } from '@/types/entities'
-import type { PaginatedResponse } from '@/types/api'
+import type { BookingWithRelations, BookingStats, BookingStatus } from '@/types/entities'
 
 // ============ Types ============
 

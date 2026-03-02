@@ -19,6 +19,8 @@ RUN yarn prisma:generate
 
 # Build Next.js (standalone output)
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG APP_URL
+ENV APP_URL=${APP_URL}
 RUN yarn build
 
 # ── Stage 3: Production image ────────────────────────────────────────────────
