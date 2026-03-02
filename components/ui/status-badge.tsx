@@ -21,7 +21,6 @@ const bookingStatusToVariant: Record<BookingStatus, BadgeProps['variant']> = {
   confirmed: 'success',
   pending: 'warning',
   cancelled: 'danger',
-  blocked: 'muted',
 }
 
 const invoiceStatusToVariant: Record<InvoiceStatus, BadgeProps['variant']> = {

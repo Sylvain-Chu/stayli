@@ -19,7 +19,6 @@ const STATUS_OPTIONS: { value: BookingStatus; label: string; color: string }[] =
   { value: 'pending', label: BOOKING_STATUS_COLORS.pending.label, color: BOOKING_STATUS_COLORS.pending.color },
   { value: 'confirmed', label: BOOKING_STATUS_COLORS.confirmed.label, color: BOOKING_STATUS_COLORS.confirmed.color },
   { value: 'cancelled', label: BOOKING_STATUS_COLORS.cancelled.label, color: BOOKING_STATUS_COLORS.cancelled.color },
-  { value: 'blocked', label: BOOKING_STATUS_COLORS.blocked.label, color: BOOKING_STATUS_COLORS.blocked.color },
 ]
 
 interface BookingActionsProps {

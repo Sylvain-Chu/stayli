@@ -11,7 +11,7 @@ export interface CalendarBooking {
   endDay: number
   startDate: string
   endDate: string
-  status: 'confirmed' | 'pending' | 'cancelled' | 'blocked'
+  status: 'confirmed' | 'pending' | 'cancelled'
   totalPrice: number
   basePrice: number
   cleaningFee: number
@@ -99,7 +99,7 @@ export async function createCalendarBooking(bookingData: {
   clientId: string
   startDate: string
   endDate: string
-  status: 'confirmed' | 'pending' | 'cancelled' | 'blocked'
+  status: 'confirmed' | 'pending' | 'cancelled'
   totalPrice: number
   basePrice: number
   cleaningFee?: number

@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
     const bookings = await prisma.booking.findMany({
       where: {
         AND: [{ startDate: { lte: nextDay } }, { endDate: { gte: selectedDate } }],
-        status: { in: ['confirmed', 'pending', 'blocked'] },
+        status: { in: ['confirmed', 'pending'] },
       },
       include: {
         client: {

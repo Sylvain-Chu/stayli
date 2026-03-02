@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
             AND: [{ startDate: { lte: startOfMonth } }, { endDate: { gte: endOfMonth } }],
           },
         ],
-        status: { in: ['confirmed', 'pending', 'blocked'] },
+        status: { in: ['confirmed', 'pending'] },
       },
       select: {
         startDate: true,

@@ -551,7 +551,6 @@ export function BookingForm() {
               <SelectContent>
                 <SelectItem value="confirmed">Confirmé</SelectItem>
                 <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="blocked">Bloqué</SelectItem>
               </SelectContent>
             </Select>
           </div>

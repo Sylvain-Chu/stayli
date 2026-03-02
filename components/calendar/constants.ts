@@ -19,7 +19,6 @@ export const statusColors = {
   confirmed: 'bg-[#2d5a47] hover:bg-[#234a3a]',
   pending: 'bg-[#d4a853] hover:bg-[#c49943]',
   cancelled: 'bg-[#c53030] hover:bg-[#a52828]',
-  blocked: 'bg-[#9ca3af] hover:bg-[#8b929b]',
 } as const
 
 export const DEFAULT_NEW_BOOKING: NewBookingState = {

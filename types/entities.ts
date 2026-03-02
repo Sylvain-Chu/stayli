@@ -6,7 +6,7 @@
 // ============ Enums ============
 
 export type Role = 'ADMIN' | 'USER'
-export type BookingStatus = 'confirmed' | 'pending' | 'cancelled' | 'blocked'
+export type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
 export type DiscountType = 'amount' | 'percent'
 
@@ -22,7 +22,6 @@ export const BOOKING_STATUS_CONFIG: Record<BookingStatus, StatusConfig> = {
   confirmed: { label: 'Confirmed', color: 'text-green-700', bgColor: 'bg-green-100' },
   pending: { label: 'Pending', color: 'text-orange-700', bgColor: 'bg-orange-100' },
   cancelled: { label: 'Cancelled', color: 'text-red-700', bgColor: 'bg-red-100' },
-  blocked: { label: 'Blocked', color: 'text-gray-700', bgColor: 'bg-gray-100' },
 } as const
 
 export const INVOICE_STATUS_CONFIG: Record<InvoiceStatus, StatusConfig> = {

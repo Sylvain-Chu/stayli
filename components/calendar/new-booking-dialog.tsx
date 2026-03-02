@@ -271,7 +271,6 @@ export function NewBookingDialog({
                     <SelectContent>
                       <SelectItem value="pending">En attente</SelectItem>
                       <SelectItem value="confirmed">Confirmé</SelectItem>
-                      <SelectItem value="blocked">Bloqué</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

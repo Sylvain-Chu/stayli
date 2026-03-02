@@ -6,7 +6,7 @@
 // ============ Enums ============
 
 export type Role = 'ADMIN' | 'USER'
-export type BookingStatus = 'confirmed' | 'pending' | 'cancelled' | 'blocked'
+export type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
 export type DiscountType = 'amount' | 'percent'
 

@@ -3,7 +3,7 @@ import { z } from 'zod'
 /**
  * Booking status enum matching Prisma schema
  */
-export const BookingStatusEnum = z.enum(['confirmed', 'pending', 'cancelled', 'blocked'])
+export const BookingStatusEnum = z.enum(['confirmed', 'pending', 'cancelled'])
 
 /**
  * Base schema without refinement for partial usage
@@ -103,8 +103,8 @@ export const calculatePriceSchema = z.object({
  */
 export const checkAvailabilitySchema = z.object({
   propertyId: z.string().uuid('ID de propriété invalide'),
-  startDate: z.string().datetime('Date de début invalide'),
-  endDate: z.string().datetime('Date de fin invalide'),
+  startDate: z.string().datetime({ message: 'Date de début invalide' }).or(z.string().min(1, 'La date de début est requise')),
+  endDate: z.string().datetime({ message: 'Date de fin invalide' }).or(z.string().min(1, 'La date de fin est requise')),
   excludeBookingId: z.string().uuid().optional(),
   clientId: z.string().uuid().optional(),
 }).refine(

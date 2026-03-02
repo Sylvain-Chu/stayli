@@ -108,7 +108,6 @@ export function BookingsToolbar({
             <SelectItem value="confirmed">Confirmée</SelectItem>
             <SelectItem value="pending">En attente</SelectItem>
             <SelectItem value="cancelled">Annulée</SelectItem>
-            <SelectItem value="blocked">Bloquée</SelectItem>
           </SelectContent>
         </Select>
 

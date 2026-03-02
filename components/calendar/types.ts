@@ -1,4 +1,4 @@
-export type BookingStatus = 'confirmed' | 'pending' | 'cancelled' | 'blocked'
+export type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
 
 export interface DragState {
   propertyId: string

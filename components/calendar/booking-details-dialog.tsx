@@ -106,11 +106,6 @@ export function BookingDetailsDialog({
                       En attente
                     </span>
                   )}
-                  {booking.status === 'blocked' && (
-                    <span className="inline-block rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-800">
-                      Bloqué
-                    </span>
-                  )}
                 </div>
               </div>
             </div>
