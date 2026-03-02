@@ -52,8 +52,8 @@ export function BookingSummary() {
         body: JSON.stringify({
           propertyId: formData.propertyId,
           clientId: formData.clientId,
-          startDate: formData.startDate,
-          endDate: formData.endDate,
+          startDate: `${formData.startDate}T00:00:00.000Z`,
+          endDate: `${formData.endDate}T00:00:00.000Z`,
           adults: formData.adults,
           children: formData.children,
           hasLinens: formData.hasLinens,
@@ -66,7 +66,8 @@ export function BookingSummary() {
           discount: priceBreakdown.discount,
           taxes: priceBreakdown.touristTax,
           totalPrice: priceBreakdown.totalPrice,
-          status: 'confirmed',
+          status: formData.status,
+          specialRequests: formData.specialRequests || undefined,
         }),
       })
 
@@ -107,17 +108,19 @@ export function BookingSummary() {
     }
 
     setLoading(true)
+    const customBasePrice = formData.customBasePrice ? Number(formData.customBasePrice) : undefined
     fetch('/api/bookings/calculate-price', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        startDate: formData.startDate,
-        endDate: formData.endDate,
+        startDate: `${formData.startDate}T00:00:00.000Z`,
+        endDate: `${formData.endDate}T00:00:00.000Z`,
         adults: formData.adults,
         children: formData.children,
         hasLinens: formData.hasLinens,
         hasCleaning: formData.hasCleaning,
         hasCancellationInsurance: formData.hasInsurance,
+        ...(customBasePrice !== undefined && { customBasePrice }),
       }),
     })
       .then((res) => res.json())
@@ -149,6 +152,7 @@ export function BookingSummary() {
     formData.hasLinens,
     formData.hasCleaning,
     formData.hasInsurance,
+    formData.customBasePrice,
   ])
 
   if (!priceBreakdown) {

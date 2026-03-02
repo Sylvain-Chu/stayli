@@ -12,6 +12,9 @@ interface BookingFormData {
   hasLinens: boolean
   hasCleaning: boolean
   hasInsurance: boolean
+  customBasePrice: string
+  status: string
+  specialRequests: string
 }
 
 interface BookingFormContextType {
@@ -21,17 +24,29 @@ interface BookingFormContextType {
 
 const BookingFormContext = createContext<BookingFormContextType | undefined>(undefined)
 
-export function BookingFormProvider({ children }: { children: ReactNode }) {
+interface BookingFormProviderProps {
+  children: ReactNode
+  initialValues?: {
+    propertyId?: string
+    startDate?: string
+    endDate?: string
+  }
+}
+
+export function BookingFormProvider({ children, initialValues }: BookingFormProviderProps) {
   const [formData, setFormData] = useState<BookingFormData>({
-    propertyId: '',
+    propertyId: initialValues?.propertyId ?? '',
     clientId: '',
-    startDate: '',
-    endDate: '',
+    startDate: initialValues?.startDate ?? '',
+    endDate: initialValues?.endDate ?? '',
     adults: 2,
     children: 0,
     hasLinens: false,
     hasCleaning: false,
     hasInsurance: false,
+    customBasePrice: '',
+    status: 'confirmed',
+    specialRequests: '',
   })
 
   const updateFormData = (data: Partial<BookingFormData>) => {

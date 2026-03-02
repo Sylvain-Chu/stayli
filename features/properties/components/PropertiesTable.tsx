@@ -26,7 +26,6 @@ import { usePropertiesContext } from '@/features/properties/context/PropertiesCo
 import { Property } from '../types'
 import { propertySchema } from '@/lib/validations/property'
 import { ZodError } from 'zod'
-import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 
@@ -39,7 +38,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
   const [sortColumn, setSortColumn] = useState<string | null>(null)
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
-  const perPage = usePerPage(552)
+  const [perPage, setPerPage] = useState(10)
   const [prevSearch, setPrevSearch] = useState(searchQuery)
   if (prevSearch !== searchQuery) {
     setPrevSearch(searchQuery)
@@ -422,12 +421,22 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
         description="Êtes-vous sûr de vouloir supprimer cette propriété ? Cette action est irréversible."
       />
 
-      {total != null && total > perPage && (
+      {total != null && total > 0 && (
         <div className="border-border flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground text-sm">
             {total} propriété{total > 1 ? 's' : ''} au total
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+              className="border-input text-muted-foreground h-8 rounded-md border bg-transparent px-2 text-sm"
+            >
+              <option value={5}>5 / page</option>
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
             <Button
               variant="outline"
               size="sm"

@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
-import { usePerPage } from '@/hooks/use-per-page'
 import { Booking, BookingStatus } from '../types'
 import {
   BOOKING_STATUS_COLORS,
@@ -62,6 +61,7 @@ interface BookingsTableProps {
   perPage?: number
   total?: number
   onPageChange?: (page: number) => void
+  onPerPageChange?: (perPage: number) => void
 }
 
 export function BookingsTable({
@@ -73,12 +73,12 @@ export function BookingsTable({
   sortDirection: externalSortDirection,
   onSortChange,
   page = 1,
-  perPage: _perPage = 10,
+  perPage = 10,
   total,
   onPageChange,
+  onPerPageChange,
 }: BookingsTableProps) {
   const { selectedIds, toggleSelection, selectAll, clearSelection } = useBookingsContext()
-  const perPage = usePerPage(508)
   const [localSortColumn, setLocalSortColumn] = useState<string | null>(null)
   const [localSortDirection, setLocalSortDirection] = useState<SortDirection>(null)
 
@@ -422,12 +422,22 @@ export function BookingsTable({
         variant="destructive"
       />
 
-      {total != null && total > perPage && onPageChange && (
+      {total != null && total > 0 && onPageChange && (
         <div className="border-border flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground text-sm">
             {total} réservation{total > 1 ? 's' : ''} au total
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <select
+              value={perPage}
+              onChange={(e) => onPerPageChange?.(Number(e.target.value))}
+              className="border-input text-muted-foreground h-8 rounded-md border bg-transparent px-2 text-sm"
+            >
+              <option value={5}>5 / page</option>
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
             <Button
               variant="outline"
               size="sm"

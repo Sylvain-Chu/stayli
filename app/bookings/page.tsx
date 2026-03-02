@@ -2,7 +2,6 @@
 
 import { Suspense, lazy, useState } from 'react'
 import { AppLayout } from '@/components/layouts/app-shell'
-import { usePerPage } from '@/hooks/use-per-page'
 import { BookingsToolbar, BookingsStats } from '@/features/bookings'
 import { BookingsProvider } from '@/features/bookings/context/BookingsContext'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -24,7 +23,7 @@ function BookingsContent() {
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc' | null>(null)
 
   const debouncedSearch = useDebounce(searchQuery, 300)
-  const perPage = usePerPage()
+  const [perPage, setPerPage] = useState(10)
 
   const filters: BookingsFilters = {
     from: dateFrom || undefined,
@@ -91,6 +90,7 @@ function BookingsContent() {
           perPage={perPage}
           total={total}
           onPageChange={setPage}
+          onPerPageChange={(v) => { setPerPage(v); setPage(1) }}
         />
       </Suspense>
     </>

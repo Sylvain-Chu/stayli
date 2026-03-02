@@ -294,18 +294,13 @@ function ContractPage({ booking, property, client, settings }: ContractProps) {
   const clientCityLine = [client.zipCode, client.city].filter(Boolean).join(' ')
   const taxRate = settings.touristTaxRatePerPersonPerDay ?? 1
 
-  const cleaningOptionLabel = settings.cleaningOptionPrice
-    ? fmtPrice(settings.cleaningOptionPrice)
-    : booking.cleaningPrice > 0
+  const cleaningOptionLabel =
+    booking.cleaningPrice > 0
       ? fmtPrice(booking.cleaningPrice)
       : booking.cleaningFee > 0
         ? fmtPrice(booking.cleaningFee)
         : ''
-  const linensOptionLabel = settings.linensOptionPrice
-    ? fmtPrice(settings.linensOptionPrice)
-    : booking.linensPrice > 0
-      ? fmtPrice(booking.linensPrice)
-      : ''
+  const linensOptionLabel = booking.linensPrice > 0 ? fmtPrice(booking.linensPrice) : ''
 
   const cleaningAmount =
     booking.hasCleaning && booking.cleaningPrice > 0

@@ -89,6 +89,7 @@ export const calculatePriceSchema = z.object({
   hasCancellationInsurance: z.boolean().default(false),
   discount: z.number().min(0).default(0),
   discountType: z.enum(['amount', 'percent']).nullable().optional(),
+  customBasePrice: z.number().min(0).optional(),
 }).refine(
   (data) => new Date(data.endDate) > new Date(data.startDate),
   {

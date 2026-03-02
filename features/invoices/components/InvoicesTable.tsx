@@ -13,7 +13,6 @@ import { useToast } from '@/hooks/use-toast'
 import { useState, useTransition } from 'react'
 import { useInvoicesContext } from '@/features/invoices/context/InvoicesContext'
 import { Invoice } from '../types'
-import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 
@@ -59,7 +58,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
   const [sortDirection, setSortDirection] = useState<SortDirection>(null)
   const [page, setPage] = useState(1)
   const [prevSearchQuery, setPrevSearchQuery] = useState(searchQuery)
-  const perPage = usePerPage(464)
+  const [perPage, setPerPage] = useState(10)
 
   if (prevSearchQuery !== searchQuery) {
     setPrevSearchQuery(searchQuery)
@@ -346,12 +345,22 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
         description="Êtes-vous sûr de vouloir supprimer cette facture ? Cette action est irréversible."
       />
 
-      {total != null && total > perPage && (
+      {total != null && total > 0 && (
         <div className="border-border flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground text-sm">
             {total} facture{total > 1 ? 's' : ''} au total
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+              className="border-input text-muted-foreground h-8 rounded-md border bg-transparent px-2 text-sm"
+            >
+              <option value={5}>5 / page</option>
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
             <Button
               variant="outline"
               size="sm"

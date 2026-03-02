@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { Textarea } from '@/components/ui/textarea'
 import { Minus, Plus, UserPlus } from 'lucide-react'
 import {
   Dialog,
@@ -37,6 +39,12 @@ interface Client {
   phone: string | null
 }
 
+interface OptionPrices {
+  linensOptionPrice: number
+  cleaningOptionPrice: number
+  cancellationInsurancePercentage: number
+}
+
 import { useBookingForm } from '../context/BookingFormContext'
 import { useToast } from '@/hooks/use-toast'
 import * as clientsService from '@/services/clients.service'
@@ -46,6 +54,7 @@ export function BookingForm() {
   const { toast } = useToast()
   const [properties, setProperties] = useState<Property[]>([])
   const [clients, setClients] = useState<Client[]>([])
+  const [optionPrices, setOptionPrices] = useState<OptionPrices | null>(null)
   const [availabilityError, setAvailabilityError] = useState<string | null>(null)
   const [checkingAvailability, setCheckingAvailability] = useState(false)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -125,6 +134,18 @@ export function BookingForm() {
         setClients(list)
       })
       .catch((err) => console.error('Error fetching clients:', err))
+
+    fetch('/api/settings')
+      .then((res) => res.json())
+      .then((payload) => {
+        const data = payload?.data ?? payload
+        setOptionPrices({
+          linensOptionPrice: data?.linensOptionPrice ?? 0,
+          cleaningOptionPrice: data?.cleaningOptionPrice ?? 0,
+          cancellationInsurancePercentage: data?.cancellationInsurancePercentage ?? 0,
+        })
+      })
+      .catch((err) => console.error('Error fetching settings:', err))
   }, [])
 
   useEffect(() => {
@@ -191,10 +212,13 @@ export function BookingForm() {
 
   return (
     <div className="space-y-6">
+      {/* Propriété + Client */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <Card className="border-border bg-card border">
           <CardHeader>
-            <CardTitle className="text-base">Propriété</CardTitle>
+            <CardTitle className="text-base">
+              Propriété <span className="text-destructive">*</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -220,7 +244,9 @@ export function BookingForm() {
 
         <Card className="border-border bg-card border">
           <CardHeader>
-            <CardTitle className="text-base">Client</CardTitle>
+            <CardTitle className="text-base">
+              Client <span className="text-destructive">*</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
@@ -243,13 +269,9 @@ export function BookingForm() {
                 </Select>
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      aria-label="Ajouter un client"
-                      className="shrink-0"
-                    >
-                      <UserPlus className="h-4 w-4" />
+                    <Button variant="outline" size="sm" className="shrink-0 gap-1.5">
+                      <UserPlus className="h-3.5 w-3.5" />
+                      Nouveau
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
@@ -323,9 +345,13 @@ export function BookingForm() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Dates */}
       <Card className="border-border bg-card border">
         <CardHeader>
-          <CardTitle className="text-base">Dates du séjour</CardTitle>
+          <CardTitle className="text-base">
+            Dates du séjour <span className="text-destructive">*</span>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
@@ -333,39 +359,35 @@ export function BookingForm() {
               <Label htmlFor="checkin" className="text-sm font-semibold">
                 Date d&apos;arrivée
               </Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  id="checkin"
-                  value={formData.startDate}
-                  onChange={(e) => updateFormData({ startDate: e.target.value })}
-                  className={`cursor-pointer text-base transition-all ${
-                    availabilityError
-                      ? 'border-destructive focus-visible:border-destructive'
-                      : 'hover:border-primary/50'
-                  }`}
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
+              <Input
+                type="date"
+                id="checkin"
+                value={formData.startDate}
+                onChange={(e) => updateFormData({ startDate: e.target.value })}
+                className={`cursor-pointer text-base transition-all ${
+                  availabilityError
+                    ? 'border-destructive focus-visible:border-destructive'
+                    : 'hover:border-primary/50'
+                }`}
+                min={new Date().toISOString().split('T')[0]}
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="checkout" className="text-sm font-semibold">
                 Date de départ
               </Label>
-              <div className="relative">
-                <Input
-                  type="date"
-                  id="checkout"
-                  value={formData.endDate}
-                  onChange={(e) => updateFormData({ endDate: e.target.value })}
-                  className={`cursor-pointer text-base transition-all ${
-                    availabilityError
-                      ? 'border-destructive focus-visible:border-destructive'
-                      : 'hover:border-primary/50'
-                  }`}
-                  min={formData.startDate || new Date().toISOString().split('T')[0]}
-                />
-              </div>
+              <Input
+                type="date"
+                id="checkout"
+                value={formData.endDate}
+                onChange={(e) => updateFormData({ endDate: e.target.value })}
+                className={`cursor-pointer text-base transition-all ${
+                  availabilityError
+                    ? 'border-destructive focus-visible:border-destructive'
+                    : 'hover:border-primary/50'
+                }`}
+                min={formData.startDate || new Date().toISOString().split('T')[0]}
+              />
             </div>
           </div>
           {checkingAvailability && (
@@ -379,18 +401,22 @@ export function BookingForm() {
         </CardContent>
       </Card>
 
+      {/* Voyageurs + Options + Tarification (consolidé) */}
       <Card className="border-border bg-card border">
         <CardHeader>
-          <CardTitle className="text-base">Voyageurs</CardTitle>
+          <CardTitle className="text-base">Détails du séjour</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
+          {/* Adultes */}
           <div className="flex items-center justify-between">
-            <Label>Nombre de voyageurs</Label>
+            <div>
+              <Label className="font-medium">Adultes</Label>
+            </div>
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 size="icon"
-                aria-label="Retirer un voyageur"
+                aria-label="Retirer un adulte"
                 className="h-8 w-8 bg-transparent"
                 onClick={() => updateFormData({ adults: Math.max(1, formData.adults - 1) })}
               >
@@ -400,50 +426,145 @@ export function BookingForm() {
               <Button
                 variant="outline"
                 size="icon"
-                aria-label="Ajouter un voyageur"
+                aria-label="Ajouter un adulte"
                 className="h-8 w-8 bg-transparent"
-                onClick={() => updateFormData({ adults: Math.min(10, formData.adults + 1) })}
+                onClick={() => updateFormData({ adults: Math.min(20, formData.adults + 1) })}
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card className="border-border bg-card border">
-        <CardHeader>
-          <CardTitle className="text-base">Options</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+          {/* Enfants */}
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="font-medium">Enfants</Label>
+              <p className="text-muted-foreground text-sm">Comptés pour la taxe de séjour</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Retirer un enfant"
+                className="h-8 w-8 bg-transparent"
+                onClick={() => updateFormData({ children: Math.max(0, formData.children - 1) })}
+              >
+                <Minus className="h-4 w-4" />
+              </Button>
+              <span className="w-8 text-center font-medium">{formData.children}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                aria-label="Ajouter un enfant"
+                className="h-8 w-8 bg-transparent"
+                onClick={() => updateFormData({ children: Math.min(20, formData.children + 1) })}
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Linge de maison */}
           <div className="flex items-center justify-between">
             <div>
               <Label className="font-medium">Linge de maison</Label>
-              <p className="text-muted-foreground text-sm">Draps, serviettes, etc.</p>
+              <p className="text-muted-foreground text-sm">
+                Draps, serviettes, etc.
+                {optionPrices?.linensOptionPrice
+                  ? ` — ${optionPrices.linensOptionPrice.toFixed(2)} €`
+                  : ''}
+              </p>
             </div>
             <Switch
               checked={formData.hasLinens}
               onCheckedChange={(checked) => updateFormData({ hasLinens: checked })}
             />
           </div>
+
+          {/* Ménage */}
           <div className="flex items-center justify-between">
             <div>
               <Label className="font-medium">Ménage de fin de séjour</Label>
-              <p className="text-muted-foreground text-sm">Nettoyage complet</p>
+              <p className="text-muted-foreground text-sm">
+                Nettoyage complet
+                {optionPrices?.cleaningOptionPrice
+                  ? ` — ${optionPrices.cleaningOptionPrice.toFixed(2)} €`
+                  : ''}
+              </p>
             </div>
             <Switch
               checked={formData.hasCleaning}
               onCheckedChange={(checked) => updateFormData({ hasCleaning: checked })}
             />
           </div>
+
+          {/* Assurance */}
           <div className="flex items-center justify-between">
             <div>
               <Label className="font-medium">Assurance annulation</Label>
-              <p className="text-muted-foreground text-sm">Protection en cas d&apos;annulation</p>
+              <p className="text-muted-foreground text-sm">
+                Protection en cas d&apos;annulation
+                {optionPrices?.cancellationInsurancePercentage
+                  ? ` — ${optionPrices.cancellationInsurancePercentage} % du loyer`
+                  : ''}
+              </p>
             </div>
             <Switch
               checked={formData.hasInsurance}
               onCheckedChange={(checked) => updateFormData({ hasInsurance: checked })}
+            />
+          </div>
+
+          <Separator />
+
+          {/* Prix de base personnalisé */}
+          <div className="space-y-1.5">
+            <Label htmlFor="customBasePrice">Prix de base personnalisé (€)</Label>
+            <Input
+              id="customBasePrice"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Laisser vide pour utiliser le tarif standard"
+              value={formData.customBasePrice}
+              onChange={(e) => updateFormData({ customBasePrice: e.target.value })}
+            />
+            <p className="text-muted-foreground text-xs">
+              Le prix calculé automatiquement est visible dans le résumé →
+            </p>
+          </div>
+
+          <Separator />
+
+          {/* Statut */}
+          <div className="space-y-2">
+            <Label htmlFor="status">Statut</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) => updateFormData({ status: value })}
+            >
+              <SelectTrigger id="status">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="confirmed">Confirmé</SelectItem>
+                <SelectItem value="pending">En attente</SelectItem>
+                <SelectItem value="blocked">Bloqué</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Notes */}
+          <div className="space-y-1.5">
+            <Label htmlFor="specialRequests">Notes / Demandes spéciales</Label>
+            <Textarea
+              id="specialRequests"
+              placeholder="Notes, demandes particulières..."
+              value={formData.specialRequests}
+              onChange={(e) => updateFormData({ specialRequests: e.target.value })}
+              className="min-h-20 resize-none"
             />
           </div>
         </CardContent>

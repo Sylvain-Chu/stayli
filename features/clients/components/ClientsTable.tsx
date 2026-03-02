@@ -25,7 +25,6 @@ import { FormEvent, useMemo, useState, useEffect } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
 import { clientSchema } from '@/lib/validations/client'
 import { ZodError } from 'zod'
-import { usePerPage } from '@/hooks/use-per-page'
 
 type SortDirection = 'asc' | 'desc' | null
 type FieldErrors = Partial<Record<string, string>>
@@ -55,7 +54,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     email: '',
   })
   const [page, setPage] = useState(1)
-  const perPage = usePerPage(464)
+  const [perPage, setPerPage] = useState(10)
 
   useEffect(() => {
     setPage(1)
@@ -395,12 +394,22 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
           Aucun client trouvé
         </div>
       )}
-      {total != null && total > perPage && (
+      {total != null && total > 0 && (
         <div className="border-border flex items-center justify-between border-t px-4 py-3">
           <div className="text-muted-foreground text-sm">
             {total} client{total > 1 ? 's' : ''} au total
           </div>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
+            <select
+              value={perPage}
+              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+              className="border-input text-muted-foreground h-8 rounded-md border bg-transparent px-2 text-sm"
+            >
+              <option value={5}>5 / page</option>
+              <option value={10}>10 / page</option>
+              <option value={25}>25 / page</option>
+              <option value={50}>50 / page</option>
+            </select>
             <Button
               variant="outline"
               size="sm"

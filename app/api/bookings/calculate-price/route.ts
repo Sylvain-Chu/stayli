@@ -21,13 +21,27 @@ export async function POST(request: NextRequest) {
       throw ApiError.notFound('Settings')
     }
 
+    // If a custom base price is provided, back-calculate a rate equivalent so the
+    // calculator produces exactly that base price regardless of season.
+    // Formula: calculator does (rate / 21) * nights, so rate = (customBasePrice / nights) * 21.
+    let effectiveLowRate = settings.lowSeasonRate
+    let effectiveHighRate = settings.highSeasonRate
+    if (validatedData.customBasePrice) {
+      const start = new Date(validatedData.startDate)
+      const end = new Date(validatedData.endDate)
+      const nights = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24))
+      const rateEquivalent = (validatedData.customBasePrice / nights) * 21
+      effectiveLowRate = rateEquivalent
+      effectiveHighRate = rateEquivalent
+    }
+
     const priceBreakdown = priceCalculator.calculate({
       startDate: new Date(validatedData.startDate),
       endDate: new Date(validatedData.endDate),
       adults: validatedData.adults,
       children: validatedData.children,
-      baseRateLowSeason: settings.lowSeasonRate,
-      baseRateHighSeason: settings.highSeasonRate,
+      baseRateLowSeason: effectiveLowRate,
+      baseRateHighSeason: effectiveHighRate,
       lowSeasonMonths: settings.lowSeasonMonths,
       hasLinens: validatedData.hasLinens,
       linensPrice: settings.linensOptionPrice,
