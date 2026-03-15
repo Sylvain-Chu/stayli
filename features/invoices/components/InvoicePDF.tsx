@@ -329,6 +329,7 @@ interface InvoicePDFProps {
     touristTaxRatePerPersonPerDay?: number
     companyZipCode?: string
     companyCity?: string
+    hideInvoiceDueDate?: boolean
   }
 }
 
@@ -417,10 +418,12 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
               <Text style={styles.metaLabel}>Date :</Text>
               <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
             </View>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Échéance :</Text>
-              <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
-            </View>
+            {!settings.hideInvoiceDueDate && (
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Échéance :</Text>
+                <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
+              </View>
+            )}
           </View>
         </View>
 

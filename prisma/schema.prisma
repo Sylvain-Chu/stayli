@@ -137,6 +137,7 @@ model Settings {
   invoicePrefix                        String   @default("FAC-")
   invoiceDueDays                       Int      @default(30)
   invoicePaymentInstructions           String?
+  hideInvoiceDueDate                   Boolean  @default(false)
   cancellationInsurancePercentage      Float    @default(6)
   cancellationInsuranceProviderName    String   @default("Holiday Peace of Mind Insurance")
   depositPercentage                    Float    @default(25)

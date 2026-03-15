@@ -55,6 +55,7 @@ interface DownloadInvoiceButtonProps {
     currencySymbol?: string
     invoicePaymentInstructions?: string
     cancellationInsuranceProviderName?: string
+    hideInvoiceDueDate?: boolean
   }
 }
 

@@ -61,6 +61,7 @@ export default function InvoiceDetailPage() {
     invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,
     cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
     touristTaxRatePerPersonPerDay: settings.touristTaxRatePerPersonPerDay,
+    hideInvoiceDueDate: settings.hideInvoiceDueDate || undefined,
   }
 
   return (
