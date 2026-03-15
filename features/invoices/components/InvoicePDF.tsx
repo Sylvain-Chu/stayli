@@ -100,19 +100,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 6,
     alignItems: 'center',
+    width: '100%',
+  },
+  metaSpacer: {
+    flex: 1,
   },
   metaLabel: {
     fontSize: 11,
     color: colors.textMuted,
     marginRight: 10,
-    textAlign: 'right',
   },
   metaValue: {
     fontSize: 11,
     fontWeight: 700,
     color: colors.text,
-    textAlign: 'right',
-    minWidth: 80,
   },
 
   // --- CLIENT INFO ---
@@ -239,6 +240,10 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 
+  flexColumn: {
+    flex: 1,
+  },
+
   // --- FOOTER ---
   bottomFooter: {
     position: 'absolute',
@@ -329,6 +334,7 @@ interface InvoicePDFProps {
     touristTaxRatePerPersonPerDay?: number
     companyZipCode?: string
     companyCity?: string
+    hideInvoiceDueDate?: boolean
   }
 }
 
@@ -369,6 +375,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
   const taxes = booking.taxes || 0
   const discount = booking.discount || 0
   const total = booking.totalPrice
+  const subtotalWithAddons = subtotal + cleaningFee + linensFee + insuranceFee
 
   const depositAmount = Number((total * 0.25).toFixed(2))
   const balanceAmount = total - depositAmount
@@ -399,9 +406,6 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
               </Text>
             )}
             <Text style={styles.senderInfo}>{settings.companyEmail}</Text>
-            {settings.companyPhoneNumber && (
-              <Text style={styles.senderInfo}>{settings.companyPhoneNumber}</Text>
-            )}
             {settings.companySiret && (
               <Text style={styles.senderInfo}>SIRET: {settings.companySiret}</Text>
             )}
@@ -410,35 +414,28 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
           <View style={styles.invoiceMetaColumn}>
             <Text style={styles.invoiceTitle}>FACTURE</Text>
             <View style={styles.metaRow}>
+              <View style={styles.metaSpacer} />
               <Text style={styles.metaLabel}>Numéro :</Text>
               <Text style={styles.metaValue}>{invoice.invoiceNumber}</Text>
             </View>
             <View style={styles.metaRow}>
+              <View style={styles.metaSpacer} />
               <Text style={styles.metaLabel}>Date :</Text>
               <Text style={styles.metaValue}>{formatDate(invoice.issueDate)}</Text>
             </View>
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>Échéance :</Text>
-              <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
-            </View>
+            {!settings.hideInvoiceDueDate && (
+              <View style={styles.metaRow}>
+                <View style={styles.metaSpacer} />
+                <Text style={styles.metaLabel}>Échéance :</Text>
+                <Text style={styles.metaValue}>{formatDate(invoice.dueDate)}</Text>
+              </View>
+            )}
           </View>
         </View>
 
         {/* --- CLIENT SECTION --- */}
         <View style={styles.clientSection}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.clientLabel}>Facturé à</Text>
-            <Text style={styles.clientName}>
-              {client.firstName} {client.lastName}
-            </Text>
-            <Text style={styles.clientAddress}>{client.address}</Text>
-            <Text style={styles.clientAddress}>
-              {client.zipCode} {client.city}
-            </Text>
-            <Text style={styles.clientAddress}>{client.email}</Text>
-            {client.phone && <Text style={styles.clientAddress}>{client.phone}</Text>}
-          </View>
-          <View style={{ flex: 1 }}>
+          <View style={styles.flexColumn}>
             <Text style={styles.clientLabel}>Détails Séjour</Text>
             <Text style={styles.clientAddress}>{property.name}</Text>
             <Text style={[styles.clientAddress, { color: colors.textMuted }]}>
@@ -446,6 +443,16 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
             </Text>
             <Text style={[styles.clientAddress, { color: colors.textMuted }]}>
               Départ : {formatDate(booking.endDate)} (10h00)
+            </Text>
+          </View>
+          <View style={styles.flexColumn}>
+            <Text style={styles.clientLabel}>Facturé à</Text>
+            <Text style={styles.clientName}>
+              {client.firstName} {client.lastName}
+            </Text>
+            <Text style={styles.clientAddress}>{client.address}</Text>
+            <Text style={styles.clientAddress}>
+              {client.zipCode} - {client.city}
             </Text>
           </View>
         </View>
@@ -565,7 +572,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Sous-total</Text>
               <Text style={styles.totalValue}>
-                {formatCurrency(subtotal + cleaningFee + linensFee + insuranceFee)}
+                {formatCurrency(subtotalWithAddons)}
               </Text>
             </View>
             <View style={styles.totalRow}>
@@ -583,10 +590,6 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         <View style={styles.bottomFooter}>
           <Text style={styles.footerText}>
             Merci de votre confiance. {settings.companyName || 'Stayli'} - {settings.companyEmail}
-          </Text>
-          <Text style={styles.footerText}>
-            En cas de retard de paiement, des pénalités pourront être appliquées conformément à la
-            législation en vigueur.
           </Text>
         </View>
       </Page>

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { Save } from 'lucide-react'
 import { useSettingsMutations } from '../hooks/useSettingsMutations'
 import { useToast } from '@/hooks/use-toast'
@@ -14,6 +15,7 @@ interface Settings {
   invoicePrefix: string
   invoiceDueDays: number
   invoicePaymentInstructions: string | null
+  hideInvoiceDueDate?: boolean
 }
 
 export function InvoiceSettings({ settings }: { settings: Settings }) {
@@ -23,6 +25,7 @@ export function InvoiceSettings({ settings }: { settings: Settings }) {
     invoicePrefix: settings.invoicePrefix,
     invoiceDueDays: settings.invoiceDueDays,
     invoicePaymentInstructions: settings.invoicePaymentInstructions || '',
+    hideInvoiceDueDate: settings.hideInvoiceDueDate || false,
   })
   const [saving, setSaving] = useState(false)
 
@@ -85,6 +88,19 @@ export function InvoiceSettings({ settings }: { settings: Settings }) {
             placeholder="Ajoutez des instructions de paiement (IBAN, RIB, etc.)"
             rows={4}
           />
+        </div>
+
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="hideInvoiceDueDate"
+            checked={formData.hideInvoiceDueDate}
+            onCheckedChange={(checked) =>
+              setFormData({ ...formData, hideInvoiceDueDate: checked as boolean })
+            }
+          />
+          <Label htmlFor="hideInvoiceDueDate" className="font-normal cursor-pointer">
+            Masquer la date d&apos;échéance sur les factures
+          </Label>
         </div>
 
         <div className="flex justify-end">

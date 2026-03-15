@@ -25,6 +25,7 @@ export const settingsSchema = z.object({
   invoicePrefix: z.string().optional(),
   invoiceDueDays: z.number().min(0).optional(),
   invoicePaymentInstructions: z.string().optional(),
+  hideInvoiceDueDate: z.boolean().optional(),
   cancellationInsurancePercentage: z.number().min(0).max(100).optional(),
   cancellationInsuranceProviderName: z.string().optional(),
   depositPercentage: z.number().min(0).max(100).optional(),

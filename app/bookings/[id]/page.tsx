@@ -156,6 +156,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                   invoicePaymentInstructions: settings.invoicePaymentInstructions ?? undefined,
                   cancellationInsuranceProviderName:
                     settings.cancellationInsuranceProviderName ?? undefined,
+                  hideInvoiceDueDate: settings.hideInvoiceDueDate ?? undefined,
                 }}
               />
             )}

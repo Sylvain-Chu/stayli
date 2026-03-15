@@ -92,6 +92,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,
           cancellationInsuranceProviderName: settings.cancellationInsuranceProviderName,
           touristTaxRatePerPersonPerDay: settings.touristTaxRatePerPersonPerDay,
+          hideInvoiceDueDate: settings.hideInvoiceDueDate || undefined,
         }}
       />,
     )
