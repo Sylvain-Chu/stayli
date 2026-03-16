@@ -115,7 +115,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     setEditFormData({
       firstName: client.firstName,
       lastName: client.lastName,
-      email: client.email,
+      email: client.email || '',
       phone: client.phone || '',
       address: client.address || '',
       zipCode: client.zipCode || '',

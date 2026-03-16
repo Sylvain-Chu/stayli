@@ -141,7 +141,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                 client={{
                   firstName: booking.client.firstName,
                   lastName: booking.client.lastName,
-                  email: booking.client.email,
+                  email: booking.client.email ?? '',
                   phone: booking.client.phone ?? undefined,
                   address: booking.client.address ?? undefined,
                   zipCode: booking.client.zipCode ?? undefined,
@@ -188,7 +188,7 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                 client={{
                   firstName: booking.client.firstName,
                   lastName: booking.client.lastName,
-                  email: booking.client.email,
+                  email: booking.client.email ?? '',
                   phone: booking.client.phone,
                   address: booking.client.address,
                   zipCode: booking.client.zipCode,

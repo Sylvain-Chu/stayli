@@ -165,6 +165,7 @@ export interface Settings extends BaseEntity {
   invoicePrefix: string
   invoiceDueDays: number
   invoicePaymentInstructions: string | null
+  hideInvoiceDueDate: boolean
   cancellationInsurancePercentage: number
   cancellationInsuranceProviderName: string
   depositPercentage: number

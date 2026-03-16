@@ -73,7 +73,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         client={{
           firstName: invoice.booking.client.firstName,
           lastName: invoice.booking.client.lastName,
-          email: invoice.booking.client.email,
+          email: invoice.booking.client.email || '',
           phone: invoice.booking.client.phone || undefined,
           address: invoice.booking.client.address || undefined,
           zipCode: invoice.booking.client.zipCode || undefined,
