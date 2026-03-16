@@ -1,12 +1,14 @@
 import useSWR from 'swr'
+import type { Settings } from '@/types/entities'
 
 export function useSettings() {
-  const { data, error, mutate } = useSWR('/api/settings')
+  const { data, error, isLoading, mutate } = useSWR<Settings>('/api/settings')
 
   return {
     settings: data,
-    isLoading: !error && !data,
-    isError: error,
+    isLoading,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }

@@ -95,7 +95,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     sortBy,
     sortDir,
     refreshInterval = 0,
-    revalidateOnFocus = true,
+    revalidateOnFocus = false,
   } = options
 
   const url = buildUrl('/api/bookings', {
@@ -109,7 +109,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     sortDir: sortDir || undefined,
   })
 
-  const { data, error, mutate, isValidating } = useSWR<BookingsResponse>(url, {
+  const { data, error, mutate, isValidating, isLoading } = useSWR<BookingsResponse>(url, {
     refreshInterval,
     revalidateOnFocus,
     keepPreviousData: true,
@@ -120,7 +120,7 @@ export function useBookings(options: UseBookingsOptions = {}): UseBookingsReturn
     total: data?.total,
     totalPages: data?.totalPages,
     currentPage: data?.page,
-    isLoading: !error && !data,
+    isLoading,
     isValidating,
     error: error as Error | undefined,
     refresh: () => mutate(),
@@ -146,13 +146,13 @@ export interface UseBookingReturn {
  * Hook to fetch a single booking by ID
  */
 export function useBooking(id: string | null | undefined): UseBookingReturn {
-  const { data, error, mutate, isValidating } = useSWR<BookingWithRelations>(
+  const { data, error, mutate, isValidating, isLoading } = useSWR<BookingWithRelations>(
     id ? `/api/bookings/${id}` : null,
   )
 
   return {
     booking: data,
-    isLoading: !error && !data && !!id,
+    isLoading,
     isValidating,
     error: error as Error | undefined,
     refresh: () => mutate(),

@@ -18,7 +18,7 @@ export function useInvoices(
     params.set('sortDir', sortDir)
   }
 
-  const { data, error, mutate, isLoading } = useSWR(`/api/invoices?${params.toString()}`, {
+  const { data, error, mutate, isLoading } = useSWR<{ invoices: Invoice[], total: number, totalPages: number }>(`/api/invoices?${params.toString()}`, {
     revalidateOnReconnect: false,
   })
 
@@ -27,18 +27,20 @@ export function useInvoices(
     total: data?.total as number | undefined,
     totalPages: data?.totalPages as number | undefined,
     isLoading,
-    isError: error ? 'Erreur lors du chargement des factures' : null,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }
 
 export function useInvoice(id: string) {
-  const { data, error, mutate } = useSWR(id ? `/api/invoices/${id}` : null)
+  const { data, error, isLoading, mutate } = useSWR(id ? `/api/invoices/${id}` : null)
 
   return {
     invoice: data,
-    isLoading: !error && !data,
-    isError: error,
+    isLoading,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }

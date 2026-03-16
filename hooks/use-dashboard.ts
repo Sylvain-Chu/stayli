@@ -28,7 +28,7 @@ export function useDashboardStats() {
   return {
     stats: data,
     isLoading,
-    isError: error,
+    isError: !!error,
   }
 }
 
@@ -43,7 +43,7 @@ export function useActivities(type: 'current' | 'arrivals' | 'departures' = 'cur
   return {
     activities: data?.activities || [],
     isLoading,
-    isError: error,
+    isError: !!error,
   }
 }
 
@@ -67,7 +67,7 @@ export function useCalendarData(year: number, month: number) {
   return {
     occupiedDays: data?.occupiedDays || [],
     isLoading,
-    isError: error,
+    isError: !!error,
   }
 }
 
@@ -79,6 +79,6 @@ export function useCalendarBookings(year: number, month: number, day: number | n
   return {
     bookings: data?.bookings || [],
     isLoading,
-    isError: error,
+    isError: !!error,
   }
 }

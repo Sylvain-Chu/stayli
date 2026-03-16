@@ -26,15 +26,15 @@ export function useClients(
     params.set('sortDir', sortDir)
   }
 
-  const { data, error, mutate } = useSWR<ClientsResponse>(`/api/clients?${params.toString()}`)
+  const { data, error, isLoading, mutate } = useSWR<ClientsResponse>(`/api/clients?${params.toString()}`)
 
   return {
     clients: data?.clients,
     total: data?.total,
     totalPages: data?.totalPages,
-    isLoading: !error && !data,
-    isError: error,
-    error: error?.message,
+    isLoading,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }

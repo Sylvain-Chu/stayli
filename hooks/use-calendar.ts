@@ -65,7 +65,7 @@ export function useCalendarBookings(year: number, month: number) {
   return {
     bookings: data?.bookings || [],
     isLoading,
-    isError: error,
+    isError: !!error,
     mutate,
   }
 }
@@ -77,7 +77,7 @@ export function useProperties() {
   return {
     properties: data?.properties || [],
     isLoading,
-    isError: error,
+    isError: !!error,
   }
 }
 
@@ -88,7 +88,7 @@ export function useClients() {
   return {
     clients: data?.clients || [],
     isLoading,
-    isError: error,
+    isError: !!error,
     mutate,
   }
 }

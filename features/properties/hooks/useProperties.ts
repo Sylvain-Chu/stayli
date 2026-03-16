@@ -26,15 +26,15 @@ export function useProperties(
     params.set('sortDir', sortDir)
   }
 
-  const { data, error, mutate } = useSWR<PropertiesResponse>(`/api/properties?${params.toString()}`)
+  const { data, error, isLoading, mutate } = useSWR<PropertiesResponse>(`/api/properties?${params.toString()}`)
 
   return {
     properties: data?.properties,
     total: data?.total,
     totalPages: data?.totalPages,
-    isLoading: !error && !data,
-    isError: error,
-    error: error?.message,
+    isLoading,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }
