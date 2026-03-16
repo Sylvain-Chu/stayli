@@ -1,5 +1,5 @@
 import React from 'react'
-import { Document, Page, Text, View, StyleSheet, Font, Image } from '@react-pdf/renderer'
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import { format } from 'date-fns'
 import { fr } from 'date-fns/locale'
 
@@ -51,25 +51,6 @@ const styles = StyleSheet.create({
   },
   brandColumn: {
     width: '50%',
-  },
-  logoImage: {
-    width: 120,
-    height: 'auto',
-    marginBottom: 10,
-  },
-  logoPlaceholder: {
-    width: 40,
-    height: 40,
-    backgroundColor: colors.primary,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 10,
-  },
-  logoInitial: {
-    color: colors.white,
-    fontSize: 20,
-    fontWeight: 700,
   },
   senderName: {
     fontSize: 14,
@@ -326,7 +307,6 @@ interface InvoicePDFProps {
     companyAddress?: string
     companyPhoneNumber?: string
     companyEmail?: string
-    companyLogoUrl?: string | null
     companySiret?: string
     currencySymbol?: string
     invoicePaymentInstructions?: string
@@ -387,16 +367,6 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
         {/* --- HEADER --- */}
         <View style={styles.header}>
           <View style={styles.brandColumn}>
-            {settings.companyLogoUrl ? (
-              // eslint-disable-next-line jsx-a11y/alt-text -- react-pdf Image is a PDF element, not HTML
-              <Image src={settings.companyLogoUrl} style={styles.logoImage} />
-            ) : (
-              <View style={styles.logoPlaceholder}>
-                <Text style={styles.logoInitial}>
-                  {settings.companyName ? settings.companyName[0].toUpperCase() : 'S'}
-                </Text>
-              </View>
-            )}
             <Text style={styles.senderName}>{settings.companyName || 'Stayli'}</Text>
 
             <Text style={styles.senderInfo}>{settings.companyAddress}</Text>
@@ -571,9 +541,7 @@ export const InvoicePDF: React.FC<InvoicePDFProps> = ({
           <View style={styles.totalsColumn}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Sous-total</Text>
-              <Text style={styles.totalValue}>
-                {formatCurrency(subtotalWithAddons)}
-              </Text>
+              <Text style={styles.totalValue}>{formatCurrency(subtotalWithAddons)}</Text>
             </View>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Taxes</Text>

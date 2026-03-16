@@ -155,7 +155,6 @@ export function ClientsToolbar({ onSearchChange }: ClientsToolbarProps) {
           <form onSubmit={handleSubmit}>
             <DialogHeader>
               <DialogTitle>Nouveau client</DialogTitle>
-              {/* ... */}
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -195,7 +194,7 @@ export function ClientsToolbar({ onSearchChange }: ClientsToolbarProps) {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -205,7 +204,6 @@ export function ClientsToolbar({ onSearchChange }: ClientsToolbarProps) {
                       setFieldErrors((prev) => ({ ...prev, email: undefined }))
                     }}
                     className={fieldErrors.email ? 'border-destructive' : ''}
-                    required
                   />
                   {fieldErrors.email && (
                     <p className="text-destructive text-xs">{fieldErrors.email}</p>

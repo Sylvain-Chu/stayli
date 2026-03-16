@@ -14,11 +14,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const validatedData = calculatePriceSchema.parse(body)
 
-    // Get settings for calculation
-    const settings = await prisma.settings.findFirst()
+    // Get settings and property for calculation
+    const [settings, property] = await Promise.all([
+      prisma.settings.findFirst(),
+      prisma.property.findUnique({ where: { id: validatedData.propertyId } }),
+    ])
 
     if (!settings) {
       throw ApiError.notFound('Settings')
+    }
+
+    if (!property) {
+      throw ApiError.notFound('Property')
     }
 
     // If a custom base price is provided, back-calculate a rate equivalent so the
@@ -51,7 +58,7 @@ export async function POST(request: NextRequest) {
       discountType: validatedData.discountType || null,
       hasCancellationInsurance: validatedData.hasCancellationInsurance,
       insuranceRate: settings.cancellationInsurancePercentage,
-      touristTaxRate: settings.touristTaxRatePerPersonPerDay,
+      touristTaxRate: property.sejourTaxEnabled ? settings.touristTaxRatePerPersonPerDay : 0,
     })
 
     return successResponse(priceBreakdown)

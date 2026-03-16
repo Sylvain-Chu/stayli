@@ -76,7 +76,7 @@ export interface PropertyWithStats extends Property {
 export interface Client extends BaseEntity {
   firstName: string
   lastName: string
-  email: string
+  email: string | null
   phone: string | null
   address: string | null
   zipCode: string | null
@@ -151,7 +151,6 @@ export interface Settings extends BaseEntity {
   companyPhoneNumber: string | null
   companyEmail: string | null
   companySiret: string | null
-  companyLogoUrl: string | null
   companyZipCode: string | null
   companyCity: string | null
   defaultLanguage: string
@@ -166,6 +165,7 @@ export interface Settings extends BaseEntity {
   invoicePrefix: string
   invoiceDueDays: number
   invoicePaymentInstructions: string | null
+  hideInvoiceDueDate: boolean
   cancellationInsurancePercentage: number
   cancellationInsuranceProviderName: string
   depositPercentage: number

@@ -103,6 +103,7 @@ describe('updateBookingSchema', () => {
 
 describe('calculatePriceSchema', () => {
   const validData = {
+    propertyId: '00000000-0000-0000-0000-000000000001',
     startDate: VALID_DATE_START,
     endDate: VALID_DATE_END,
     adults: 2,

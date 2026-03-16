@@ -15,7 +15,7 @@ import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
-import { Minus, Plus, UserPlus } from 'lucide-react'
+import { Minus, Plus, UserPlus, Bed, Shirt, Shield, Info } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -35,7 +35,7 @@ interface Client {
   id: string
   firstName: string
   lastName: string
-  email: string
+  email: string | null
   phone: string | null
 }
 
@@ -401,144 +401,202 @@ export function BookingForm() {
         </CardContent>
       </Card>
 
-      {/* Voyageurs + Options + Tarification (consolidé) */}
+      {/* GROUPE 1: OCCUPANTS */}
       <Card className="border-border bg-card border">
         <CardHeader>
-          <CardTitle className="text-base">Détails du séjour</CardTitle>
+          <CardTitle className="text-base">Occupants</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            {/* Adultes */}
+            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-4">
+              <div>
+                <Label className="font-semibold">Adultes</Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Retirer un adulte"
+                  disabled={formData.adults <= 1}
+                  onClick={() => updateFormData({ adults: Math.max(1, formData.adults - 1) })}
+                  className="h-10 w-10"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-8 text-center text-lg font-bold">{formData.adults}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Ajouter un adulte"
+                  onClick={() => updateFormData({ adults: Math.min(20, formData.adults + 1) })}
+                  className="h-10 w-10"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Enfants */}
+            <div className="bg-muted/30 flex items-center justify-between rounded-lg p-4">
+              <div>
+                <Label className="font-semibold">Enfants</Label>
+                <p className="text-muted-foreground text-xs">Taxe de séjour</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Retirer un enfant"
+                  disabled={formData.children <= 0}
+                  onClick={() => updateFormData({ children: Math.max(0, formData.children - 1) })}
+                  className="h-10 w-10"
+                >
+                  <Minus className="h-4 w-4" />
+                </Button>
+                <span className="w-8 text-center text-lg font-bold">{formData.children}</span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  aria-label="Ajouter un enfant"
+                  onClick={() => updateFormData({ children: Math.min(20, formData.children + 1) })}
+                  className="h-10 w-10"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* GROUPE 2: SERVICES & OPTIONS + TARIFICATION (GRID 2x2) */}
+      <Card className="border-border bg-card border">
+        <CardHeader>
+          <CardTitle className="text-base">Services, Options & Tarification</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Linge de maison */}
+            <div
+              className={`flex h-20 flex-col justify-between rounded-lg border p-4 transition-all ${formData.hasLinens ? 'border-green-500/30 bg-green-50/40' : 'border-border bg-muted/20'}`}
+            >
+              <div className="flex items-start gap-3">
+                <Bed className="text-muted-foreground mt-0.5 h-5 w-5 shrink-0" />
+                <div className="flex-1">
+                  <Label className="cursor-pointer text-sm font-semibold">Linge de maison</Label>
+                  <p className="text-muted-foreground text-xs">Draps, serviettes, etc.</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold">
+                  {optionPrices?.linensOptionPrice
+                    ? `${optionPrices.linensOptionPrice.toFixed(2)} €`
+                    : '—'}
+                </span>
+                <Switch
+                  checked={formData.hasLinens}
+                  onCheckedChange={(checked) => updateFormData({ hasLinens: checked })}
+                />
+              </div>
+            </div>
+
+            {/* Ménage */}
+            <div
+              className={`flex h-20 flex-col justify-between rounded-lg border p-4 transition-all ${formData.hasCleaning ? 'border-green-500/30 bg-green-50/40' : 'border-border bg-muted/20'}`}
+            >
+              <div className="flex items-start gap-3">
+                <Shirt className="text-muted-foreground mt-0.5 h-5 w-5 shrink-0" />
+                <div className="flex-1">
+                  <Label className="cursor-pointer text-sm font-semibold">
+                    Ménage de fin de séjour
+                  </Label>
+                  <p className="text-muted-foreground text-xs">Nettoyage complet</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold">
+                  {optionPrices?.cleaningOptionPrice
+                    ? `${optionPrices.cleaningOptionPrice.toFixed(2)} €`
+                    : '—'}
+                </span>
+                <Switch
+                  checked={formData.hasCleaning}
+                  onCheckedChange={(checked) => updateFormData({ hasCleaning: checked })}
+                />
+              </div>
+            </div>
+
+            {/* Assurance */}
+            <div
+              className={`flex h-20 flex-col justify-between rounded-lg border p-4 transition-all ${formData.hasInsurance ? 'border-green-500/30 bg-green-50/40' : 'border-border bg-muted/20'}`}
+            >
+              <div className="flex items-start gap-3">
+                <Shield className="text-muted-foreground mt-0.5 h-5 w-5 shrink-0" />
+                <div className="flex-1">
+                  <Label className="cursor-pointer text-sm font-semibold">
+                    Assurance annulation
+                  </Label>
+                  <p className="text-muted-foreground text-xs">
+                    {optionPrices?.cancellationInsurancePercentage
+                      ? `${optionPrices.cancellationInsurancePercentage}% du loyer`
+                      : "Protection en cas d'annulation"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold"></span>
+                <Switch
+                  checked={formData.hasInsurance}
+                  onCheckedChange={(checked) => updateFormData({ hasInsurance: checked })}
+                />
+              </div>
+            </div>
+
+            {/* Tarification */}
+            <div
+              className={`flex h-20 flex-col justify-between rounded-lg border p-4 transition-all ${formData.customBasePrice ? 'border-slate-300 bg-slate-50/50' : 'border-border bg-slate-50/30'}`}
+            >
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="customBasePrice" className="text-sm font-semibold">
+                    Prix personnalisé
+                  </Label>
+                  {formData.customBasePrice && (
+                    <Info
+                      className="h-3.5 w-3.5 text-slate-600"
+                      aria-label="Prix personnalisé (override)"
+                    />
+                  )}
+                </div>
+                <div className="relative">
+                  <Input
+                    id="customBasePrice"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    placeholder="Tarif standard"
+                    value={formData.customBasePrice}
+                    onChange={(e) => updateFormData({ customBasePrice: e.target.value })}
+                    className="h-8 pr-7 text-sm"
+                  />
+                  <span className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-sm">
+                    €
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* GROUPE 4: STATUT & NOTES */}
+      <Card className="border-border bg-card border">
+        <CardHeader>
+          <CardTitle className="text-base">Finalisation</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Adultes */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="font-medium">Adultes</Label>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Retirer un adulte"
-                className="h-8 w-8 bg-transparent"
-                onClick={() => updateFormData({ adults: Math.max(1, formData.adults - 1) })}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="w-8 text-center font-medium">{formData.adults}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Ajouter un adulte"
-                className="h-8 w-8 bg-transparent"
-                onClick={() => updateFormData({ adults: Math.min(20, formData.adults + 1) })}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Enfants */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="font-medium">Enfants</Label>
-              <p className="text-muted-foreground text-sm">Comptés pour la taxe de séjour</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Retirer un enfant"
-                className="h-8 w-8 bg-transparent"
-                onClick={() => updateFormData({ children: Math.max(0, formData.children - 1) })}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <span className="w-8 text-center font-medium">{formData.children}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                aria-label="Ajouter un enfant"
-                className="h-8 w-8 bg-transparent"
-                onClick={() => updateFormData({ children: Math.min(20, formData.children + 1) })}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <Separator />
-
-          {/* Linge de maison */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="font-medium">Linge de maison</Label>
-              <p className="text-muted-foreground text-sm">
-                Draps, serviettes, etc.
-                {optionPrices?.linensOptionPrice
-                  ? ` — ${optionPrices.linensOptionPrice.toFixed(2)} €`
-                  : ''}
-              </p>
-            </div>
-            <Switch
-              checked={formData.hasLinens}
-              onCheckedChange={(checked) => updateFormData({ hasLinens: checked })}
-            />
-          </div>
-
-          {/* Ménage */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="font-medium">Ménage de fin de séjour</Label>
-              <p className="text-muted-foreground text-sm">
-                Nettoyage complet
-                {optionPrices?.cleaningOptionPrice
-                  ? ` — ${optionPrices.cleaningOptionPrice.toFixed(2)} €`
-                  : ''}
-              </p>
-            </div>
-            <Switch
-              checked={formData.hasCleaning}
-              onCheckedChange={(checked) => updateFormData({ hasCleaning: checked })}
-            />
-          </div>
-
-          {/* Assurance */}
-          <div className="flex items-center justify-between">
-            <div>
-              <Label className="font-medium">Assurance annulation</Label>
-              <p className="text-muted-foreground text-sm">
-                Protection en cas d&apos;annulation
-                {optionPrices?.cancellationInsurancePercentage
-                  ? ` — ${optionPrices.cancellationInsurancePercentage} % du loyer`
-                  : ''}
-              </p>
-            </div>
-            <Switch
-              checked={formData.hasInsurance}
-              onCheckedChange={(checked) => updateFormData({ hasInsurance: checked })}
-            />
-          </div>
-
-          <Separator />
-
-          {/* Prix de base personnalisé */}
-          <div className="space-y-1.5">
-            <Label htmlFor="customBasePrice">Prix de base personnalisé (€)</Label>
-            <Input
-              id="customBasePrice"
-              type="number"
-              min="0"
-              step="0.01"
-              placeholder="Laisser vide pour utiliser le tarif standard"
-              value={formData.customBasePrice}
-              onChange={(e) => updateFormData({ customBasePrice: e.target.value })}
-            />
-            <p className="text-muted-foreground text-xs">
-              Le prix calculé automatiquement est visible dans le résumé →
-            </p>
-          </div>
-
-          <Separator />
-
-          {/* Statut */}
+          {/* Statut avec badge coloré */}
           <div className="space-y-2">
             <Label htmlFor="status">Statut</Label>
             <Select
@@ -546,24 +604,36 @@ export function BookingForm() {
               onValueChange={(value) => updateFormData({ status: value })}
             >
               <SelectTrigger id="status">
-                <SelectValue />
+                <div className="flex items-center gap-2">
+                  <SelectValue />
+                </div>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="confirmed">Confirmé</SelectItem>
-                <SelectItem value="pending">En attente</SelectItem>
+                <SelectItem value="confirmed">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-green-500" />
+                    Confirmé
+                  </div>
+                </SelectItem>
+                <SelectItem value="pending">
+                  <div className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-amber-500" />
+                    En attente
+                  </div>
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           {/* Notes */}
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <Label htmlFor="specialRequests">Notes / Demandes spéciales</Label>
             <Textarea
               id="specialRequests"
-              placeholder="Notes, demandes particulières..."
+              placeholder="Ajouter des notes ou demandes particulières..."
               value={formData.specialRequests}
               onChange={(e) => updateFormData({ specialRequests: e.target.value })}
-              className="min-h-20 resize-none"
+              className="h-14 resize-none"
             />
           </div>
         </CardContent>

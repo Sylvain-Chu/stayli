@@ -341,7 +341,7 @@ function ContractPage({ booking, property, client, settings }: ContractProps) {
           {'Téléphone fixe : .............................. Téléphone portable : ' +
             (client.phone || '..............................')}
         </Text>
-        <Text style={styles.text}>{'Adresse mail : ' + client.email}</Text>
+        <Text style={styles.text}>{'Adresse mail : ' + (client.email || '..............................')}</Text>
         <Text style={styles.text}>
           {'Ci-après dénommé(e) '}
           <Text style={styles.bold}>LE LOCATAIRE</Text>

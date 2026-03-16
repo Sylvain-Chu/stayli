@@ -25,7 +25,13 @@ export const clientSchema = z.object({
     .min(1, 'Le nom est requis')
     .max(100, 'Le nom est trop long')
     .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Le nom contient des caractères invalides'),
-  email: z.string().min(1, "L'email est requis").email('Adresse e-mail invalide'),
+  email: z
+    .string()
+    .optional()
+    .or(z.literal(''))
+    .refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
+      message: 'Adresse e-mail invalide',
+    }),
   phone: z
     .string()
     .optional()

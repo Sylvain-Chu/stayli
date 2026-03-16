@@ -16,15 +16,15 @@ export function useUsers(q?: string, page = 1, perPage = 10) {
   })
   if (q) params.set('q', q)
 
-  const { data, error, mutate } = useSWR<UsersResponse>(`/api/users?${params.toString()}`)
+  const { data, error, isLoading, mutate } = useSWR<UsersResponse>(`/api/users?${params.toString()}`)
 
   return {
     users: data?.users,
     total: data?.total,
     totalPages: data?.totalPages,
-    isLoading: !error && !data,
-    isError: error,
-    error: error?.message,
+    isLoading,
+    isError: !!error,
+    error: error as Error | undefined,
     mutate,
   }
 }

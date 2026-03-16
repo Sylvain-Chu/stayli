@@ -119,7 +119,6 @@ export interface Settings extends BaseEntity {
   companyPhoneNumber: string | null
   companyEmail: string | null
   companySiret: string | null
-  companyLogoUrl: string | null
   companyZipCode: string | null
   companyCity: string | null
   defaultLanguage: string

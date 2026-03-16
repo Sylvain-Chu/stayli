@@ -108,7 +108,7 @@ export function FullCalendar() {
       setShowModal(true)
       const startDate = new Date(displayYear, displayMonth, selection.startDay)
       const endDate = new Date(displayYear, displayMonth, selection.endDay)
-      bookingForm.calculatePrices(startDate, endDate)
+      bookingForm.calculatePrices(startDate, endDate, selection.propertyId)
     }
   }
 
@@ -121,7 +121,7 @@ export function FullCalendar() {
           endDate: new Date(displayYear, displayMonth, Math.max(ds.startDay, ds.endDay)),
         }
       : null
-    bookingForm.handleOptionChange(key, value, dates)
+    bookingForm.handleOptionChange(key, value, dates, ds?.propertyId)
   }
 
   // Booking creation

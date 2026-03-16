@@ -167,7 +167,7 @@ export interface PriceCalculation {
   linensPrice: number
   cleaningPrice: number
   insuranceFee: number
-  taxes: number
+  touristTax: number
   discount: number
   totalPrice: number
 }

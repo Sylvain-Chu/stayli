@@ -77,4 +77,30 @@ describe('clientSchema', () => {
     })
     expect(result.success).toBe(true)
   })
+
+  it('should accept missing email', () => {
+    const result = clientSchema.safeParse({
+      firstName: 'John',
+      lastName: 'Doe',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should accept empty email string', () => {
+    const result = clientSchema.safeParse({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: '',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('should still reject invalid email when provided', () => {
+    const result = clientSchema.safeParse({
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'invalid-email',
+    })
+    expect(result.success).toBe(false)
+  })
 })

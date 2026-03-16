@@ -169,9 +169,11 @@ export function NewBookingDialog({
                               <p className="truncate text-sm font-medium">
                                 {client.firstName} {client.lastName}
                               </p>
-                              <p className="text-muted-foreground truncate text-xs">
-                                {client.email}
-                              </p>
+                              {client.email && (
+                                <p className="text-muted-foreground truncate text-xs">
+                                  {client.email}
+                                </p>
+                              )}
                             </div>
                           </button>
                         ))}

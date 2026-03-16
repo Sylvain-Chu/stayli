@@ -55,7 +55,6 @@ export default function InvoiceDetailPage() {
     companyCity: settings.companyCity || undefined,
     companyPhoneNumber: settings.companyPhoneNumber || undefined,
     companyEmail: settings.companyEmail || undefined,
-    companyLogoUrl: settings.companyLogoUrl || undefined,
     companySiret: settings.companySiret || undefined,
     currencySymbol: settings.currencySymbol,
     invoicePaymentInstructions: settings.invoicePaymentInstructions || undefined,

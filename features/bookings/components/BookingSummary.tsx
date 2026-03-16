@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
+import { useDebounce } from '@/hooks/use-debounce'
 import { useBookingForm } from '../context/BookingFormContext'
 
 interface PriceBreakdown {
@@ -20,6 +21,7 @@ interface PriceBreakdown {
 
 export function BookingSummary() {
   const { formData } = useBookingForm()
+  const debouncedFormData = useDebounce(formData, 500)
   const [priceBreakdown, setPriceBreakdown] = useState<PriceBreakdown | null>(null)
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -102,24 +104,25 @@ export function BookingSummary() {
   }
 
   useEffect(() => {
-    if (!formData.startDate || !formData.endDate) {
+    if (!debouncedFormData.startDate || !debouncedFormData.endDate || !debouncedFormData.propertyId) {
       setPriceBreakdown(null)
       return
     }
 
     setLoading(true)
-    const customBasePrice = formData.customBasePrice ? Number(formData.customBasePrice) : undefined
+    const customBasePrice = debouncedFormData.customBasePrice ? Number(debouncedFormData.customBasePrice) : undefined
     fetch('/api/bookings/calculate-price', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        startDate: `${formData.startDate}T00:00:00.000Z`,
-        endDate: `${formData.endDate}T00:00:00.000Z`,
-        adults: formData.adults,
-        children: formData.children,
-        hasLinens: formData.hasLinens,
-        hasCleaning: formData.hasCleaning,
-        hasCancellationInsurance: formData.hasInsurance,
+        propertyId: debouncedFormData.propertyId,
+        startDate: `${debouncedFormData.startDate}T00:00:00.000Z`,
+        endDate: `${debouncedFormData.endDate}T00:00:00.000Z`,
+        adults: debouncedFormData.adults,
+        children: debouncedFormData.children,
+        hasLinens: debouncedFormData.hasLinens,
+        hasCleaning: debouncedFormData.hasCleaning,
+        hasCancellationInsurance: debouncedFormData.hasInsurance,
         ...(customBasePrice !== undefined && { customBasePrice }),
       }),
     })
@@ -144,16 +147,7 @@ export function BookingSummary() {
         console.error('Error calculating price:', err)
         setLoading(false)
       })
-  }, [
-    formData.startDate,
-    formData.endDate,
-    formData.adults,
-    formData.children,
-    formData.hasLinens,
-    formData.hasCleaning,
-    formData.hasInsurance,
-    formData.customBasePrice,
-  ])
+  }, [debouncedFormData])
 
   if (!priceBreakdown) {
     return (
@@ -282,7 +276,7 @@ export function BookingSummary() {
               </div>
 
               <Button
-                className="bg-primary hover:bg-primary/90 w-full"
+                className="bg-primary hover:bg-primary/90 w-full shadow-md hover:shadow-lg transition-shadow"
                 onClick={handleSubmit}
                 disabled={submitting || !formData.propertyId || !formData.clientId}
               >
