@@ -297,10 +297,12 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                     </p>
                   </div>
                   <div className="space-y-2 pt-2">
-                    <div className="flex items-center gap-2 text-sm">
-                      <Mail className="text-muted-foreground h-4 w-4 shrink-0" />
-                      <span className="text-foreground break-all">{booking.client.email}</span>
-                    </div>
+                    {booking.client.email && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Mail className="text-muted-foreground h-4 w-4 shrink-0" />
+                        <span className="text-foreground break-all">{booking.client.email}</span>
+                      </div>
+                    )}
                     {booking.client.phone && (
                       <div className="flex items-center gap-2 text-sm">
                         <Phone className="text-muted-foreground h-4 w-4 shrink-0" />
@@ -308,12 +310,14 @@ export default async function BookingDetailPage({ params }: { params: Promise<{ 
                       </div>
                     )}
                   </div>
-                  <Button variant="outline" className="mt-2 w-full bg-transparent" asChild>
-                    <a href={`mailto:${booking.client.email}`}>
-                      <Mail className="mr-2 h-4 w-4" />
-                      Envoyer Email
-                    </a>
-                  </Button>
+                  {booking.client.email && (
+                    <Button variant="outline" className="mt-2 w-full bg-transparent" asChild>
+                      <a href={`mailto:${booking.client.email}`}>
+                        <Mail className="mr-2 h-4 w-4" />
+                        Envoyer Email
+                      </a>
+                    </Button>
+                  )}
                 </>
               ) : (
                 <p className="text-muted-foreground text-sm">Client non trouvé</p>

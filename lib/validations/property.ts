@@ -12,6 +12,7 @@ export const propertySchema = z.object({
   address: z.string().optional().or(z.literal('')),
   description: z.string().optional().or(z.literal('')),
   contractDescription: z.string().optional().or(z.literal('')),
+  sejourTaxEnabled: z.boolean().default(true),
 })
 
 /**

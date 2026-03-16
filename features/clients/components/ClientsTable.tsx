@@ -33,7 +33,7 @@ type ClientRow = {
   id: string
   firstName: string
   lastName: string
-  email: string
+  email: string | null
   phone?: string | null
   address?: string | null
   zipCode?: string | null
@@ -326,13 +326,17 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     </div>
                   </td>
                   <td className="hidden h-11 px-4 sm:table-cell">
-                    <a
-                      href={`mailto:${client.email}`}
-                      className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm"
-                    >
-                      <Mail className="h-3.5 w-3.5" />
-                      {client.email}
-                    </a>
+                    {client.email ? (
+                      <a
+                        href={`mailto:${client.email}`}
+                        className="text-muted-foreground hover:text-primary flex items-center gap-2 text-sm"
+                      >
+                        <Mail className="h-3.5 w-3.5" />
+                        {client.email}
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground text-sm">—</span>
+                    )}
                   </td>
                   <td className="hidden h-11 px-4 sm:table-cell">
                     {client.phone ? (

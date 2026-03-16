@@ -15,6 +15,7 @@ import {
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { Switch } from '@/components/ui/switch'
 import { ColumnHeader } from '@/components/ui/data-table'
 import { cn } from '@/lib/utils'
 import { useProperties } from '@/features/properties/hooks/useProperties'
@@ -55,6 +56,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
     address: '',
     description: '',
     contractDescription: '',
+    sejourTaxEnabled: true,
   })
 
   const [errors, setErrors] = useState<Record<string, string>>({})
@@ -98,6 +100,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
       address: property.address || '',
       description: property.description || '',
       contractDescription: property.contractDescription || '',
+      sejourTaxEnabled: (property as any).sejourTaxEnabled ?? true,
     })
     setErrors({})
   }
@@ -393,6 +396,18 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                   rows={6}
                   className="font-mono text-sm"
                   placeholder="Texte juridique pour le contrat..."
+                />
+              </div>
+              <div className="flex items-center justify-between rounded-lg border border-input bg-card p-3">
+                <Label htmlFor="edit-sejourTaxEnabled" className="cursor-pointer">
+                  Taxe de séjour (1€/nuit/personne)
+                </Label>
+                <Switch
+                  id="edit-sejourTaxEnabled"
+                  checked={editFormData.sejourTaxEnabled}
+                  onCheckedChange={(checked) =>
+                    setEditFormData({ ...editFormData, sejourTaxEnabled: checked })
+                  }
                 />
               </div>
             </div>

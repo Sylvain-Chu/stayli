@@ -43,7 +43,7 @@ export function ExportClientsButton({ filename = 'clients.csv' }: ExportButtonPr
       const rows = clients.map((client) => [
         client.firstName,
         client.lastName,
-        client.email,
+        client.email || '',
         client.phone || '',
         new Date(client.createdAt).toLocaleDateString('fr-FR'),
       ])

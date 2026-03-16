@@ -15,7 +15,7 @@ export function useBookingForm({ clients }: UseBookingFormOptions) {
   const [isCalculating, setIsCalculating] = useState(false)
   const priceTimerRef = useRef<ReturnType<typeof setTimeout>>(null)
 
-  const calculatePrices = async (startDate: Date, endDate: Date, options = {}) => {
+  const calculatePrices = async (startDate: Date, endDate: Date, propertyId: string, options = {}) => {
     setIsCalculating(true)
     try {
       const currentOptions = {
@@ -31,6 +31,7 @@ export function useBookingForm({ clients }: UseBookingFormOptions) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          propertyId,
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           ...currentOptions,
@@ -62,13 +63,14 @@ export function useBookingForm({ clients }: UseBookingFormOptions) {
     key: string,
     value: unknown,
     dates?: { startDate: Date; endDate: Date } | null,
+    propertyId?: string,
   ) => {
     setNewBooking((prev) => {
       const updated = { ...prev, [key]: value }
-      if (dates) {
+      if (dates && propertyId) {
         if (priceTimerRef.current) clearTimeout(priceTimerRef.current)
         priceTimerRef.current = setTimeout(() => {
-          calculatePrices(dates.startDate, dates.endDate, { [key]: value })
+          calculatePrices(dates.startDate, dates.endDate, propertyId, { [key]: value })
         }, 300)
       }
       return updated
@@ -78,7 +80,7 @@ export function useBookingForm({ clients }: UseBookingFormOptions) {
   const filteredClients = clients.filter(
     (client) =>
       `${client.firstName} ${client.lastName}`.toLowerCase().includes(clientSearch.toLowerCase()) ||
-      client.email.toLowerCase().includes(clientSearch.toLowerCase()),
+      (client.email?.toLowerCase().includes(clientSearch.toLowerCase()) ?? false),
   )
 
   const showCreateClientOption =

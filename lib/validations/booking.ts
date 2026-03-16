@@ -80,6 +80,7 @@ export const bookingQuerySchema = z.object({
  * Price calculation request validation
  */
 export const calculatePriceSchema = z.object({
+  propertyId: z.string().uuid('ID de propriété invalide'),
   startDate: z.string().datetime('Date de début invalide'),
   endDate: z.string().datetime('Date de fin invalide'),
   adults: z.number().int().min(1).default(1),

@@ -76,7 +76,7 @@ export interface PropertyWithStats extends Property {
 export interface Client extends BaseEntity {
   firstName: string
   lastName: string
-  email: string
+  email: string | null
   phone: string | null
   address: string | null
   zipCode: string | null

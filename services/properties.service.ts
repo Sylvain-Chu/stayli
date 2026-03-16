@@ -27,6 +27,7 @@ export interface CreatePropertyData {
   address?: string
   description?: string
   contractDescription?: string
+  sejourTaxEnabled?: boolean
 }
 
 export type UpdatePropertyData = Partial<CreatePropertyData>

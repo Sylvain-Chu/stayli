@@ -27,7 +27,7 @@ export interface ClientsListResponse {
 export interface CreateClientData {
   firstName: string
   lastName: string
-  email: string
+  email?: string
   phone?: string
   address?: string
   zipCode?: string

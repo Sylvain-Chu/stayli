@@ -136,6 +136,18 @@ describe('BookingPriceCalculator', () => {
       const withoutChildren = calc.calculate({ ...BASE_INPUT, adults: 2, children: 0 })
       expect(withChildren.touristTax).toBeGreaterThan(withoutChildren.touristTax)
     })
+
+    it('returns 0 tax when touristTaxRate is 0 (sejour tax disabled)', () => {
+      const result = calc.calculate({ ...BASE_INPUT, touristTaxRate: 0, adults: 2, children: 1 })
+      expect(result.touristTax).toBe(0)
+    })
+
+    it('excludes tax from total when rate is 0', () => {
+      const withTax = calc.calculate({ ...BASE_INPUT, hasLinens: true })
+      const withoutTax = calc.calculate({ ...BASE_INPUT, hasLinens: true, touristTaxRate: 0 })
+      expect(withTax.totalPrice).toBeGreaterThan(withoutTax.totalPrice)
+      expect(withoutTax.totalPrice).toBe(withTax.totalPrice - withTax.touristTax)
+    })
   })
 
   describe('total price', () => {
