@@ -194,11 +194,6 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                     Émission
                   </span>
                 </th>
-                <th className="hidden h-11 px-4 text-left sm:table-cell">
-                  <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-                    Échéance
-                  </span>
-                </th>
                 <ColumnHeader
                   label="Montant"
                   sortable
@@ -262,16 +257,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {formatDate(invoice.issueDate)}
                       </span>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
-                      <span
-                        className={cn(
-                          'text-sm',
-                          overdue ? 'text-destructive font-medium' : 'text-foreground',
-                        )}
-                      >
-                        {formatDate(invoice.dueDate)}
-                      </span>
-                    </td>
+
                     <td className="h-11 px-4">
                       <span className="text-foreground text-sm font-semibold">
                         {invoice.amount.toLocaleString('fr-FR')} €
@@ -296,7 +282,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                           className={cn(
                             'h-8 w-8 focus-visible:ring-2',
                             (invoice.status === 'paid' || invoice.status === 'cancelled') &&
-                              'invisible pointer-events-none',
+                              'pointer-events-none invisible',
                           )}
                           onClick={() => handleChangeStatus(invoice.id, 'paid')}
                         >
@@ -353,7 +339,10 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
           <div className="flex items-center gap-2">
             <select
               value={perPage}
-              onChange={(e) => { setPerPage(Number(e.target.value)); setPage(1) }}
+              onChange={(e) => {
+                setPerPage(Number(e.target.value))
+                setPage(1)
+              }}
               className="border-input text-muted-foreground h-8 rounded-md border bg-transparent px-2 text-sm"
             >
               <option value={5}>5 / page</option>

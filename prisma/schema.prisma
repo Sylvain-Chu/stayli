@@ -122,8 +122,7 @@ model Settings {
   companyAddress                       String?
   companyPhoneNumber                   String?
   companyEmail                         String?
-  companySiret                         String?  
-  companyLogoUrl                       String?
+  companySiret                         String?
   companyZipCode                       String?  
   companyCity                          String?
   defaultLanguage                      String   @default("fr")

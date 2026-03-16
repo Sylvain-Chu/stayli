@@ -12,7 +12,6 @@ export const settingsSchema = z.object({
   companyZipCode: z.string().optional(),
   companyCity: z.string().optional(),
   companySiret: z.string().optional(),
-  companyLogoUrl: z.string().optional(),
   defaultLanguage: z.string().optional(),
   currencyCode: z.string().optional(),
   currencySymbol: z.string().optional(),
