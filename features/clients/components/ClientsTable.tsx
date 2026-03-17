@@ -23,7 +23,7 @@ import { ClientsTableSkeleton } from './TableSkeleton'
 import { useToast } from '@/hooks/use-toast'
 import { FormEvent, useMemo, useState, useEffect } from 'react'
 import { useClientsContext } from '@/features/clients/context/ClientsContext'
-import { clientSchema } from '@/lib/validations/client'
+import { updateClientSchema } from '@/lib/validations/client'
 import { ZodError } from 'zod'
 
 type SortDirection = 'asc' | 'desc' | null
@@ -130,7 +130,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
     setIsSubmitting(true)
     try {
       // Validate form data before submitting
-      clientSchema.parse(editFormData)
+      updateClientSchema.parse(editFormData)
 
       mutate(
         async (data: any) => {
@@ -545,7 +545,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                 )}
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="edit-email">Email *</Label>
+                <Label htmlFor="edit-email">Email</Label>
                 <Input
                   id="edit-email"
                   type="email"
@@ -555,7 +555,6 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     setEditFieldErrors((prev) => ({ ...prev, email: undefined }))
                   }}
                   className={editFieldErrors.email ? 'border-destructive' : ''}
-                  required
                 />
                 {editFieldErrors.email && (
                   <p className="text-destructive text-xs">{editFieldErrors.email}</p>
