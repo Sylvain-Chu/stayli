@@ -14,6 +14,7 @@ import {
   BookOpen,
   X,
   UserCog,
+  Receipt,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useSession } from 'next-auth/react'
@@ -25,6 +26,7 @@ const mainNavItems = [
   { href: '/clients', label: 'Clients', icon: Users },
   { href: '/properties', label: 'Propriétés', icon: Home },
   { href: '/invoices', label: 'Factures', icon: FileText },
+  { href: '/expenses', label: 'Dépenses', icon: Receipt },
   { href: '/users', label: 'Utilisateurs', icon: UserCog, adminOnly: true },
 ]
 

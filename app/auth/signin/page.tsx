@@ -42,13 +42,13 @@ function SignInForm() {
       })
 
       if (result?.error) {
-        setFormError('Invalid email or password')
+        setFormError('Email ou mot de passe invalide')
       } else {
         router.push(callbackUrl)
         router.refresh()
       }
     } catch {
-      setFormError('An error occurred. Please try again.')
+      setFormError('Une erreur est survenue. Veuillez réessayer.')
     } finally {
       setIsLoading(false)
     }
@@ -62,15 +62,15 @@ function SignInForm() {
             <Home className="h-6 w-6" />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-        <CardDescription>Sign in to your Stayli account</CardDescription>
+        <CardTitle className="text-2xl font-bold">Bon retour</CardTitle>
+        <CardDescription>Connectez-vous à votre compte Stayli</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           {(formError || error) && (
             <div className="bg-destructive/10 text-destructive flex items-center gap-2 rounded-md p-3 text-sm">
               <AlertCircle className="h-4 w-4" />
-              {formError || 'Authentication failed. Please try again.'}
+              {formError || 'Authentification échouée. Veuillez réessayer.'}
             </div>
           )}
 
@@ -79,7 +79,7 @@ function SignInForm() {
             <Input
               id="email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="vous@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -88,7 +88,7 @@ function SignInForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password">Mot de passe</Label>
             <Input
               id="password"
               type="password"
@@ -104,19 +104,19 @@ function SignInForm() {
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Signing in...
+                Connexion en cours...
               </>
             ) : (
-              'Sign in'
+              'Se connecter'
             )}
           </Button>
         </form>
 
         {needsSetup && (
           <div className="text-muted-foreground mt-6 text-center text-sm">
-            First time here?{' '}
+            Première visite?{' '}
             <Link href="/auth/setup" className="text-primary hover:underline">
-              Set up your account
+              Créez votre compte
             </Link>
           </div>
         )}

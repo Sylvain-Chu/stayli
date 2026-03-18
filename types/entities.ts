@@ -9,6 +9,7 @@ export type Role = 'ADMIN' | 'USER'
 export type BookingStatus = 'confirmed' | 'pending' | 'cancelled'
 export type InvoiceStatus = 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
 export type DiscountType = 'amount' | 'percent'
+export type ExpenseCategory = 'energy' | 'materials' | 'maintenance' | 'insurance'
 
 // ============ Status Configuration ============
 
@@ -30,6 +31,13 @@ export const INVOICE_STATUS_CONFIG: Record<InvoiceStatus, StatusConfig> = {
   paid: { label: 'Paid', color: 'text-green-700', bgColor: 'bg-green-100' },
   overdue: { label: 'Overdue', color: 'text-red-700', bgColor: 'bg-red-100' },
   cancelled: { label: 'Cancelled', color: 'text-gray-700', bgColor: 'bg-gray-100' },
+} as const
+
+export const EXPENSE_CATEGORY_CONFIG: Record<ExpenseCategory, StatusConfig> = {
+  energy: { label: 'Énergie', color: 'text-blue-700', bgColor: 'bg-blue-100' },
+  materials: { label: 'Matériel & fournitures', color: 'text-orange-700', bgColor: 'bg-orange-100' },
+  maintenance: { label: 'Travaux & entretien', color: 'text-red-700', bgColor: 'bg-red-100' },
+  insurance: { label: 'Assurance & taxes', color: 'text-purple-700', bgColor: 'bg-purple-100' },
 } as const
 
 // ============ Base Entity ============
@@ -143,6 +151,27 @@ export interface InvoiceWithBooking extends Invoice {
   booking?: BookingWithRelations
 }
 
+// ============ Expense ============
+
+export interface Expense extends BaseEntity {
+  propertyId: string
+  amount: number
+  category: ExpenseCategory
+  description: string | null
+  date: string
+  supplier: string | null
+}
+
+export interface ExpenseWithProperty extends Expense {
+  property?: Property
+}
+
+export interface ExpenseStats {
+  total: number
+  totalAmount: number
+  byCategory: Record<ExpenseCategory, number>
+}
+
 // ============ Settings ============
 
 export interface Settings extends BaseEntity {
@@ -216,4 +245,6 @@ export interface DashboardStats {
   activeBookings: number
   bookingsTrend: number
   pendingInvoices: number
+  monthlyExpenses: number
+  netRevenue: number
 }

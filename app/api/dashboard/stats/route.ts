@@ -53,6 +53,14 @@ export async function GET() {
       },
     })
 
+    // Dépenses du mois courant
+    const monthlyExpenses = await prisma.expense.aggregate({
+      where: {
+        date: { gte: startOfMonth, lte: endOfMonth },
+      },
+      _sum: { amount: true },
+    })
+
     // Taux d'occupation (jours occupés / jours totaux du mois)
     const daysInMonth = endOfMonth.getDate()
     const properties = await prisma.property.count()
@@ -96,8 +104,10 @@ export async function GET() {
     bookingsThisMonth.forEach((booking) => {
       const start = booking.startDate > startOfMonth ? booking.startDate : startOfMonth
       const end = booking.endDate < endOfMonth ? booking.endDate : endOfMonth
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        occupiedDays.add(d.toDateString())
+      const currentDate = new Date(start)
+      while (currentDate.getTime() <= end.getTime()) {
+        occupiedDays.add(currentDate.toDateString())
+        currentDate.setDate(currentDate.getDate() + 1)
       }
     })
 
@@ -105,8 +115,10 @@ export async function GET() {
     bookingsLastMonth.forEach((booking) => {
       const start = booking.startDate > lastMonth ? booking.startDate : lastMonth
       const end = booking.endDate < endOfLastMonth ? booking.endDate : endOfLastMonth
-      for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-        lastMonthOccupiedDays.add(d.toDateString())
+      const currentDate = new Date(start)
+      while (currentDate.getTime() <= end.getTime()) {
+        lastMonthOccupiedDays.add(currentDate.toDateString())
+        currentDate.setDate(currentDate.getDate() + 1)
       }
     })
 
@@ -129,6 +141,9 @@ export async function GET() {
     const bookingsTrend = activeBookings - lastMonthActiveBookings
     const occupancyTrend = occupancyRate - lastMonthOccupancyRate
 
+    const expenses = monthlyExpenses._sum.amount || 0
+    const netRevenue = revenue - expenses
+
     return successResponse({
       occupancyRate: Math.round(occupancyRate),
       occupancyTrend: Math.round(occupancyTrend),
@@ -137,6 +152,8 @@ export async function GET() {
       activeBookings,
       bookingsTrend,
       pendingInvoices,
+      monthlyExpenses: expenses,
+      netRevenue,
     })
   } catch (error) {
     return handleApiError(error, 'Failed to fetch dashboard stats')
