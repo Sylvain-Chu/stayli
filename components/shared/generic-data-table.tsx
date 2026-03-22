@@ -152,7 +152,7 @@ export function GenericDataTable<T extends Record<string, any>>({
           <thead className="border-b">
             <tr className="hover:bg-muted/50 border-b transition-colors">
               {onSelectionChange && (
-                <th className="h-11 w-12 px-4">
+                <th className="h-12 w-12 px-4">
                   <Checkbox
                     checked={selectedItems.size === data.length && data.length > 0}
                     onCheckedChange={handleSelectAll}
@@ -175,7 +175,7 @@ export function GenericDataTable<T extends Record<string, any>>({
                 />
               ))}
               {actions.length > 0 && (
-                <th className="text-muted-foreground h-11 px-4 text-left align-middle font-medium">
+                <th className="text-muted-foreground h-12 px-4 text-left align-middle font-medium">
                   <span className="text-xs font-semibold tracking-wide uppercase">Actions</span>
                 </th>
               )}
@@ -197,7 +197,7 @@ export function GenericDataTable<T extends Record<string, any>>({
               processedData.map((item) => (
                 <tr
                   key={String(item[idKey])}
-                  className="hover:bg-muted/50 border-b transition-colors"
+                  className="hover:bg-muted/50 border-b transition-colors h-12"
                 >
                   {onSelectionChange && (
                     <td className="w-12 px-4">
@@ -208,12 +208,12 @@ export function GenericDataTable<T extends Record<string, any>>({
                     </td>
                   )}
                   {columns.map((column) => (
-                    <td key={column.key} className={`px-4 py-3 ${column.className || ''}`}>
+                    <td key={column.key} className={`px-4 align-middle ${column.className || ''}`}>
                       {column.render ? column.render(item) : String(item[column.key])}
                     </td>
                   ))}
                   {actions.length > 0 && (
-                    <td className="px-4 py-3">
+                    <td className="px-4 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" aria-label="Actions">

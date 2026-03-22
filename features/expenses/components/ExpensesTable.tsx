@@ -87,20 +87,20 @@ export function ExpensesTable({ propertyId, category }: ExpensesTableProps) {
             {expenses.map((expense) => {
               const categoryConfig = EXPENSE_CATEGORY_CONFIG[expense.category as ExpenseCategory]
               return (
-                <tr key={expense.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-sm">{formatDate(expense.date)}</td>
-                  <td className="px-4 py-3 text-sm">{expense.property?.name || '-'}</td>
-                  <td className="px-4 py-3 text-sm">
+                <tr key={expense.id} className="hover:bg-gray-50 transition-colors h-12">
+                  <td className="h-12 px-4 align-middle text-sm">{formatDate(expense.date)}</td>
+                  <td className="h-12 px-4 align-middle text-sm">{expense.property?.name || '-'}</td>
+                  <td className="h-12 px-4 align-middle text-sm">
                     <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${categoryConfig.bgColor} ${categoryConfig.color}`}>
                       {categoryConfig.label}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm">{expense.supplier || '-'}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{expense.description || '-'}</td>
-                  <td className="px-4 py-3 text-right text-sm font-medium">
+                  <td className="h-12 px-4 align-middle text-sm">{expense.supplier || '-'}</td>
+                  <td className="h-12 px-4 align-middle text-sm text-gray-600">{expense.description || '-'}</td>
+                  <td className="h-12 px-4 align-middle text-right text-sm font-medium">
                     {expense.amount.toLocaleString('fr-FR')} €
                   </td>
-                  <td className="px-4 py-3 flex gap-2">
+                  <td className="h-12 px-4 align-middle flex gap-2">
                     <Button
                       variant="ghost"
                       size="sm"

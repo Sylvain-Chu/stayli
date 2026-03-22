@@ -107,8 +107,8 @@ export function UsersTable({ searchQuery = '', page = 1, perPage = 10 }: UsersTa
           </thead>
           <tbody className="divide-y divide-border">
             {users.map((user) => (
-              <tr key={user.id} className="hover:bg-muted/30 transition-colors">
-                <td className="px-4 py-3">
+              <tr key={user.id} className="hover:bg-muted/30 transition-colors h-12">
+                <td className="h-12 px-4 align-middle">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-8 w-8">
                       <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
@@ -119,15 +119,15 @@ export function UsersTable({ searchQuery = '', page = 1, perPage = 10 }: UsersTa
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3">
+                <td className="h-12 px-4 align-middle">
                   <Badge variant={user.role === 'ADMIN' ? 'default' : 'secondary'}>
                     {user.role === 'ADMIN' ? 'Admin' : 'Utilisateur'}
                   </Badge>
                 </td>
-                <td className="px-4 py-3 text-sm text-muted-foreground">
+                <td className="h-12 px-4 text-sm text-muted-foreground">
                   {new Date(user.createdAt).toLocaleDateString('fr-FR')}
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="h-12 px-4 text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon">
