@@ -1,4 +1,9 @@
 import useSWR from 'swr'
+import type {
+  MonthlyDataPoint,
+  PropertyBreakdown,
+  ExpenseCategoryBreakdown,
+} from '@/types/entities'
 
 export interface DashboardStats {
   occupancyRate: number
@@ -8,6 +13,8 @@ export interface DashboardStats {
   activeBookings: number
   bookingsTrend: number
   pendingInvoices: number
+  monthlyExpenses: number
+  netRevenue: number
 }
 
 export interface Activity {
@@ -78,6 +85,54 @@ export function useCalendarBookings(year: number, month: number, day: number | n
 
   return {
     bookings: data?.bookings || [],
+    isLoading,
+    isError: !!error,
+  }
+}
+
+export function useRevenueVsExpenses() {
+  const { data, error, isLoading } = useSWR<{ data: MonthlyDataPoint[] }>(
+    '/api/dashboard/revenue-vs-expenses',
+    { refreshInterval: 300000 },
+  )
+
+  return {
+    data: data?.data ?? [],
+    isLoading,
+    isError: !!error,
+  }
+}
+
+export function usePropertyBreakdown(year?: number) {
+  const url = year
+    ? `/api/dashboard/property-breakdown?year=${year}`
+    : '/api/dashboard/property-breakdown'
+  const { data, error, isLoading } = useSWR<{ year: number; data: PropertyBreakdown[] }>(url, {
+    refreshInterval: 300000,
+  })
+
+  return {
+    data: data?.data ?? [],
+    year: data?.year,
+    isLoading,
+    isError: !!error,
+  }
+}
+
+export function useExpenseCategories(year?: number) {
+  const url = year
+    ? `/api/dashboard/expense-categories?year=${year}`
+    : '/api/dashboard/expense-categories'
+  const { data, error, isLoading } = useSWR<{
+    year: number
+    total: number
+    data: ExpenseCategoryBreakdown[]
+  }>(url, { refreshInterval: 300000 })
+
+  return {
+    data: data?.data ?? [],
+    total: data?.total ?? 0,
+    year: data?.year,
     isLoading,
     isError: !!error,
   }

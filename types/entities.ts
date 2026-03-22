@@ -248,3 +248,27 @@ export interface DashboardStats {
   monthlyExpenses: number
   netRevenue: number
 }
+
+export interface MonthlyDataPoint {
+  month: string
+  year: number
+  revenue: number
+  expenses: number
+  netProfit: number
+}
+
+export interface PropertyBreakdown {
+  propertyId: string
+  propertyName: string
+  revenue: number
+  expenses: number
+  netProfit: number
+  roi: number | null
+}
+
+export interface ExpenseCategoryBreakdown {
+  category: ExpenseCategory
+  label: string
+  amount: number
+  percentage: number
+}

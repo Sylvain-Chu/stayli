@@ -6,7 +6,7 @@
 import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
-import { handleApiError, successResponse } from '@/lib/api-error'
+import { handleApiError, successResponse, ApiError } from '@/lib/api-error'
 import { logger } from '@/lib/logger'
 import { expenseSchema } from '@/lib/validations/expense'
 import { applyRateLimit } from '@/lib/rate-limit'
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
     const where = {
       ...(propertyId && { propertyId }),
-      ...(category && { category }),
+      ...(category && { category: category as any }),
       ...(search && {
         OR: [
           { supplier: { contains: search, mode: 'insensitive' as const } },
@@ -79,11 +79,7 @@ export async function POST(request: NextRequest) {
       where: { id: validatedData.propertyId },
     })
     if (!property) {
-      return handleApiError(
-        new Error(`Property not found: ${validatedData.propertyId}`),
-        'Property does not exist',
-        400,
-      )
+      throw ApiError.badRequest('Propriété non trouvée')
     }
 
     const expense = await prisma.expense.create({

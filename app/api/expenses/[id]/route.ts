@@ -64,11 +64,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         where: { id: validatedData.propertyId },
       })
       if (!property) {
-        return handleApiError(
-          new Error(`Property not found: ${validatedData.propertyId}`),
-          'Property does not exist',
-          400,
-        )
+        throw ApiError.badRequest('Propriété non trouvée')
       }
     }
 
