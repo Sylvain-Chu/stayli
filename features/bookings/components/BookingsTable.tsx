@@ -226,7 +226,7 @@ export function BookingsTable({
           <table className="w-full">
             <thead>
               <tr className="border-border bg-muted/40 border-b">
-                <th className="h-11 w-12 px-4">
+                <th className="h-12 w-12 px-4">
                   <Checkbox
                     checked={selectedIds.length === bookings?.length && (bookings?.length || 0) > 0}
                     onCheckedChange={handleSelectAll}
@@ -252,12 +252,12 @@ export function BookingsTable({
                   sortDirection={sortColumn === 'startDate' ? sortDirection : null}
                   onSort={() => handleSort('startDate')}
                 />
-                <th className="h-11 px-4 text-left">
+                <th className="h-12 px-4 text-left">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Départ
                   </span>
                 </th>
-                <th className="hidden h-11 px-4 text-left sm:table-cell">
+                <th className="hidden h-12 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Nuits
                   </span>
@@ -269,12 +269,12 @@ export function BookingsTable({
                   onSort={() => handleSort('price')}
                   className="hidden min-w-[100px] sm:table-cell"
                 />
-                <th className="h-11 px-4 text-left">
+                <th className="h-12 px-4 text-left">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Statut
                   </span>
                 </th>
-                <th className="h-11 w-16 px-4"></th>
+                <th className="h-12 w-16 px-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -292,13 +292,13 @@ export function BookingsTable({
                       idx === (bookings?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <Checkbox
                         checked={selectedIds.includes(booking.id)}
                         onCheckedChange={() => toggleSelection(booking.id)}
                       />
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <Link
                         href={`/bookings/${booking.id}`}
                         className="hover:text-primary flex items-center gap-3"
@@ -313,28 +313,28 @@ export function BookingsTable({
                         </div>
                       </Link>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
+                    <td className="hidden h-12 px-4 sm:table-cell">
                       <span className="text-foreground text-sm">
                         {booking.property?.name || 'N/A'}
                       </span>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <span className="text-foreground text-sm">
                         {formatDate(booking.startDate)}
                       </span>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <span className="text-foreground text-sm">{formatDate(booking.endDate)}</span>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
+                    <td className="hidden h-12 px-4 sm:table-cell">
                       <span className="text-muted-foreground text-sm">{nights} nuits</span>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
+                    <td className="hidden h-12 px-4 sm:table-cell">
                       <span className="text-foreground text-sm font-semibold">
                         {booking.totalPrice.toLocaleString('fr-FR')} €
                       </span>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <button
@@ -367,7 +367,7 @@ export function BookingsTable({
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <div className="flex flex-row items-center justify-center gap-1">
                         <Button
                           variant="ghost"

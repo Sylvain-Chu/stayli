@@ -166,13 +166,13 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
           <table className="w-full">
             <thead>
               <tr className="border-border bg-muted/40 border-b">
-                <th className="h-11 w-12 px-4">
+                <th className="h-12 w-12 px-4">
                   <Checkbox
                     checked={selectedIds.length === invoices?.length && (invoices?.length || 0) > 0}
                     onCheckedChange={handleSelectAll}
                   />
                 </th>
-                <th className="h-11 min-w-[100px] px-4 text-left">
+                <th className="h-12 min-w-[100px] px-4 text-left">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     N° Facture
                   </span>
@@ -184,12 +184,12 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                   onSort={() => handleSort('client')}
                   className="min-w-40"
                 />
-                <th className="hidden h-11 px-4 text-left sm:table-cell">
+                <th className="hidden h-12 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Réservation
                   </span>
                 </th>
-                <th className="hidden h-11 px-4 text-left sm:table-cell">
+                <th className="hidden h-12 px-4 text-left sm:table-cell">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Émission
                   </span>
@@ -201,12 +201,12 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                   onSort={() => handleSort('amount')}
                   className="min-w-[100px]"
                 />
-                <th className="h-11 px-4 text-left">
+                <th className="h-12 px-4 text-left">
                   <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                     Statut
                   </span>
                 </th>
-                <th className="h-11 w-24 px-4"></th>
+                <th className="h-12 w-24 px-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -223,13 +223,13 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                       idx === (invoices?.length || 0) - 1 && 'border-b-0',
                     )}
                   >
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <Checkbox
                         checked={selectedIds.includes(invoice.id)}
                         onCheckedChange={() => toggleSelection(invoice.id)}
                       />
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <Link
                         href={`/invoices/${invoice.id}`}
                         className="text-primary text-sm font-medium hover:underline"
@@ -237,14 +237,14 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {invoice.invoiceNumber}
                       </Link>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <span className="text-foreground text-sm">
                         {invoice.booking?.client
                           ? `${invoice.booking.client.firstName} ${invoice.booking.client.lastName}`
                           : 'N/A'}
                       </span>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
+                    <td className="hidden h-12 px-4 sm:table-cell">
                       <Link
                         href={`/bookings/${invoice.bookingId}`}
                         className="text-muted-foreground hover:text-primary text-sm hover:underline"
@@ -252,18 +252,18 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {invoice.booking?.property?.name || invoice.bookingId.slice(0, 8)}
                       </Link>
                     </td>
-                    <td className="hidden h-11 px-4 sm:table-cell">
+                    <td className="hidden h-12 px-4 sm:table-cell">
                       <span className="text-foreground text-sm">
                         {formatDate(invoice.issueDate)}
                       </span>
                     </td>
 
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <span className="text-foreground text-sm font-semibold">
                         {invoice.amount.toLocaleString('fr-FR')} €
                       </span>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <span
                         className={cn(
                           'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
@@ -273,7 +273,7 @@ export function InvoicesTable({ searchQuery = '' }: InvoicesTableProps) {
                         {status.label}
                       </span>
                     </td>
-                    <td className="h-11 px-4">
+                    <td className="h-12 px-4 align-middle">
                       <div className="flex items-center gap-1">
                         <Button
                           variant="ghost"

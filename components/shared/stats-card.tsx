@@ -38,7 +38,7 @@ export function StatsCard({
 }: StatsCardProps) {
   return (
     <Card className={cn('border-border bg-card', className)}>
-      <CardContent className="p-4">
+      <CardContent className="px-4 py-1">
         <div className="flex items-center justify-between">
           <div className="min-w-0 flex-1">
             <p className="text-muted-foreground truncate text-sm font-medium">{title}</p>

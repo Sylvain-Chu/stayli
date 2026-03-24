@@ -17,7 +17,10 @@ export async function POST(request: NextRequest) {
     // Get settings and property for calculation
     const [settings, property] = await Promise.all([
       prisma.settings.findFirst(),
-      prisma.property.findUnique({ where: { id: validatedData.propertyId } }),
+      prisma.property.findUnique({
+        where: { id: validatedData.propertyId },
+        select: { id: true, name: true, sejourTaxEnabled: true },
+      }),
     ])
 
     if (!settings) {

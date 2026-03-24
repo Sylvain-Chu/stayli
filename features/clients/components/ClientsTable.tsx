@@ -259,7 +259,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
         <table className="w-full">
           <thead>
             <tr className="border-border bg-muted/40 border-b">
-              <th className="h-11 w-12 px-4">
+              <th className="h-12 w-12 px-4">
                 <Checkbox
                   checked={selectedIds.length === clients?.length && (clients?.length || 0) > 0}
                   onCheckedChange={handleSelectAll}
@@ -282,17 +282,17 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                 onFilterChange={(value) => setFilters((prev) => ({ ...prev, email: value }))}
                 className="hidden min-w-[220px] sm:table-cell"
               />
-              <th className="hidden h-11 px-4 text-left sm:table-cell">
+              <th className="hidden h-12 px-4 text-left sm:table-cell">
                 <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                   Téléphone
                 </span>
               </th>
-              <th className="hidden h-11 px-4 text-left sm:table-cell">
+              <th className="hidden h-12 px-4 text-left sm:table-cell">
                 <span className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
                   Créé le
                 </span>
               </th>
-              <th className="h-11 w-16 px-4"></th>
+              <th className="h-12 w-16 px-4"></th>
             </tr>
           </thead>
           <tbody>
@@ -307,13 +307,13 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                     idx === (clients?.length || 0) - 1 && 'border-b-0',
                   )}
                 >
-                  <td className="h-11 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <Checkbox
                       checked={selectedIds.includes(client.id)}
                       onCheckedChange={() => toggleSelection(client.id)}
                     />
                   </td>
-                  <td className="h-11 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9">
                         <AvatarFallback className="bg-primary/10 text-primary text-sm font-medium">
@@ -325,7 +325,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       </span>
                     </div>
                   </td>
-                  <td className="hidden h-11 px-4 sm:table-cell">
+                  <td className="hidden h-12 px-4 sm:table-cell">
                     {client.email ? (
                       <a
                         href={`mailto:${client.email}`}
@@ -338,7 +338,7 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       <span className="text-muted-foreground text-sm">—</span>
                     )}
                   </td>
-                  <td className="hidden h-11 px-4 sm:table-cell">
+                  <td className="hidden h-12 px-4 sm:table-cell">
                     {client.phone ? (
                       <a
                         href={`tel:${client.phone}`}
@@ -351,12 +351,12 @@ export function ClientsTable({ searchQuery = '' }: ClientsTableProps) {
                       <span className="text-muted-foreground text-sm">-</span>
                     )}
                   </td>
-                  <td className="hidden h-11 px-4 sm:table-cell">
+                  <td className="hidden h-12 px-4 sm:table-cell">
                     <span className="text-muted-foreground text-sm">
                       {new Date(client.createdAt).toLocaleDateString('fr-FR')}
                     </span>
                   </td>
-                  <td className="h-11 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <div className="flex flex-row items-center justify-center gap-1">
                       <Button
                         variant="ghost"

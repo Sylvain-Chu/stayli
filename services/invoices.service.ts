@@ -46,3 +46,9 @@ export async function deleteInvoice(id: string): Promise<void> {
 export async function deleteInvoices(ids: string[]): Promise<void> {
   await Promise.all(ids.map((id) => deleteInvoice(id)))
 }
+
+// ============ Stats ============
+
+export async function getInvoiceStats(): Promise<InvoiceStats> {
+  return apiGet<InvoiceStats>('/api/invoices/stats')
+}

@@ -196,7 +196,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
           <table className="w-full">
             <thead>
               <tr className="border-border bg-muted/40 border-b">
-                <th className="h-11 w-12 px-4">
+                <th className="h-12 w-12 px-4">
                   <Checkbox
                     checked={
                       selectedIds.length === properties?.length && (properties?.length || 0) > 0
@@ -226,7 +226,7 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                   onSort={() => handleSort('revenue')}
                   className="min-w-[140px]"
                 />
-                <th className="h-11 w-16 px-4"></th>
+                <th className="h-12 w-16 px-4"></th>
               </tr>
             </thead>
             <tbody>
@@ -239,13 +239,13 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                     idx === (properties?.length || 0) - 1 && 'border-b-0',
                   )}
                 >
-                  <td className="h-16 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <Checkbox
                       checked={selectedIds.includes(property.id)}
                       onCheckedChange={() => toggleSelection(property.id)}
                     />
                   </td>
-                  <td className="h-16 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <div className="flex items-center gap-3">
                       <Home className="text-muted-foreground h-5 w-5" />
                       <div>
@@ -253,23 +253,23 @@ export function PropertiesTable({ searchQuery = '' }: PropertiesTableProps) {
                       </div>
                     </div>
                   </td>
-                  <td className="h-16 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <p className="text-muted-foreground flex items-center gap-1.5 text-sm">
                       <MapPin className="h-3.5 w-3.5" />
                       {property.address || 'Non renseignée'}
                     </p>
                   </td>
-                  <td className="h-16 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <span className="bg-primary/10 text-primary inline-flex h-7 min-w-7 items-center justify-center rounded-full px-2 text-sm font-semibold">
                       {property._count?.bookings || 0}
                     </span>
                   </td>
-                  <td className="h-16 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <span className="text-foreground text-sm font-semibold">
                       {property.revenue ? `${property.revenue.toLocaleString('fr-FR')} €` : '0 €'}
                     </span>
                   </td>
-                  <td className="h-14 px-4">
+                  <td className="h-12 px-4 align-middle">
                     <div className="flex flex-row items-center justify-center gap-1">
                       <Button
                         variant="ghost"
