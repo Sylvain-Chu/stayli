@@ -32,7 +32,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    await requireAdmin()
+    await requireAuth()
     await applyRateLimit('PATCH:/api/bookings/[id]')
 
     const { id } = await params
@@ -90,7 +90,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await requireAdmin()
+    await requireAuth()
     await applyRateLimit('DELETE:/api/bookings/[id]')
 
     const { id } = await params

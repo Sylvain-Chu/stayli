@@ -68,19 +68,49 @@ export function AddExpenseDialog({
     description: '',
   })
 
-  // Initialize date after hydration to prevent mismatch
+  // Initialize form data based on whether editing or creating
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setFormData((prev) => ({
-      ...prev,
-      date: prev.date || getDefaultDate(),
-    }))
-  }, [open])
+    if (open) {
+      if (expense) {
+        // Fill form with expense data
+        setFormData({
+          propertyId: expense.propertyId,
+          amount: expense.amount.toString(),
+          category: expense.category,
+          date: new Date(expense.date).toISOString().split('T')[0],
+          supplier: expense.supplier || '',
+          description: expense.description || '',
+        })
+      } else {
+        // Reset form for new expense
+        setFormData({
+          propertyId: properties[0]?.id || '',
+          amount: '',
+          category: '',
+          date: getDefaultDate(),
+          supplier: '',
+          description: '',
+        })
+      }
+    }
+  }, [open, expense, properties])
 
 
 
   const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
+  }
+
+  const handleAmountBlur = () => {
+    if (formData.amount && formData.amount.trim() !== '') {
+      const num = parseFloat(formData.amount)
+      if (!isNaN(num)) {
+        setFormData((prev) => ({
+          ...prev,
+          amount: num.toFixed(2),
+        }))
+      }
+    }
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -184,6 +214,7 @@ export function AddExpenseDialog({
                   placeholder="0.00"
                   value={formData.amount}
                   onChange={(e) => handleChange('amount', e.target.value)}
+                  onBlur={handleAmountBlur}
                   className="pr-8 text-lg font-semibold"
                   required
                 />

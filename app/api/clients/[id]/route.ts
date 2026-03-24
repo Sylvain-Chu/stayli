@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    await requireAdmin()
+    await requireAuth()
 
     const { id } = await params
     await prisma.client.delete({

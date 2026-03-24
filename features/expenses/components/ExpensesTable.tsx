@@ -48,82 +48,88 @@ export function ExpensesTable({ propertyId, category }: ExpensesTableProps) {
     )
   }
 
-  if (!expenses || expenses.length === 0) {
-    return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-12 text-center">
-        <div className="flex flex-col items-center gap-4">
-          <div className="rounded-full bg-gray-200 p-4">
-            <Receipt className="h-8 w-8 text-gray-500" />
-          </div>
-          <div>
-            <p className="text-base font-medium text-gray-900">Aucune dépense trouvée</p>
-            <p className="mt-1 text-sm text-gray-600">Commencez par ajouter votre première dépense</p>
-          </div>
-          <Button variant="outline" size="sm" className="mt-2">
-            <Plus className="mr-2 h-4 w-4" />
-            Ajouter une dépense
-          </Button>
-        </div>
-      </div>
-    )
-  }
-
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
-        <table className="w-full">
-          <thead className="border-b border-gray-200 bg-gray-50">
-            <tr>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Propriété</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Catégorie</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Fournisseur</th>
-              <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Description</th>
-              <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Montant</th>
-              <th className="w-20"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {expenses.map((expense) => {
-              const categoryConfig = EXPENSE_CATEGORY_CONFIG[expense.category as ExpenseCategory]
-              return (
-                <tr key={expense.id} className="hover:bg-gray-50 transition-colors h-12">
-                  <td className="h-12 px-4 align-middle text-sm">{formatDate(expense.date)}</td>
-                  <td className="h-12 px-4 align-middle text-sm">{expense.property?.name || '-'}</td>
-                  <td className="h-12 px-4 align-middle text-sm">
-                    <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${categoryConfig.bgColor} ${categoryConfig.color}`}>
-                      {categoryConfig.label}
-                    </span>
-                  </td>
-                  <td className="h-12 px-4 align-middle text-sm">{expense.supplier || '-'}</td>
-                  <td className="h-12 px-4 align-middle text-sm text-gray-600">{expense.description || '-'}</td>
-                  <td className="h-12 px-4 align-middle text-right text-sm font-medium">
-                    {expense.amount.toLocaleString('fr-FR')} €
-                  </td>
-                  <td className="h-12 px-4 align-middle flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEdit(expense)}
-                      className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(expense.id)}
-                      className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      {!expenses || expenses.length === 0 ? (
+        <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-12 text-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="rounded-full bg-gray-200 p-4">
+              <Receipt className="h-8 w-8 text-gray-500" />
+            </div>
+            <div>
+              <p className="text-base font-medium text-gray-900">Aucune dépense trouvée</p>
+              <p className="mt-1 text-sm text-gray-600">Commencez par ajouter votre première dépense</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-2"
+              onClick={() => {
+                setEditingExpense(null)
+                setIsDialogOpen(true)
+              }}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Ajouter une dépense
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+          <table className="w-full">
+            <thead className="border-b border-gray-200 bg-gray-50">
+              <tr>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Date</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Propriété</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Catégorie</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Fournisseur</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Description</th>
+                <th className="px-4 py-3 text-right text-sm font-medium text-gray-700">Montant</th>
+                <th className="w-20"></th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {expenses.map((expense) => {
+                const categoryConfig = EXPENSE_CATEGORY_CONFIG[expense.category as ExpenseCategory]
+                return (
+                  <tr key={expense.id} className="hover:bg-gray-50 transition-colors h-12">
+                    <td className="h-12 px-4 align-middle text-sm">{formatDate(expense.date)}</td>
+                    <td className="h-12 px-4 align-middle text-sm">{expense.property?.name || '-'}</td>
+                    <td className="h-12 px-4 align-middle text-sm">
+                      <span className={`inline-block px-2 py-1 rounded-md text-xs font-medium ${categoryConfig.bgColor} ${categoryConfig.color}`}>
+                        {categoryConfig.label}
+                      </span>
+                    </td>
+                    <td className="h-12 px-4 align-middle text-sm">{expense.supplier || '-'}</td>
+                    <td className="h-12 px-4 align-middle text-sm text-gray-600">{expense.description || '-'}</td>
+                    <td className="h-12 px-4 align-middle text-right text-sm font-medium">
+                      {parseFloat(expense.amount.toFixed(2)).toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €
+                    </td>
+                    <td className="h-12 px-4 flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEdit(expense)}
+                        className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50 hover:text-blue-700"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(expense.id)}
+                        className="h-8 w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <AddExpenseDialog
         open={isDialogOpen}
