@@ -30,10 +30,25 @@ interface AddExpenseDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   properties: Array<{ id: string; name: string }>
-  expense?: { id: string; propertyId: string; amount: number; category: ExpenseCategory; date: string; supplier?: string; description?: string } | null
+  expense?: {
+    id: string
+    propertyId: string
+    amount: number
+    category: ExpenseCategory
+    date: string
+    supplier?: string | null
+    description?: string | null
+  } | null
 }
 
-export function AddExpenseDialog({ open, onOpenChange, properties, expense }: AddExpenseDialogProps) {
+const getDefaultDate = () => new Date().toISOString().split('T')[0]
+
+export function AddExpenseDialog({
+  open,
+  onOpenChange,
+  properties,
+  expense,
+}: AddExpenseDialogProps) {
   const { createExpense, updateExpense, isMutating } = useExpenseMutations()
   const { toast } = useToast()
 
@@ -48,34 +63,21 @@ export function AddExpenseDialog({ open, onOpenChange, properties, expense }: Ad
     propertyId: '',
     amount: '',
     category: '',
-    date: new Date().toISOString().split('T')[0],
+    date: '',
     supplier: '',
     description: '',
   })
 
+  // Initialize date after hydration to prevent mismatch
   useEffect(() => {
-    if (open) {
-      if (expense) {
-        setFormData({
-          propertyId: expense.propertyId,
-          amount: expense.amount.toString(),
-          category: expense.category,
-          date: expense.date.split('T')[0],
-          supplier: expense.supplier || '',
-          description: expense.description || '',
-        })
-      } else {
-        setFormData({
-          propertyId: properties[0]?.id || '',
-          amount: '',
-          category: '',
-          date: new Date().toISOString().split('T')[0],
-          supplier: '',
-          description: '',
-        })
-      }
-    }
-  }, [open, expense, properties])
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setFormData((prev) => ({
+      ...prev,
+      date: prev.date || getDefaultDate(),
+    }))
+  }, [open])
+
+
 
   const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -123,7 +125,7 @@ export function AddExpenseDialog({ open, onOpenChange, properties, expense }: Ad
           propertyId: properties[0]?.id || '',
           amount: '',
           category: '',
-          date: new Date().toISOString().split('T')[0],
+          date: getDefaultDate(),
           supplier: '',
           description: '',
         })
@@ -133,7 +135,9 @@ export function AddExpenseDialog({ open, onOpenChange, properties, expense }: Ad
     } catch (error) {
       toast({
         title: 'Erreur',
-        description: expense ? 'Impossible de modifier la dépense' : 'Impossible de créer la dépense',
+        description: expense
+          ? 'Impossible de modifier la dépense'
+          : 'Impossible de créer la dépense',
         variant: 'destructive',
       })
     }
@@ -146,7 +150,7 @@ export function AddExpenseDialog({ open, onOpenChange, properties, expense }: Ad
           <DialogTitle>{expense ? 'Modifier la dépense' : 'Ajouter une dépense'}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form key={`${open}-${expense?.id}`} onSubmit={handleSubmit} className="space-y-5">
           {/* Property Select - Full width */}
           <div className="space-y-2">
             <Label htmlFor="property">Propriété *</Label>

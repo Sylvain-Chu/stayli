@@ -1,10 +1,16 @@
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAuth()
+
+    const searchParams = request.nextUrl.searchParams
+    const propertyId = searchParams.get('propertyId') || undefined
+
+    const propertyFilter = propertyId ? { propertyId } : {}
 
     const now = new Date()
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
@@ -15,6 +21,7 @@ export async function GET() {
     // Réservations actives (en cours)
     const activeBookings = await prisma.booking.count({
       where: {
+        ...propertyFilter,
         startDate: { lte: now },
         endDate: { gte: now },
         status: { in: ['confirmed', 'pending'] },
@@ -23,6 +30,7 @@ export async function GET() {
 
     const lastMonthActiveBookings = await prisma.booking.count({
       where: {
+        ...propertyFilter,
         startDate: { lte: lastMonth },
         endDate: { gte: lastMonth },
         status: { in: ['confirmed', 'pending'] },
@@ -32,6 +40,7 @@ export async function GET() {
     // Revenus mensuels
     const monthlyRevenue = await prisma.booking.aggregate({
       where: {
+        ...propertyFilter,
         startDate: { gte: startOfMonth, lte: endOfMonth },
         status: { in: ['confirmed', 'pending'] },
       },
@@ -40,6 +49,7 @@ export async function GET() {
 
     const lastMonthRevenue = await prisma.booking.aggregate({
       where: {
+        ...propertyFilter,
         startDate: { gte: lastMonth, lte: endOfLastMonth },
         status: { in: ['confirmed', 'pending'] },
       },
@@ -56,6 +66,7 @@ export async function GET() {
     // Dépenses du mois courant
     const monthlyExpenses = await prisma.expense.aggregate({
       where: {
+        ...propertyFilter,
         date: { gte: startOfMonth, lte: endOfMonth },
       },
       _sum: { amount: true },
@@ -63,10 +74,11 @@ export async function GET() {
 
     // Taux d'occupation (jours occupés / jours totaux du mois)
     const daysInMonth = endOfMonth.getDate()
-    const properties = await prisma.property.count()
+    const properties = propertyId ? 1 : await prisma.property.count()
 
     const bookingsThisMonth = await prisma.booking.findMany({
       where: {
+        ...propertyFilter,
         OR: [
           { startDate: { gte: startOfMonth, lte: endOfMonth } },
           { endDate: { gte: startOfMonth, lte: endOfMonth } },
@@ -77,6 +89,7 @@ export async function GET() {
         status: { in: ['confirmed', 'pending'] },
       },
       select: {
+        propertyId: true,
         startDate: true,
         endDate: true,
       },
@@ -84,6 +97,7 @@ export async function GET() {
 
     const bookingsLastMonth = await prisma.booking.findMany({
       where: {
+        ...propertyFilter,
         OR: [
           { startDate: { gte: lastMonth, lte: endOfLastMonth } },
           { endDate: { gte: lastMonth, lte: endOfLastMonth } },
@@ -94,19 +108,20 @@ export async function GET() {
         status: { in: ['confirmed', 'pending'] },
       },
       select: {
+        propertyId: true,
         startDate: true,
         endDate: true,
       },
     })
 
-    // Calculer les jours occupés
+    // Calculer les jours occupés (par propriété)
     const occupiedDays = new Set<string>()
     bookingsThisMonth.forEach((booking) => {
       const start = booking.startDate > startOfMonth ? booking.startDate : startOfMonth
       const end = booking.endDate < endOfMonth ? booking.endDate : endOfMonth
       const currentDate = new Date(start)
       while (currentDate.getTime() <= end.getTime()) {
-        occupiedDays.add(currentDate.toDateString())
+        occupiedDays.add(`${booking.propertyId}-${currentDate.toDateString()}`)
         currentDate.setDate(currentDate.getDate() + 1)
       }
     })
@@ -117,7 +132,7 @@ export async function GET() {
       const end = booking.endDate < endOfLastMonth ? booking.endDate : endOfLastMonth
       const currentDate = new Date(start)
       while (currentDate.getTime() <= end.getTime()) {
-        lastMonthOccupiedDays.add(currentDate.toDateString())
+        lastMonthOccupiedDays.add(`${booking.propertyId}-${currentDate.toDateString()}`)
         currentDate.setDate(currentDate.getDate() + 1)
       }
     })

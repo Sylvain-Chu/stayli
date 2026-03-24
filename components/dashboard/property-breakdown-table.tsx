@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { usePropertyBreakdown } from '@/hooks/use-dashboard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -11,9 +11,11 @@ export function PropertyBreakdownTable() {
   const { data, isLoading, isError } = usePropertyBreakdown()
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true)
   }, [])
 
+  // During SSR and hydration: always render skeleton to prevent mismatch
   if (!isMounted) {
     return (
       <Card>
@@ -31,6 +33,7 @@ export function PropertyBreakdownTable() {
     )
   }
 
+  // After hydration: follow actual state
   if (isLoading) {
     return (
       <Card>
@@ -92,7 +95,7 @@ export function PropertyBreakdownTable() {
             </thead>
             <tbody>
               {data.map((property) => (
-                <tr key={property.propertyId} className="border-b border-border h-12 align-middle last:border-0">
+                <tr key={property.propertyId} className="border-b border-border min-h-12 align-middle last:border-0">
                   <td className="px-4 py-3 text-sm font-medium">{property.propertyName}</td>
                   <td className="px-4 py-3 text-right text-sm">{formatCurrency(property.revenue)}</td>
                   <td className="px-4 py-3 text-right text-sm">{formatCurrency(property.expenses)}</td>

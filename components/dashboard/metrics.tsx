@@ -14,8 +14,8 @@ export function KPICards() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-6">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <Card key={i} className="border-border bg-card border">
-            <CardContent className="p-5">
-              <Skeleton className="h-20 w-full" />
+            <CardContent className="p-4">
+              <Skeleton className="h-16 w-full" />
             </CardContent>
           </Card>
         ))}
@@ -85,29 +85,36 @@ export function KPICards() {
           key={kpi.label}
           className="border-border bg-card border shadow-sm transition-shadow hover:shadow-md"
         >
-          <CardContent className="p-5">
-            <div className="flex items-start justify-between">
-              <div className="space-y-1">
-                <p className="text-muted-foreground text-sm font-medium">{kpi.label}</p>
-                <p
-                  className={`text-2xl font-bold tracking-tight ${kpi.isWarning ? 'text-destructive' : 'text-foreground'}`}
-                >
-                  {kpi.value}
-                </p>
-              </div>
+          <CardContent className="flex flex-col gap-4 p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-muted-foreground text-sm font-medium">{kpi.label}</p>
               <div
-                className={`rounded-xl p-2.5 ${kpi.isWarning ? 'bg-destructive/10' : 'bg-accent'}`}
+                className={`rounded-lg p-2 ${kpi.isWarning ? 'bg-destructive/10' : 'bg-accent'}`}
               >
                 <kpi.icon
-                  className={`h-5 w-5 ${kpi.isWarning ? 'text-destructive' : 'text-primary'}`}
+                  className={`h-4 w-4 ${kpi.isWarning ? 'text-destructive' : 'text-primary'}`}
                 />
               </div>
             </div>
-            <p
-              className={`mt-3 text-xs font-medium ${kpi.trendPositive ? 'text-primary' : kpi.isWarning ? 'text-destructive' : 'text-muted-foreground'}`}
-            >
-              {kpi.trend}
-            </p>
+
+            <div className="flex items-baseline gap-2">
+              <p
+                className={`text-2xl font-bold tracking-tight ${kpi.isWarning ? 'text-destructive' : 'text-foreground'}`}
+              >
+                {kpi.value}
+              </p>
+              <span
+                className={`rounded-md px-1.5 py-0.5 text-xs font-bold ${
+                  kpi.trendPositive
+                    ? 'bg-primary/10 text-primary'
+                    : kpi.isWarning
+                      ? 'bg-destructive/10 text-destructive'
+                      : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {kpi.trend}
+              </span>
+            </div>
           </CardContent>
         </Card>
       ))}

@@ -16,9 +16,21 @@ import { BOOKING_STATUS_COLORS, getBookingStatusDot } from '@/lib/constants/stat
 import type { BookingStatus } from '@/types/entities'
 
 const STATUS_OPTIONS: { value: BookingStatus; label: string; color: string }[] = [
-  { value: 'pending', label: BOOKING_STATUS_COLORS.pending.label, color: BOOKING_STATUS_COLORS.pending.color },
-  { value: 'confirmed', label: BOOKING_STATUS_COLORS.confirmed.label, color: BOOKING_STATUS_COLORS.confirmed.color },
-  { value: 'cancelled', label: BOOKING_STATUS_COLORS.cancelled.label, color: BOOKING_STATUS_COLORS.cancelled.color },
+  {
+    value: 'pending',
+    label: BOOKING_STATUS_COLORS.pending.label,
+    color: BOOKING_STATUS_COLORS.pending.color,
+  },
+  {
+    value: 'confirmed',
+    label: BOOKING_STATUS_COLORS.confirmed.label,
+    color: BOOKING_STATUS_COLORS.confirmed.color,
+  },
+  {
+    value: 'cancelled',
+    label: BOOKING_STATUS_COLORS.cancelled.label,
+    color: BOOKING_STATUS_COLORS.cancelled.color,
+  },
 ]
 
 interface BookingActionsProps {
@@ -92,7 +104,7 @@ export function BookingStatusSelect({ bookingId, currentStatus }: BookingActions
     <>
       <Select value={status} onValueChange={handleStatusChange} disabled={isPending}>
         <SelectTrigger
-          className={`w-[160px] font-medium ${currentOption?.color ?? ''}`}
+          className={`w-40 font-medium ${currentOption?.color ?? ''}`}
           aria-label="Changer le statut de la réservation"
         >
           <SelectValue />

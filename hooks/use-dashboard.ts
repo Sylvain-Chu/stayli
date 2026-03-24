@@ -27,8 +27,9 @@ export interface Activity {
   dates: string
 }
 
-export function useDashboardStats() {
-  const { data, error, isLoading } = useSWR<DashboardStats>('/api/dashboard/stats', {
+export function useDashboardStats(propertyId?: string) {
+  const url = propertyId ? `/api/dashboard/stats?propertyId=${propertyId}` : '/api/dashboard/stats'
+  const { data, error, isLoading } = useSWR<DashboardStats>(url, {
     refreshInterval: 60000, // Refresh every minute
   })
 
@@ -90,11 +91,13 @@ export function useCalendarBookings(year: number, month: number, day: number | n
   }
 }
 
-export function useRevenueVsExpenses() {
-  const { data, error, isLoading } = useSWR<{ data: MonthlyDataPoint[] }>(
-    '/api/dashboard/revenue-vs-expenses',
-    { refreshInterval: 300000 },
-  )
+export function useRevenueVsExpenses(propertyId?: string) {
+  const url = propertyId
+    ? `/api/dashboard/revenue-vs-expenses?propertyId=${propertyId}`
+    : '/api/dashboard/revenue-vs-expenses'
+  const { data, error, isLoading } = useSWR<{ data: MonthlyDataPoint[] }>(url, {
+    refreshInterval: 300000,
+  })
 
   return {
     data: data?.data ?? [],

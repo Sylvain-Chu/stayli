@@ -1,28 +1,37 @@
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAuth()
+
+    const searchParams = request.nextUrl.searchParams
+    const from = searchParams.get('from') ? new Date(searchParams.get('from')!) : undefined
+    const to = searchParams.get('to') ? new Date(searchParams.get('to')!) : undefined
+
+    const dateFilter = from || to ? { issueDate: { ...(from && { gte: from }), ...(to && { lte: to }) } } : {}
 
     const now = new Date()
 
     const [allStats, paidStats, overdueStats] = await Promise.all([
       // Total invoices
       prisma.invoice.aggregate({
+        where: dateFilter,
         _count: true,
         _sum: { amount: true },
       }),
       // Paid invoices
       prisma.invoice.aggregate({
-        where: { status: 'paid' },
+        where: { ...dateFilter, status: 'paid' },
         _count: true,
         _sum: { amount: true },
       }),
       // Overdue invoices (unpaid and past due date)
       prisma.invoice.aggregate({
         where: {
+          ...dateFilter,
           status: { in: ['sent', 'draft'] },
           dueDate: { lt: now },
         },

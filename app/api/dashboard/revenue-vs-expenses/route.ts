@@ -1,11 +1,17 @@
+import { NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { requireAuth } from '@/lib/auth'
 import { handleApiError, successResponse } from '@/lib/api-error'
 import type { MonthlyDataPoint } from '@/types/entities'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await requireAuth()
+
+    const searchParams = request.nextUrl.searchParams
+    const propertyId = searchParams.get('propertyId') || undefined
+
+    const propertyFilter = propertyId ? { propertyId } : {}
 
     const now = new Date()
     const monthsData: MonthlyDataPoint[] = []
@@ -20,6 +26,7 @@ export async function GET() {
       const [bookingResult, expenseResult] = await Promise.all([
         prisma.booking.aggregate({
           where: {
+            ...propertyFilter,
             startDate: { gte: startOfMonth, lte: endOfMonth },
             status: { in: ['confirmed', 'pending'] },
           },
@@ -27,6 +34,7 @@ export async function GET() {
         }),
         prisma.expense.aggregate({
           where: {
+            ...propertyFilter,
             date: { gte: startOfMonth, lte: endOfMonth },
           },
           _sum: { amount: true },

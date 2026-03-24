@@ -15,9 +15,14 @@ export async function GET(request: NextRequest) {
 
     const searchParams = request.nextUrl.searchParams
     const propertyId = searchParams.get('propertyId') || undefined
+    const from = searchParams.get('from') ? new Date(searchParams.get('from')!) : undefined
+    const to = searchParams.get('to') ? new Date(searchParams.get('to')!) : undefined
+
+    const dateFilter = from || to ? { date: { ...(from && { gte: from }), ...(to && { lte: to }) } } : {}
+    const propertyFilter = propertyId ? { propertyId } : {}
 
     const allExpenses = await prisma.expense.findMany({
-      where: propertyId ? { propertyId } : undefined,
+      where: { ...propertyFilter, ...dateFilter },
       select: {
         amount: true,
         category: true,
