@@ -73,6 +73,7 @@ export function AddExpenseDialog({
     if (open) {
       if (expense) {
         // Fill form with expense data
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setFormData({
           propertyId: expense.propertyId,
           amount: expense.amount.toString(),
@@ -94,8 +95,6 @@ export function AddExpenseDialog({
       }
     }
   }, [open, expense, properties])
-
-
 
   const handleChange = (field: string, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
